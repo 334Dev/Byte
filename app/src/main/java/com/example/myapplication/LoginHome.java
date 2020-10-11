@@ -8,7 +8,10 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -26,6 +29,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginHome extends AppCompatActivity {
     private Button google, email;
+    private ImageView mountain,back,circle1,circle2,circle3,logo;
     private GoogleSignInOptions gso;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
@@ -38,6 +42,14 @@ public class LoginHome extends AppCompatActivity {
         setContentView(R.layout.activity_loginhome);
         getSupportActionBar().hide();
         google=findViewById(R.id.google);
+        email=findViewById(R.id.email);
+        mountain=findViewById(R.id.mountain);
+        back=findViewById(R.id.imageView7);
+        circle1=findViewById(R.id.circle1);
+        circle2=findViewById(R.id.circle2);
+        circle3=findViewById(R.id.circle3);
+        logo=findViewById(R.id.logo);
+
         mAuth= FirebaseAuth.getInstance();
         parentLayout = findViewById(android.R.id.content);
 
@@ -48,10 +60,27 @@ public class LoginHome extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+
+
         google.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signIn();
+            }
+        });
+        email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent sharedintent= new Intent(LoginHome.this,signin.class);
+                //Transition Animation
+                ActivityOptions options= ActivityOptions.makeSceneTransitionAnimation(LoginHome.this,
+                        new android.util.Pair<View, String>(mountain, "MountainTransition"),
+                        new android.util.Pair<View, String>(back, "BackTransition"),
+                        new android.util.Pair<View, String>(circle1, "circle1Transition"),
+                        new android.util.Pair<View, String>(circle2, "circle2Transition"),
+                        new android.util.Pair<View, String>(circle3, "circle3Transition"),
+                        new android.util.Pair<View, String>(logo, "logoTransition"));
+                startActivity(sharedintent, options.toBundle());
             }
         });
     }

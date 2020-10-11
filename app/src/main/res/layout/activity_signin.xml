@@ -6,18 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".signin">
 
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/mountain" />
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/colorAccent"
+        android:transitionName="BackTransition"
+        app:layout_constraintBottom_toTopOf="@+id/mountain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/mountain"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:transitionName="MountainTransition"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/mountain" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName3"
+        android:id="@+id/username"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="42dp"
@@ -36,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName4"
+            android:id="@+id/emailUp"
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:layout_marginStart="42dp"
@@ -52,10 +65,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName3" />
+            app:layout_constraintTop_toBottomOf="@+id/username" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName5"
+            android:id="@+id/passwordUp"
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:layout_marginStart="42dp"
@@ -70,7 +83,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName4" />
+            app:layout_constraintTop_toBottomOf="@+id/emailUp" />
 
     <TextView
         android:id="@+id/textView2"
@@ -83,10 +96,10 @@
         android:textSize="28sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView5" />
+        app:layout_constraintTop_toBottomOf="@+id/mountain" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/register"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
@@ -99,16 +112,59 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName5" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordUp" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/signupText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="New User? Create Account Here"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button4" />
+        app:layout_constraintTop_toBottomOf="@+id/register" />
+
+    <ImageView
+        android:id="@+id/circle6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle3"
+        android:transitionName="circle3Transition"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/imageView5" />
+
+    <ImageView
+        android:id="@+id/circle8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle2"
+        android:transitionName="circle2Transition"
+        app:layout_constraintBottom_toBottomOf="@+id/circle6"
+        app:layout_constraintEnd_toEndOf="@+id/circle6"
+        app:layout_constraintStart_toStartOf="@+id/circle6"
+        app:layout_constraintTop_toTopOf="@+id/circle6" />
+
+    <ImageView
+        android:id="@+id/circle7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle1"
+        android:transitionName="circle1Transition"
+        app:layout_constraintBottom_toBottomOf="@+id/circle8"
+        app:layout_constraintEnd_toEndOf="@+id/circle8"
+        app:layout_constraintStart_toStartOf="@+id/circle8"
+        app:layout_constraintTop_toTopOf="@+id/circle8" />
+
+    <ImageView
+        android:id="@+id/logo3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo"
+        android:transitionName="logoTransition"
+        app:layout_constraintBottom_toBottomOf="@+id/circle7"
+        app:layout_constraintEnd_toEndOf="@+id/circle7"
+        app:layout_constraintStart_toStartOf="@+id/circle7"
+        app:layout_constraintTop_toTopOf="@+id/circle7" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
