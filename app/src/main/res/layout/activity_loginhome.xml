@@ -4,64 +4,79 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/Background"
     tools:context=".LoginHome">
 
-    <ImageView
-        android:id="@+id/imageView7"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/colorAccent"
-        app:layout_constraintBottom_toTopOf="@+id/mountain"
-        android:transitionName="BackTransition"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/mountain"
+    <Button
+        android:id="@+id/login2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:scaleType="fitXY"
-        android:src="@drawable/mountain"
-        android:transitionName="MountainTransition"
-        app:layout_constraintBottom_toTopOf="@+id/google"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="72dp"
+        android:background="@drawable/accentbtn"
+        android:text="Login"
+        android:transitionName="loginT"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/circle2" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordUp2" />
 
-    <ImageView
-        android:id="@+id/circle3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
-        android:src="@drawable/circle3"
-        android:transitionName="circle3Transition"
+    <EditText
+        android:id="@+id/emailUp2"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="42dp"
+        android:layout_marginEnd="42dp"
+        android:background="@drawable/whitebtn"
+        android:ems="10"
+        android:hint="Email "
+        android:inputType="textPersonName"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:textColor="@color/Background"
+        android:textColorHint="@color/hintColor"
+        android:transitionName="emailT"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="parent"
+        tools:visibility="visible" />
 
-    <ImageView
-        android:id="@+id/circle2"
+    <EditText
+        android:id="@+id/passwordUp2"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="42dp"
+        android:layout_marginEnd="42dp"
+        android:background="@drawable/whitebtn"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPersonName"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:textColor="@color/Background"
+        android:textColorHint="@color/hintColor"
+        android:transitionName="passwordT"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailUp2" />
+
+    <TextView
+        android:id="@+id/signinText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/circle2"
-        android:transitionName="circle2Transition"
-        app:layout_constraintBottom_toBottomOf="@+id/circle3"
-        app:layout_constraintEnd_toEndOf="@+id/circle3"
-        app:layout_constraintStart_toStartOf="@+id/circle3"
-        app:layout_constraintTop_toTopOf="@+id/circle3" />
-
-    <ImageView
-        android:id="@+id/circle1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/circle1"
-        android:transitionName="circle1Transition"
-        app:layout_constraintBottom_toBottomOf="@+id/circle2"
-        app:layout_constraintEnd_toEndOf="@+id/circle2"
-        app:layout_constraintStart_toStartOf="@+id/circle2"
-        app:layout_constraintTop_toTopOf="@+id/circle2" />
+        android:text="New User? Create Account Here"
+        android:textColor="@color/plainText"
+        android:transitionName="signinT"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login2" />
 
     <Button
         android:id="@+id/google"
@@ -69,44 +84,47 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
         android:layout_marginEnd="48dp"
+        android:layout_marginBottom="32dp"
         android:background="@drawable/whitebtn"
         android:fontFamily="@font/helveticaneu_bold"
         android:text="Google"
+        android:transitionName="google"
         android:textAllCaps="false"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/Background"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="240dp"
+        android:layout_height="110dp"
+        android:src="@drawable/bytelogo"
+        android:transitionName="logoTransition"
+        app:layout_constraintBottom_toTopOf="@+id/google"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/circle3" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
-        android:layout_marginTop="24dp"
         android:layout_marginEnd="48dp"
+        android:layout_marginBottom="48dp"
         android:background="@drawable/borderbtn"
         android:fontFamily="@font/helveticaneu_bold"
         android:text="Email"
+        android:transitionName="email"
         android:textAllCaps="false"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/plainText"
         android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/google" />
-
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logo"
-        android:transitionName="logoTransition"
-        app:layout_constraintBottom_toBottomOf="@+id/circle1"
-        app:layout_constraintEnd_toEndOf="@+id/circle1"
-        app:layout_constraintStart_toStartOf="@+id/circle1"
-        app:layout_constraintTop_toTopOf="@+id/circle1" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

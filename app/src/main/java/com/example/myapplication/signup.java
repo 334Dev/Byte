@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,8 +33,8 @@ import java.util.Map;
 public class signup extends AppCompatActivity {
 
     private static final String TAG ="Register" ;
-    private TextView signinText,username,email,password;
-    private ImageView mountain;
+    private TextView signinText,email,password;
+    private ImageView logo;
     private Button register;
     private String Username, Email, Password;
     private FirebaseAuth mAuth;
@@ -45,12 +47,23 @@ public class signup extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         getSupportActionBar().hide();
-        mountain=findViewById(R.id.mountain);
+
+        //transition Time period
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getSharedElementEnterTransition().setDuration(1000);
+            getWindow().getSharedElementReturnTransition().setDuration(1000)
+                    .setInterpolator(new DecelerateInterpolator());
+        }
+
+
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
         signinText=findViewById(R.id.signinText);
 
-        username=findViewById(R.id.username);
-        email=findViewById(R.id.emailUp);
-        password=findViewById(R.id.passwordUp);
+        email=findViewById(R.id.emailin);
+        password=findViewById(R.id.passwordin);
+
+        logo=findViewById(R.id.logo);
 
         mAuth=FirebaseAuth.getInstance();
         firestore=FirebaseFirestore.getInstance();
@@ -70,14 +83,13 @@ public class signup extends AppCompatActivity {
                 Intent sharedintent= new Intent(signup.this,signin.class);
                 //Transition Animation
                 ActivityOptions options= ActivityOptions.makeSceneTransitionAnimation(signup.this,
-                        new android.util.Pair<View, String>(mountain, "MountainTransition"));
+                        new android.util.Pair<View, String>(logo, "logoTransition"));
                 startActivity(sharedintent, options.toBundle());
             }
         });
     }
 
     private void registerUser() {
-        Username = username.getText().toString();
         Email = email.getText().toString();
         Password = password.getText().toString();
         if (Email.isEmpty()) {
@@ -86,11 +98,6 @@ public class signup extends AppCompatActivity {
             password.setError("Password is empty");
         } else if (Password.length() < 6) {
             password.setError("Minimum 6 character");
-        } else if (Username.isEmpty()) {
-            username.setError("Username is empty");
-        } else if (!checkUsername(Username)) {
-            Log.i(TAG, "registerUser: username exist");
-            username.setError("Username already exist");
         } else {
             mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
