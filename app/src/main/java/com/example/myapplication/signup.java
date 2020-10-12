@@ -46,7 +46,6 @@ public class signup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        getSupportActionBar().hide();
 
         //transition Time period
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -112,6 +111,8 @@ public class signup extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Snackbar.make(parentLayout, "Authentication Successful", Snackbar.LENGTH_SHORT).show();
+                                Intent i=new Intent(signup.this, HomeActivity.class);
+                                startActivity(i);
                             }
                         });
 

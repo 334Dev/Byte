@@ -38,7 +38,6 @@ public class signin extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
-        getSupportActionBar().hide();
 
         //transition Time period
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -71,6 +70,8 @@ public class signin extends AppCompatActivity {
                                         Log.d(TAG, "signInWithEmail:success");
                                         FirebaseUser user = mAuth.getCurrentUser();
                                         Snackbar.make(parentLayout, "Login Successful", Snackbar.LENGTH_SHORT).show();
+                                        Intent i=new Intent(signin.this, HomeActivity.class);
+                                        startActivity(i);
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w(TAG, "signInWithEmail:failure", task.getException());

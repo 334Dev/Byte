@@ -41,7 +41,6 @@ public class LoginHome extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loginhome);
-        getSupportActionBar().hide();
 
         register=findViewById(R.id.login2);
         password=findViewById(R.id.passwordUp2);
@@ -131,6 +130,8 @@ public class LoginHome extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Snackbar.make(parentLayout, "Authentication Successful.", Snackbar.LENGTH_SHORT).show();
+                            Intent i=new Intent(LoginHome.this, HomeActivity.class);
+                            startActivity(i);
 
                         } else {
                             // If sign in fails, display a message to the user.
