@@ -3,12 +3,16 @@ package com.example.myapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ActionBar;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -21,11 +25,12 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginHome extends AppCompatActivity {
-    private Button google, email;
+    private Button google, email,register;
+    private TextView password, emailT, signup;
+    private ImageView logo;
     private GoogleSignInOptions gso;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
@@ -37,7 +42,20 @@ public class LoginHome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loginhome);
         getSupportActionBar().hide();
+
+        register=findViewById(R.id.login2);
+        password=findViewById(R.id.passwordUp2);
+        emailT=findViewById(R.id.emailUp2);
+        signup=findViewById(R.id.signinText2);
+
         google=findViewById(R.id.google);
+        email=findViewById(R.id.email);
+        logo=findViewById(R.id.logo);
+
+        Animation animation= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fade_in);
+        email.setAnimation(animation);
+        google.setAnimation(animation);
+
         mAuth= FirebaseAuth.getInstance();
         parentLayout = findViewById(android.R.id.content);
 
@@ -48,13 +66,39 @@ public class LoginHome extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+
         google.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signIn();
             }
         });
+        email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Animation animation1=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fade_out);
+                email.setAnimation(animation1);
+                google.setAnimation(animation1);
+                transitionAnimation();
+
+            }
+        });
+
     }
+
+    private void transitionAnimation() {
+        Intent sharedintent= new Intent(LoginHome.this,signin.class);
+        ActivityOptions options= ActivityOptions.makeSceneTransitionAnimation(LoginHome.this,
+                new android.util.Pair<View, String>(logo, "logoTransition"),
+                //new android.util.Pair<View, String>(google, "google"),
+                //new android.util.Pair<View, String>(email, "email"),
+                new android.util.Pair<View, String>(password, "passwordT"),
+                new android.util.Pair<View, String>(emailT, "emailT"),
+                new android.util.Pair<View, String>(signup, "signinT"),
+                new android.util.Pair<View, String>(register, "loginT"));
+        startActivity(sharedintent, options.toBundle());
+    }
+
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
