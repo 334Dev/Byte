@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,12 +22,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class LoginHome extends AppCompatActivity {
     private Button google, email,register;
@@ -36,11 +44,19 @@ public class LoginHome extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private View parentLayout;
     private int RC_SIGN_IN=101;
+    private String UserID;
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loginhome);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getSharedElementEnterTransition().setDuration(1000);
+            getWindow().getSharedElementReturnTransition().setDuration(1000)
+                    .setInterpolator(new DecelerateInterpolator());
+        }
 
         register=findViewById(R.id.login2);
         password=findViewById(R.id.passwordUp2);
@@ -50,6 +66,8 @@ public class LoginHome extends AppCompatActivity {
         google=findViewById(R.id.google);
         email=findViewById(R.id.email);
         logo=findViewById(R.id.logo);
+
+        firestore=FirebaseFirestore.getInstance();
 
         Animation animation= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fade_in);
         email.setAnimation(animation);
@@ -128,10 +146,25 @@ public class LoginHome extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Snackbar.make(parentLayout, "Authentication Successful.", Snackbar.LENGTH_SHORT).show();
-                            Intent i=new Intent(LoginHome.this, HomeActivity.class);
-                            startActivity(i);
+                            UserID=mAuth.getCurrentUser().getUid();
+                            firestore.collection("Users").document(UserID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.getResult().exists()){
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Snackbar.make(parentLayout, "Authentication Successful.", Snackbar.LENGTH_SHORT).show();
+                                        Intent i=new Intent(LoginHome.this, HomeActivity.class);
+                                        startActivity(i);
+                                    }else{
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Snackbar.make(parentLayout, "Authentication Successful.", Snackbar.LENGTH_SHORT).show();
+                                        Intent i=new Intent(LoginHome.this, loginDetails.class);
+                                        startActivity(i);
+                                    }
+                                }
+                            });
+
+
 
                         } else {
                             // If sign in fails, display a message to the user.
