@@ -15,7 +15,7 @@
         android:layout_height="120dp"
         android:layout_marginTop="16dp"
         android:src="@drawable/ic_baseline_person_24"
-        app:layout_constraintBottom_toTopOf="@+id/userName"
+        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,18 +28,20 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
         android:layout_marginEnd="72dp"
+        android:layout_marginBottom="40dp"
         android:background="@drawable/accentbtn"
         android:text="Finish"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:transitionName="loginT"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="643dp"
         tools:visibility="visible" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
@@ -48,26 +50,30 @@
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
         app:layout_constraintBottom_toTopOf="@+id/register"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        tools:layout_editor_absoluteX="1dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView">
 
-        <RadioButton
-            android:id="@+id/radioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:buttonTint="@color/colorAccent"
-            android:text="Web Development"
-            android:textColor="@color/plainText" />
 
-        <RadioButton
-            android:id="@+id/radioButton7"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:buttonTint="@color/colorAccent"
-            android:text="App Development"
-            android:textColor="@color/plainText" />
+
+
+            <RadioButton
+                android:id="@+id/radioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:buttonTint="@color/colorAccent"
+                android:text="Web Development"
+                android:textColor="@color/plainText" />
+
+            <RadioButton
+                android:id="@+id/radioButton7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:buttonTint="@color/colorAccent"
+                android:text="App Development"
+                android:textColor="@color/plainText" />
 
         <RadioButton
             android:id="@+id/radioButton8"
@@ -104,6 +110,7 @@
             android:buttonTint="@color/colorAccent"
             android:text="Hostels"
             android:textColor="@color/plainText" />
+
 
     </LinearLayout>
 
