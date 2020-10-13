@@ -103,18 +103,9 @@ public class signup extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "createUserWithEmail:success");
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        String UID=user.getUid();
-                        Map<String, String> map=new HashMap<>();
-                        map.put("Username", Username);
-                        firestore.collection("Users").document(UID).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Snackbar.make(parentLayout, "Authentication Successful", Snackbar.LENGTH_SHORT).show();
-                                Intent i=new Intent(signup.this, loginDetails.class);
-                                startActivity(i);
-                            }
-                        });
+                        Snackbar.make(parentLayout, "Authentication Successful", Snackbar.LENGTH_SHORT).show();
+                        Intent i=new Intent(signup.this, loginDetails.class);
+                        startActivity(i);
 
                     } else {
                         Snackbar.make(parentLayout, "Authentication Failed", Snackbar.LENGTH_SHORT).show();
