@@ -19,6 +19,7 @@ import com.example.myapplication.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -47,7 +48,7 @@ public class ProfileFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
         mAuth = FirebaseAuth.getInstance();
         profileImageView = root.findViewById(R.id.circleImageViewPro);
-        userName = root.findViewById(R.id.userNameProfileFrag);
+        userName = root.findViewById(R.id.textView7);
         Logout = root.findViewById(R.id.logoutBtn);
         UserID = mAuth.getCurrentUser().getUid();
         fstore = FirebaseFirestore.getInstance();
@@ -69,6 +70,8 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        setUserDetails();
+
         Logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,12 +80,24 @@ public class ProfileFragment extends Fragment {
                 startActivity(i);
 
 
+
             }
         });
 
         return root;
 
 
+    }
+
+    private void setUserDetails() {
+        fstore.collection("Users").document(UserID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                 String UserName=documentSnapshot.getString("Username");
+
+                 userName.setText(UserName);
+            }
+        });
     }
 
     @Override
