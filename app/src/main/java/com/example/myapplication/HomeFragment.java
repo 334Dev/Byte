@@ -18,12 +18,9 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    public HomeFragment()
-    {
-
-    }
-   RecyclerView recyclerView;
-   List<Model_Latest> item_list;
+   private RecyclerView recyclerView;
+   private List<Model_Latest> item_list;
+   private LatestAdapter latestAdapter;
 
 
     @Nullable
@@ -35,22 +32,9 @@ public class HomeFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
-
-
-        recyclerView.setAdapter(new LatestAdapter(initData()));
-
-        return root;
-
-
-
-    }
-
-    private List<Model_Latest> initData() {
-
         item_list=new ArrayList<>();
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-        ,  6725,890));
+                ,  6725,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
                 ,  672537,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
@@ -67,6 +51,20 @@ public class HomeFragment extends Fragment {
                 ,  67253,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
                 ,  672537,890));
+
+
+        latestAdapter= new LatestAdapter(item_list);
+        recyclerView.setAdapter(latestAdapter);
+
+        return root;
+
+
+
+    }
+
+    private List<Model_Latest> initData() {
+
+
 
         return item_list;
 

@@ -5,10 +5,9 @@
         app:constraintSetEnd="@layout/fragment_home_end"
         app:constraintSetStart="@layout/fragment_home_start" >
 
-        <OnSwipe
-            app:dragDirection="dragUp"
-            app:touchAnchorSide="top"
-            />
+        <OnClick
+            app:clickAction="toggle"
+            app:targetId="@+id/headLatestPost"/>
 
     </Transition>
 </MotionScene>

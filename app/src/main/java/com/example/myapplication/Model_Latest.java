@@ -1,11 +1,11 @@
 package com.example.myapplication;
 
 public class Model_Latest {
-    int img;
+    Integer img;
     String title;
     String desc;
     String tag;
-    int time;
+    Integer time;
     Integer viewCount;
 
     Model_Latest()
@@ -13,7 +13,7 @@ public class Model_Latest {
 
     }
 
-    public Model_Latest(int img, String title, String desc, String tag, int time, Integer viewCount) {
+    public Model_Latest(Integer img, String title, String desc, String tag, Integer time, Integer viewCount) {
         this.img = img;
         this.title = title;
         this.desc = desc;
@@ -22,11 +22,11 @@ public class Model_Latest {
         this.viewCount = viewCount;
     }
 
-    public int getImg() {
+    public Integer getImg() {
         return img;
     }
 
-    public void setImg(int img) {
+    public void setImg(Integer img) {
         this.img = img;
     }
 
@@ -54,11 +54,11 @@ public class Model_Latest {
         this.tag = tag;
     }
 
-    public int getTime() {
+    public Integer getTime() {
         return time;
     }
 
-    public void setTime(int time) {
+    public void setTime(Integer time) {
         this.time = time;
     }
 
