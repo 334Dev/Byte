@@ -8,63 +8,86 @@
     android:animateLayoutChanges="true"
     tools:context=".signin">
 
+    <com.jgabrielfreitas.core.BlurImageView
+        android:id="@+id/dogBlurImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/iceland"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:radius="12" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/dogBlurImageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/gradient" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/circleImageViewPro"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:src="@drawable/ic_baseline_person_120"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
-
-
     <TextView
-        android:id="@+id/textView7"
+        android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/helveticaneu_bold"
-        android:text="Darpan Mittal"
         android:textColor="@color/plainText"
         android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/circleImageViewPro" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:orientation="horizontal"
         android:paddingStart="32dp"
         android:paddingEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/circleImageViewPro"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/circleImageViewPro"
-        app:layout_constraintTop_toTopOf="@+id/circleImageViewPro">
+        app:layout_constraintEnd_toEndOf="@+id/circleImageViewPro"
+        app:layout_constraintStart_toStartOf="@+id/circleImageViewPro"
+        app:layout_constraintTop_toBottomOf="@+id/username">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView10"
+                android:id="@+id/post"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:textSize="18dp"
-                android:textColor="@color/plainText"
-                android:text="342"
-
                 android:fontFamily="@font/helveticaneu_bold"
+                android:text="-"
                 android:textAlignment="center"
-                 />
+
+                android:textColor="@color/plainText"
+                android:textSize="18dp" />
 
             <TextView
                 android:id="@+id/textView11"
@@ -74,24 +97,25 @@
                 android:fontFamily="@font/helveticaneue_medium"
                 android:text="Posts"
                 android:textAlignment="center"
-                android:textColor="@color/plainText"
-                 />
+                android:textColor="@color/plainText" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView13"
+                android:id="@+id/followers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/helveticaneu_bold"
-                android:text="213"
-                android:textColor="@color/plainText"
+                android:text="-"
                 android:textAlignment="center"
+                android:textColor="@color/plainText"
                 android:textSize="18dp" />
 
             <TextView
@@ -108,17 +132,19 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView14"
+                android:id="@+id/following"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/helveticaneu_bold"
-                android:textColor="@color/plainText"
-                android:text="259"
+                android:text="-"
                 android:textAlignment="center"
+                android:textColor="@color/plainText"
                 android:textSize="18dp" />
 
             <TextView
@@ -143,13 +169,15 @@
         android:layout_marginEnd="8dp"
         android:background="@drawable/stroke_rectangle"
         android:text="LogOut"
+        android:textColor="@color/plainText"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="409dp"
-        android:layout_height="515dp"
+        android:layout_height="0dp"
         android:layout_marginTop="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

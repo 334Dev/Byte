@@ -119,9 +119,12 @@ public class loginDetails extends AppCompatActivity {
              else{
                  FirebaseUser user = mAuth.getCurrentUser();
                  String UID=user.getUid();
-                 Map<String, String> map=new HashMap<>();
+                 Map<String, Object> map=new HashMap<>();
                  map.put("Username", UserName.getText().toString());
                  map.put("Tag",Tag);
+                 map.put("Followers",0);
+                 map.put("Following",0);
+                 map.put("Post",0);
                  firestore.collection("Users").document(UID).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                      @Override
                      public void onSuccess(Void aVoid) {

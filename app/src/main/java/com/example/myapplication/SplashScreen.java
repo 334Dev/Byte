@@ -33,11 +33,9 @@ public class SplashScreen extends AppCompatActivity {
                     ActivityOptions options= ActivityOptions.makeSceneTransitionAnimation(SplashScreen.this,
                             new android.util.Pair<View, String>(logo, "logoTransition"));
                     startActivity(sharedintent, options.toBundle());
-                    finish();
                 }else{
                     Intent i=new Intent(SplashScreen.this, HomeActivity.class);
                     startActivity(i);
-                    finish();
                 }
             }
         },1000);
