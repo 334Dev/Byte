@@ -13,22 +13,22 @@
         android:id="@+id/circleImageView"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_marginTop="32dp"
-        android:src="@drawable/ic_baseline_person_120"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_baseline_person_24"
+        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/finishBtn"
+        android:id="@+id/register"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="72dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="40dp"
         android:background="@drawable/accentbtn"
         android:text="Finish"
         android:textColor="#FFFFFF"
@@ -38,88 +38,77 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         tools:visibility="visible" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
+        android:layout_marginBottom="64dp"
         android:orientation="vertical"
-        android:paddingStart="48dp"
-        android:paddingEnd="48dp"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
-        tools:layout_editor_absoluteX="1dp">
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/register"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView">
 
-        <CheckBox
-            android:id="@+id/radioButton1"
+
+
+
+            <RadioButton
+                android:id="@+id/radioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:buttonTint="@color/colorAccent"
+                android:text="Web Development"
+                android:textColor="@color/plainText" />
+
+            <RadioButton
+                android:id="@+id/radioButton7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:buttonTint="@color/colorAccent"
+                android:text="App Development"
+                android:textColor="@color/plainText" />
+
+        <RadioButton
+            android:id="@+id/radioButton8"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:buttonTint="@color/colorAccent"
-            android:fontFamily="@font/helveticaneue_medium"
-            android:text="Web Development"
-            android:textColor="@color/plainText" />
-
-        <CheckBox
-            android:id="@+id/radioButton2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:buttonTint="@color/colorAccent"
-            android:fontFamily="@font/helveticaneue_medium"
-            android:text="App Development"
-            android:textColor="@color/plainText" />
-
-        <CheckBox
-            android:id="@+id/radioButton3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:buttonTint="@color/colorAccent"
-            android:fontFamily="@font/helveticaneue_medium"
             android:text="Competitive Programmnig"
             android:textColor="@color/plainText" />
 
-        <CheckBox
-            android:id="@+id/radioButton4"
+        <RadioButton
+            android:id="@+id/radioButton9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:buttonTint="@color/colorAccent"
-            android:fontFamily="@font/helveticaneue_medium"
             android:text="Politics"
             android:textColor="@color/plainText" />
 
-        <CheckBox
-            android:id="@+id/radioButton5"
+        <RadioButton
+            android:id="@+id/radioButton10"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:buttonTint="@color/colorAccent"
-            android:fontFamily="@font/helveticaneue_medium"
             android:text="T.V Series"
             android:textColor="@color/plainText" />
 
-        <CheckBox
-            android:id="@+id/radioButton6"
+        <RadioButton
+            android:id="@+id/radioButton11"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:buttonTint="@color/colorAccent"
-            android:fontFamily="@font/helveticaneue_medium"
-            android:text="Automobile"
-            android:textColor="@color/plainText" />
-
-        <CheckBox
-            android:id="@+id/radioButton7"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:buttonTint="@color/colorAccent"
-            android:fontFamily="@font/helveticaneue_medium"
-            android:text="Literature"
+            android:text="Hostels"
             android:textColor="@color/plainText" />
 
 
@@ -129,46 +118,32 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="32dp"
         android:fontFamily="@font/helveticaneu_bold"
-        android:text="Choose Your Interests "
+        android:text="Choose Your Categories"
         android:textColor="@color/plainText"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
 
     <EditText
         android:id="@+id/editTextTextPersonName"
         android:layout_width="wrap_content"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="98dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="100dp"
-        android:background="@drawable/borderbtn"
         android:ems="10"
-        android:hint="Your Username"
-
         android:inputType="textPersonName"
-        android:padding="16dp"
-        android:textAlignment="center"
-        android:textColor="@color/plainText"
+        android:text="Name"
+        android:hint="Enter Your UserName"
         android:textColorHint="@color/hintColor"
+        android:textColor="@color/plainText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/circleImageView" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:fontFamily="@font/helveticaneue_light"
-        android:text="You can modify later"
-        android:textColor="@color/plainText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
