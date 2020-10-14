@@ -33,7 +33,7 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.ViewHolder
         holder.Title.setText(itemList1.get(position).getTitle());
         holder.Desc.setText(itemList1.get(position).getDesc());
         holder.viewCountTxt.setText(itemList1.get(position).getViewCount());
-        holder.time.setText(itemList1.get(position).getTime()+"");
+        holder.time.setText(Integer.toString(itemList1.get(position).getTime()));
 
     }
 

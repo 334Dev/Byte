@@ -1,13 +1,11 @@
 package com.example.myapplication;
 
-import android.widget.ImageView;
-
 public class Model_Latest {
     int img;
     String title;
     String desc;
     String tag;
-    Long time;
+    int time;
     Integer viewCount;
 
     Model_Latest()
@@ -15,7 +13,7 @@ public class Model_Latest {
 
     }
 
-    public Model_Latest(int img, String title, String desc, String tag, Long time, Integer viewCount) {
+    public Model_Latest(int img, String title, String desc, String tag, int time, Integer viewCount) {
         this.img = img;
         this.title = title;
         this.desc = desc;
@@ -56,11 +54,11 @@ public class Model_Latest {
         this.tag = tag;
     }
 
-    public Long getTime() {
+    public int getTime() {
         return time;
     }
 
-    public void setTime(Long time) {
+    public void setTime(int time) {
         this.time = time;
     }
 

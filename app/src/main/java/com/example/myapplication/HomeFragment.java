@@ -37,8 +37,9 @@ public class HomeFragment extends Fragment {
 
 
 
+
         recyclerView.setAdapter(new LatestAdapter(initData()));
-        
+
         return root;
 
 
@@ -49,25 +50,26 @@ public class HomeFragment extends Fragment {
 
         item_list=new ArrayList<>();
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-        , (long) 672537763,890));
+        ,  6725,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                , (long) 672537763,890));
+                ,  672537,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                , (long) 672537763,890));
+                ,  67253,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                , (long) 672537763,890));
+                ,  67253,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                , (long) 672537763,890));
+                ,  6725,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                , (long) 672537763,890));
+                , 6725,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                , (long) 672537763,890));
+                , 672,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                , (long) 672537763,890));
+                ,  67253,890));
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                , (long) 672537763,890));
+                ,  672537,890));
 
         return item_list;
 
     }
+
 }
