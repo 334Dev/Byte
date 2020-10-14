@@ -78,15 +78,16 @@ public class ProfileFragment extends Fragment {
 
         //getImage
         StorageReference profileRef = storageReference.child("users/" + mAuth.getCurrentUser().getUid() + "/profile.jpg");
-
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
+                //setting profile picture
                 Picasso.get().load(uri).into(profileImageView);
+                //setting cover image
                 Picasso.get().load(uri).into(coverImage);
             }
         });
-
+        //change profile picture
         profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,7 +114,7 @@ public class ProfileFragment extends Fragment {
 
 
     }
-
+    //setting user profile details; post, followers, following
     private void setUserDetails() {
         fstore.collection("Users").document(UserID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -143,7 +144,7 @@ public class ProfileFragment extends Fragment {
             uploadImageTOFirebase(resultUri);
         }
     }
-
+    //uploading new image in firebase
     private void uploadImageTOFirebase(Uri resultUri) {
 
         final StorageReference fileref=storageReference.child("users/"+mAuth.getCurrentUser().getUid()+"/profile.jpg");

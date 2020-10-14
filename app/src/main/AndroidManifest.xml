@@ -4,9 +4,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/bytelogo"
+        android:icon="@drawable/byte_icon"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/bytelogo"
+        android:roundIcon="@drawable/byte_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".LoginHome"></activity>
