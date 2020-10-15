@@ -38,6 +38,7 @@ public class ViewPost extends AppCompatActivity {
         web.getSettings().setBuiltInZoomControls(true);
         web.getSettings().setDisplayZoomControls(false);
 
+
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -48,8 +49,11 @@ public class ViewPost extends AppCompatActivity {
                 //String color="#ff333333";
                 Log.i("color", "onSuccess: "+color);
                 String text="<font color="+color+">"+documentSnapshot.getString("Post")+"</font>";
+
+                  text="<style>a:link{color:"+color+";}</style>"+text;
                 //String text=documentSnapshot.getString("Post");
                 web.loadDataWithBaseURL("",text,"text/html","utf-8",null);
+
 
 
             }

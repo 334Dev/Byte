@@ -34,6 +34,22 @@
             android:src="@drawable/ic_baseline_format_italic_24" />
 
         <ImageButton
+            android:id="@+id/action_align_left"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@null"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_baseline_format_align_left_24" />
+
+        <ImageButton
+            android:id="@+id/action_align_center"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@null"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_baseline_format_align_center_24" />
+
+        <ImageButton
             android:id="@+id/action_insert_image"
             android:layout_width="match_parent"
             android:layout_height="48dp"
@@ -78,6 +94,8 @@
             android:background="@null"
             android:contentDescription="@null"
             android:src="@drawable/ic_baseline_insert_link_24" />
+
+
 
 
     </LinearLayout>

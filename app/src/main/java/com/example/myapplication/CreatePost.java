@@ -54,7 +54,7 @@ public class CreatePost extends AppCompatActivity {
 
         done=findViewById(R.id.doneButton);
         mAuth = FirebaseAuth.getInstance();
-        UserID = mAuth.getCurrentUser().getUid();
+      //  UserID = mAuth.getCurrentUser().getUid();
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -125,24 +125,83 @@ public class CreatePost extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(CreatePost.this);
+
+                alert.setTitle("Enter Link");
+
+
+                final EditText input1 = new EditText(CreatePost.this);
+                input1.setHint("Enter Link here");
+                alert.setView(input1);
+
+              /*  final EditText input2 = new EditText(CreatePost.this);
+                input2.setHint("Title of Link");
+                alert.setView(input2);*/
+
+                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        String res1 = input1.getText().toString();
+
+
+                        mEditor.insertLink(res1,res1);
+
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Canceled.
+                    }
+                });
+
+                alert.show();
+
+
+                 }
+        });
+
+
         findViewById(R.id.action_insert_audio).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEditor.insertAudio("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_5MG.mp3");
+                Intent audio_upload=new Intent();
+                audio_upload.setType("audio/*");
+                audio_upload.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(audio_upload,1);
+
+
             }
         });
 
         findViewById(R.id.action_insert_video).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEditor.insertVideo("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_10MB.mp4", 360);
+
+                Intent audio_upload=new Intent();
+                audio_upload.setType("video/*");
+                audio_upload.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(audio_upload,2);
+
             }
         });
 
-        findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
+
+        findViewById(R.id.action_align_left).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEditor.insertLink("https://github.com/oneon334/LiteLo", "Lite Lo App Download kre");
+                mEditor.setAlignLeft();
+            }
+        });
+
+        findViewById(R.id.action_align_center).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEditor.setAlignCenter();
             }
         });
 
@@ -184,5 +243,22 @@ public class CreatePost extends AppCompatActivity {
             Uri resultUri = data.getData();
             mEditor.insertImage(resultUri.toString(), "Image Not Loaded",320);
         }
+
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+
+            Uri resultUri = data.getData();
+            mEditor.insertAudio(resultUri.toString());
+
+        }
+
+        if (requestCode == 2 && resultCode == RESULT_OK) {
+
+            Uri resultUri = data.getData();
+
+            mEditor.insertVideo(resultUri.toString(),360);
+
+        }
+
+
     }
 }
