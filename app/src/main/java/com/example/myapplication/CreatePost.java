@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -104,7 +105,11 @@ public class CreatePost extends AppCompatActivity {
 
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        value[0] = input.getText().toString();
+                        Log.i("link", "onClick: "+input.getText().toString());
+                        String[] res = input.getText().toString().split("/",-2);
+                        Log.i("link", "onClick: "+res[3]);
+                        String embeddedUrl = "https://www.youtube.com/embed/"+res[3];
+                        mEditor.insertYoutubeVideo(embeddedUrl);
 
                     }
                 });
@@ -116,7 +121,7 @@ public class CreatePost extends AppCompatActivity {
                 });
 
                 alert.show();
-                mEditor.insertYoutubeVideo(value[0]);
+
             }
         });
 

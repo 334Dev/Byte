@@ -3,6 +3,7 @@ package com.example.myapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
@@ -31,6 +32,11 @@ public class ViewPost extends AppCompatActivity {
 
         web=findViewById(R.id.webView);
         web.setBackgroundColor(getColor(R.color.Background));
+        web.getSettings().setDomStorageEnabled(true);
+        web.getSettings().setJavaScriptEnabled(true);
+        web.getSettings().setLoadWithOverviewMode(true);
+        web.getSettings().setBuiltInZoomControls(true);
+        web.getSettings().setDisplayZoomControls(false);
 
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -38,7 +44,7 @@ public class ViewPost extends AppCompatActivity {
         fstore.collection("Post").document("hello").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                String color=getResources().getString(R.color.plainText);
+                @SuppressLint("ResourceType") String color=getResources().getString(R.color.plainText);
                 Log.i("color", "onSuccess: "+color);
                 String text="<font color="+color+">"+documentSnapshot.getString("Post")+"</font>";
                 web.loadDataWithBaseURL("",text,"text/html","utf-8",null);
