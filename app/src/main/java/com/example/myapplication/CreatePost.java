@@ -2,8 +2,10 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,22 +52,14 @@ public class CreatePost extends AppCompatActivity {
 
 
         done=findViewById(R.id.doneButton);
-       // mAuth = FirebaseAuth.getInstance();
-       // UserID = mAuth.getCurrentUser().getUid();
+        mAuth = FirebaseAuth.getInstance();
+        UserID = mAuth.getCurrentUser().getUid();
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
 
         mEditor.setPadding(10,10,10,10);
-        mEditor.setPlaceholder("Hula hoops.. Type Here");
-
-       /* mPreview=(TextView)findViewById(R.id.preview);
-        mEditor.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
-            @Override
-            public void onTextChange(String text) {
-                mPreview.setText(text);
-            }
-        });*/
+        mEditor.setPlaceholder("Type Here...");
 
 
 
@@ -97,7 +92,31 @@ public class CreatePost extends AppCompatActivity {
         findViewById(R.id.action_insert_youtube).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEditor.insertYoutubeVideo("https://youtu.be/AAm95jaoAJc");
+                AlertDialog.Builder alert = new AlertDialog.Builder(CreatePost.this);
+
+                alert.setTitle("Youtube");
+                alert.setMessage("Enter the Youtube Link here");
+                final String[] value = new String[1];
+
+                // Set an EditText view to get user input
+                final EditText input = new EditText(CreatePost.this);
+                alert.setView(input);
+
+                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        value[0] = input.getText().toString();
+
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Canceled.
+                    }
+                });
+
+                alert.show();
+                mEditor.insertYoutubeVideo(value[0]);
             }
         });
 

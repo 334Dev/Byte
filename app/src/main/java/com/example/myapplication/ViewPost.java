@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -29,14 +30,17 @@ public class ViewPost extends AppCompatActivity {
         setContentView(R.layout.activity_view_post);
 
         web=findViewById(R.id.webView);
+        web.setBackgroundColor(getColor(R.color.Background));
+
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
         fstore.collection("Post").document("hello").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                String text=documentSnapshot.getString("Post");
+                String color=getResources().getString(R.color.plainText);
+                Log.i("color", "onSuccess: "+color);
+                String text="<font color="+color+">"+documentSnapshot.getString("Post")+"</font>";
                 web.loadDataWithBaseURL("",text,"text/html","utf-8",null);
 
 
