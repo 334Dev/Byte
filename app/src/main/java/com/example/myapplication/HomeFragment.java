@@ -52,7 +52,7 @@ public class HomeFragment extends Fragment {
         item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
                 ,  672537,890));
 
-
+        recyclerView.setNestedScrollingEnabled(false);
         latestAdapter= new LatestAdapter(item_list);
         recyclerView.setAdapter(latestAdapter);
 

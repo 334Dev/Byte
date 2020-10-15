@@ -9,7 +9,7 @@
         android:roundIcon="@drawable/byte_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginHome"></activity>
+        <activity android:name=".LoginHome" />
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,10 +17,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".loginDetails"></activity>
+        <activity android:name=".loginDetails" />
         <activity android:name=".signin" />
         <activity android:name=".signup" />
-        <activity android:name=".HomeActivity"/>
+        <activity android:name=".HomeActivity" />
     </application>
 
 </manifest>

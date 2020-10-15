@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,10 +28,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.jgabrielfreitas.core.BlurImageView;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import jp.wasabeef.picasso.transformations.BlurTransformation;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -42,7 +44,7 @@ public class ProfileFragment extends Fragment {
     String UserID;
     StorageReference storageReference;
     private FirebaseFirestore fstore;
-    private BlurImageView coverImage;
+    private ImageView coverImage;
     private TextView post,followers,following;
     private AlertDialog.Builder builder;
     private AlertDialog show;
@@ -84,7 +86,7 @@ public class ProfileFragment extends Fragment {
                 //setting profile picture
                 Picasso.get().load(uri).into(profileImageView);
                 //setting cover image
-                Picasso.get().load(uri).into(coverImage);
+                Picasso.get().load(uri).transform(new BlurTransformation(getContext(),25,3)).into(coverImage);
             }
         });
         //change profile picture
