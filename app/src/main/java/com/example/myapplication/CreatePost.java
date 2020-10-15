@@ -227,6 +227,7 @@ public class CreatePost extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(CreatePost.this,"fdsgffd",Toast.LENGTH_LONG).show();
                         Intent i=new Intent(CreatePost.this,ViewPost.class);
+                        i.putExtra("PostId",FileName);
                         startActivity(i);
                     }
                 }).addOnFailureListener(new OnFailureListener() {

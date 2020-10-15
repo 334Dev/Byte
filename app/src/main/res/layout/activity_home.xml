@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        app:fabCustomSize="54dp"
+        android:id="@+id/AddPostButton"
+        app:layout_constraintBottom_toBottomOf="@+id/fragment_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_baseline_add_24"
+        app:useCompatPadding="false" />
+
     <LinearLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
@@ -16,6 +30,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
+
+
+
+
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -28,6 +46,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/nav_items" >
+
+
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 
