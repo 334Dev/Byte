@@ -44,9 +44,11 @@ public class ViewPost extends AppCompatActivity {
         fstore.collection("Post").document("hello").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                @SuppressLint("ResourceType") String color=getResources().getString(R.color.plainText);
+                @SuppressLint("ResourceType") String color="#"+getResources().getString(R.color.plainText).substring(3);
+                //String color="#ff333333";
                 Log.i("color", "onSuccess: "+color);
                 String text="<font color="+color+">"+documentSnapshot.getString("Post")+"</font>";
+                //String text=documentSnapshot.getString("Post");
                 web.loadDataWithBaseURL("",text,"text/html","utf-8",null);
 
 

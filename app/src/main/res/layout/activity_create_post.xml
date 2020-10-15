@@ -67,7 +67,8 @@
             android:layout_weight="1"
             android:background="@null"
             android:contentDescription="@null"
-            android:src="@drawable/ic_baseline_play_circle_filled_24" />
+            android:src="@drawable/ic_baseline_play_circle_filled_24"
+            android:visibility="visible" />
 
         <ImageButton
             android:id="@+id/action_insert_link"

@@ -109,7 +109,7 @@ public class CreatePost extends AppCompatActivity {
                         String[] res = input.getText().toString().split("/",-2);
                         Log.i("link", "onClick: "+res[3]);
                         String embeddedUrl = "https://www.youtube.com/embed/"+res[3];
-                        mEditor.insertYoutubeVideo(embeddedUrl);
+                        mEditor.insertYoutubeVideo(embeddedUrl,320);
 
                     }
                 });
