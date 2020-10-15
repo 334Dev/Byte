@@ -15,19 +15,23 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import jp.wasabeef.richeditor.RichEditor;
 
@@ -39,7 +43,8 @@ public class CreatePost extends AppCompatActivity {
     private FirebaseFirestore fstore;
     private FirebaseAuth mAuth;
     StorageReference storageReference;
-    private String UserID;
+    private ProgressBar loading;
+    private String UserID,FileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +55,13 @@ public class CreatePost extends AppCompatActivity {
         mEditor.setEditorFontSize(16);
         mEditor.setEditorFontColor(getColor(R.color.plainText));
         mEditor.setBackgroundColor(getColor(R.color.Background));
-
+        loading=findViewById(R.id.createPostLoad);
 
         done=findViewById(R.id.doneButton);
         mAuth = FirebaseAuth.getInstance();
-      //  UserID = mAuth.getCurrentUser().getUid();
+        UserID = mAuth.getCurrentUser().getUid();
+        String TimeMillie= String.valueOf(System.currentTimeMillis());
+        FileName=UserID+TimeMillie;
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -215,7 +222,7 @@ public class CreatePost extends AppCompatActivity {
                String text= mEditor.getHtml();
                 Map<String,String> map=new HashMap<>();
                 map.put("Post",text);
-                fstore.collection("Post").document("hello").set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                fstore.collection("Post").document(FileName).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(CreatePost.this,"fdsgffd",Toast.LENGTH_LONG).show();
@@ -238,24 +245,108 @@ public class CreatePost extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1000 && resultCode == RESULT_OK) {
 
+        StorageReference reff=storageReference.child("posts").child(FileName);
+        if (requestCode == 1000 && resultCode == RESULT_OK) {
+            loading.setVisibility(View.VISIBLE);
+            String randomName= UUID.randomUUID().toString()+".jpg";
             Uri resultUri = data.getData();
-            mEditor.insertImage(resultUri.toString(), "Image Not Loaded",320);
+            reff.child(randomName).putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    if(taskSnapshot.getMetadata().getReference()!=null){
+                        Task<Uri> result=taskSnapshot.getStorage().getDownloadUrl();
+                        result.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String imageURI=uri.toString();
+                                mEditor.insertImage(imageURI, "Image Not Loaded",320);
+                                loading.setVisibility(View.INVISIBLE);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(), "Failed get Download URI", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getApplicationContext(), "Failed to upload", Toast.LENGTH_LONG).show();
+                    loading.setVisibility(View.INVISIBLE);
+                }
+            });
+
+
         }
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
-
+            loading.setVisibility(View.VISIBLE);
+            String randomName= UUID.randomUUID().toString()+".mp3";
             Uri resultUri = data.getData();
-            mEditor.insertAudio(resultUri.toString());
+            reff.child(randomName).putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    if(taskSnapshot.getMetadata().getReference()!=null){
+                        Task<Uri> result=taskSnapshot.getStorage().getDownloadUrl();
+                        result.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String audioURI=uri.toString();
+                                mEditor.insertAudio(audioURI);
+                                loading.setVisibility(View.INVISIBLE);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(), "Failed get Download URI", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getApplicationContext(), "Failed to upload", Toast.LENGTH_LONG).show();
+                    loading.setVisibility(View.INVISIBLE);
+                }
+            });
 
         }
 
         if (requestCode == 2 && resultCode == RESULT_OK) {
-
+            loading.setVisibility(View.VISIBLE);
+            String randomName= UUID.randomUUID().toString()+".mp4";
             Uri resultUri = data.getData();
-
-            mEditor.insertVideo(resultUri.toString(),360);
+            reff.child(randomName).putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    if(taskSnapshot.getMetadata().getReference()!=null){
+                        Task<Uri> result=taskSnapshot.getStorage().getDownloadUrl();
+                        result.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String VideoURI=uri.toString();
+                                mEditor.insertVideo(VideoURI);
+                                loading.setVisibility(View.INVISIBLE);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(), "Failed get Download URI", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getApplicationContext(), "Failed to upload", Toast.LENGTH_LONG).show();
+                    loading.setVisibility(View.INVISIBLE);
+                }
+            });
 
         }
 
