@@ -34,12 +34,11 @@ import java.util.UUID;
 
 public class SetPostTitle extends AppCompatActivity{
 
-    ImageView TitleImage;
-    Button finishBtn;
-    EditText Title;
-    Spinner Tag;
-    EditText Desc;
-    ProgressBar loading;
+    private ImageView TitleImage;
+    private Button finishBtn;
+    private Spinner Tag;
+    private ProgressBar loading;
+    private EditText Desc, Title;
     private String post_Title,post_Tag,post_Desc,UserID,FileName;
     private Uri titleUri;
     private Integer IMAGE_ADDED=0;
@@ -61,21 +60,21 @@ public class SetPostTitle extends AppCompatActivity{
         mAuth = FirebaseAuth.getInstance();
         UserID = mAuth.getCurrentUser().getUid();
         String TimeMillie= String.valueOf(System.currentTimeMillis());
+
+        //filename based on UserID and current time in Milli seconds
         FileName=UserID+TimeMillie;
 
         storageReference= FirebaseStorage.getInstance().getReference();
 
+        //Tag spinner adapter
         ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(this,
                 R.array.Tag_Spinner,
                 R.layout.onselected_tag
                 );
         adapter.setDropDownViewResource(R.layout.ondropdown_tag);
-
         Tag.setAdapter(adapter);
-        //Tag.getOnItemSelectedListener().toString();
 
-
-
+        //add TitleImage
         TitleImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,6 +86,8 @@ public class SetPostTitle extends AppCompatActivity{
         finishBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Field Checker
                 post_Title = Title.getText().toString();
                 post_Desc = Desc.getText().toString();
                 post_Tag=Tag.getSelectedItem().toString();

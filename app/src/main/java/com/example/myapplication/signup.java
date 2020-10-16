@@ -36,7 +36,7 @@ public class signup extends AppCompatActivity {
     private TextView signinText,email,password;
     private ImageView logo;
     private Button register;
-    private String Username, Email, Password;
+    private String Email, Password;
     private FirebaseAuth mAuth;
     private FirebaseFirestore firestore;
     private View parentLayout;
@@ -58,17 +58,18 @@ public class signup extends AppCompatActivity {
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
         signinText=findViewById(R.id.signinText);
-
         email=findViewById(R.id.emailin);
         password=findViewById(R.id.passwordin);
+        register=findViewById(R.id.register);
 
         logo=findViewById(R.id.logo);
 
         mAuth=FirebaseAuth.getInstance();
         firestore=FirebaseFirestore.getInstance();
+
         parentLayout = findViewById(android.R.id.content);
 
-        register=findViewById(R.id.register);
+        //registering new user
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +77,7 @@ public class signup extends AppCompatActivity {
             }
         });
 
+        //sign-in intent for already registered user
         signinText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,6 +93,7 @@ public class signup extends AppCompatActivity {
     private void registerUser() {
         Email = email.getText().toString();
         Password = password.getText().toString();
+        //Field Checks
         if (Email.isEmpty()) {
             email.setError("Email is empty");
         } else if (Password.isEmpty()) {
@@ -113,33 +116,6 @@ public class signup extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    private boolean checkUsername(final String username) {
-        firestore.collection("Users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                Log.i(TAG, "onSuccess: checkUsername");
-                if(queryDocumentSnapshots.isEmpty()){
-                    USERNAME_ALREADY=false;
-                }else {
-                    List<DocumentSnapshot> snapshotList = queryDocumentSnapshots.getDocuments();
-                    for (DocumentSnapshot snapshot : snapshotList) {
-                        if (snapshot.getString("Username").equals(username)) {
-                            Log.i(TAG, "onSuccess: Equal");
-                            USERNAME_ALREADY = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                USERNAME_ALREADY=true;
-            }
-        });
-        return USERNAME_ALREADY;
     }
 
 }
