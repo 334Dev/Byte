@@ -103,7 +103,7 @@ public class CreatePost extends AppCompatActivity {
         mEditor.setPadding(10,10,10,10);
         mEditor.setPlaceholder("Type Here...");
 
-        findViewById(R.id.action_bold).setOnClickListener(new View.OnClickListener() {
+
 
         bold_btn=findViewById(R.id.action_bold);
         bold_btn.setOnClickListener(new View.OnClickListener() {
