@@ -18,7 +18,10 @@ import com.example.myapplication.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -43,27 +46,31 @@ public class HomeFragment extends Fragment implements LatestAdapter.OnNoteListen
         firestore=FirebaseFirestore.getInstance();
 
         item_list=new ArrayList<>();
+        latestAdapter= new LatestAdapter(item_list,this);
+        recyclerView.setAdapter(latestAdapter);
 
-        firestore.collection("Post").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        recyclerView.setHasFixedSize(true);
+        //recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        firestore.collection("Post").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> snapshotList= queryDocumentSnapshots.getDocuments();
-                for(DocumentSnapshot snapshot: snapshotList){
-                    item_list.add(snapshot.toObject(Model_Latest.class));
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                for (QueryDocumentSnapshot doc : value) {
+
+                    Log.i("dataRecieveCHeck", "onEvent:" + value.size());
+
+                    Model_Latest set = doc.toObject(Model_Latest.class);
+                    item_list.add(set);
+                    latestAdapter.notifyDataSetChanged();
+
+
                 }
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.i("LatestPost", "onFailure: "+e.getMessage());
             }
         });
 
 
         recyclerView.setNestedScrollingEnabled(false);
-        latestAdapter= new LatestAdapter(item_list,this);
-        recyclerView.setAdapter(latestAdapter);
+
 
         return root;
 

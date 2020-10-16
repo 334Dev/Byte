@@ -5,7 +5,7 @@ public class Model_Latest {
     String title;
     String desc;
     String tag;
-    Integer time;
+    Long time;
     Integer viewCount;
     String ID;
 
@@ -15,7 +15,7 @@ public class Model_Latest {
 
     }
 
-    public Model_Latest(Integer img, String title, String desc, String tag, Integer time, Integer viewCount, String ID) {
+    public Model_Latest(Integer img, String title, String desc, String tag, Long time, Integer viewCount, String ID) {
         this.img = img;
         this.title = title;
         this.desc = desc;
@@ -64,11 +64,11 @@ public class Model_Latest {
         this.tag = tag;
     }
 
-    public Integer getTime() {
+    public Long getTime() {
         return time;
     }
 
-    public void setTime(Integer time) {
+    public void setTime(Long time) {
         this.time = time;
     }
 

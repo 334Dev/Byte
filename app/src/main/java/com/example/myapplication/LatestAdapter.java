@@ -70,7 +70,7 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
             desc=view.findViewById(R.id.post_description);
             desc.setText(Desc);
         }
-        public void setTime(Integer Time){
+        public void setTime(Long Time){
             time=view.findViewById(R.id.postTime);
             time.setText(Time.toString());
         }

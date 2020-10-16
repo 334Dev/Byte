@@ -226,10 +226,10 @@ public class CreatePost extends AppCompatActivity {
                 Map<String,Object> map=new HashMap<>();
                 map.put("ID",FileName);
                 map.put("Post",text);
-                map.put("Time",time);
+                map.put("time",time);
                 map.put("UpVote",0);
                 map.put("Report",0);
-                map.put("Views",0);
+                map.put("viewCount",0);
                 fstore.collection("Post").document(FileName).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
