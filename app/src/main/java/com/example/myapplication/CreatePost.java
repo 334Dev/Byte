@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,20 @@ import java.util.UUID;
 
 import jp.wasabeef.richeditor.RichEditor;
 
+import static com.example.myapplication.R.drawable.bold_clicked;
+import static com.example.myapplication.R.drawable.center_align_clicked;
+import static com.example.myapplication.R.drawable.ic_baseline_format_align_center_24;
+import static com.example.myapplication.R.drawable.ic_baseline_format_align_left_24;
+import static com.example.myapplication.R.drawable.ic_baseline_format_bold_24;
+import static com.example.myapplication.R.drawable.ic_baseline_format_italic_24;
+import static com.example.myapplication.R.drawable.ic_baseline_image_24;
+import static com.example.myapplication.R.drawable.ic_baseline_play_circle_filled_24;
+import static com.example.myapplication.R.drawable.image_insert_clicked;
+import static com.example.myapplication.R.drawable.italic_clicked;
+import static com.example.myapplication.R.drawable.left_align_clicked;
+import static com.example.myapplication.R.drawable.link_clicked;
+import static com.example.myapplication.R.drawable.youtube_clicked;
+
 public class CreatePost extends AppCompatActivity {
 
     private RichEditor mEditor;
@@ -46,6 +61,26 @@ public class CreatePost extends AppCompatActivity {
     StorageReference storageReference;
     private ProgressBar loading;
     private String UserID,FileName,TitleURI;
+
+    private ImageButton bold_btn;
+    private int Bold_flag =0;
+
+    private ImageButton italic_btn;
+    private int italic_flag=0;
+
+    private  ImageButton left_align_btn;
+    private int leftAlign_flag=0;
+
+    private ImageButton center_align_btn;
+    private int center_alignFlag=0;
+
+    private ImageButton insert_image_btn;
+
+    private ImageButton insert_youtube_btn;
+
+
+    private ImageButton insert_link_btn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,21 +104,46 @@ public class CreatePost extends AppCompatActivity {
         mEditor.setPlaceholder("Type Here...");
 
         findViewById(R.id.action_bold).setOnClickListener(new View.OnClickListener() {
+
+        bold_btn=findViewById(R.id.action_bold);
+        bold_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                   if(Bold_flag==0) {
+                       Bold_flag = 1;
+                      bold_btn.setImageResource(bold_clicked);
+                   }
+                   else {
+                       Bold_flag=0;
+                       bold_btn.setImageResource(ic_baseline_format_bold_24);
+
+                   }
                 mEditor.setBold();
             }
         });
 
-
-        findViewById(R.id.action_italic).setOnClickListener(new View.OnClickListener() {
+         italic_btn=findViewById(R.id.action_italic);
+        italic_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(italic_flag==0) {
+                    italic_flag = 1;
+                    italic_btn.setImageResource(italic_clicked);
+                }
+                else {
+                    italic_flag=0;
+                    italic_btn.setImageResource(ic_baseline_format_italic_24);
+
+                }
+
                 mEditor.setItalic();
             }
         });
 
-        findViewById(R.id.action_insert_image).setOnClickListener(new View.OnClickListener() {
+
+           insert_image_btn=findViewById(R.id.action_insert_image);
+        insert_image_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -94,9 +154,12 @@ public class CreatePost extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.action_insert_youtube).setOnClickListener(new View.OnClickListener() {
+         insert_youtube_btn=findViewById(R.id.action_insert_youtube);
+        insert_youtube_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 AlertDialog.Builder alert = new AlertDialog.Builder(CreatePost.this);
 
                 alert.setTitle("Youtube");
@@ -129,9 +192,12 @@ public class CreatePost extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
+
+         insert_link_btn=findViewById(R.id.action_insert_link);
+        insert_link_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(CreatePost.this);
 
@@ -195,16 +261,42 @@ public class CreatePost extends AppCompatActivity {
         });
 
 
-        findViewById(R.id.action_align_left).setOnClickListener(new View.OnClickListener() {
+
+        left_align_btn=findViewById(R.id.action_align_left);
+       left_align_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(leftAlign_flag==0) {
+                    leftAlign_flag = 1;
+                    left_align_btn.setImageResource(left_align_clicked);
+                }
+                else {
+                    leftAlign_flag=0;
+                    left_align_btn.setImageResource(ic_baseline_format_align_left_24);
+
+                }
+
                 mEditor.setAlignLeft();
             }
         });
 
-        findViewById(R.id.action_align_center).setOnClickListener(new View.OnClickListener() {
+
+
+           center_align_btn=findViewById(R.id.action_align_center);
+        center_align_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(center_alignFlag==0) {
+                    center_alignFlag = 1;
+                    center_align_btn.setImageResource(center_align_clicked);
+                }
+                else {
+                    center_alignFlag=0;
+                    center_align_btn.setImageResource(ic_baseline_format_align_center_24);
+
+                }
+
+
                 mEditor.setAlignCenter();
             }
         });

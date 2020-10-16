@@ -23,7 +23,11 @@
             android:layout_weight="1"
             android:background="@null"
             android:contentDescription="@null"
-            android:src="@drawable/ic_baseline_format_bold_24" />
+            android:src="@drawable/ic_baseline_format_bold_24"
+
+
+
+        />
 
         <ImageButton
             android:id="@+id/action_italic"
