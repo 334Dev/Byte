@@ -97,8 +97,7 @@ public class loginDetails extends AppCompatActivity {
          @Override
          public void onClick(View view) {
 
-            Intent openGallery =new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(openGallery,1000);
+             CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1,1).start(loginDetails.this);
          }
      });
      USERNAME_ALREADY=1;
@@ -207,10 +206,13 @@ public class loginDetails extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1000 && resultCode==RESULT_OK){
 
-            Uri resultUri=data.getData();
-            profileImage.setImageURI(resultUri);
+        if(requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode==RESULT_OK){
+            CropImage.ActivityResult result=CropImage.getActivityResult(data);
+
+            Uri resultUri=result.getUri();
+
+            Picasso.get().load(resultUri).into(profileImage);
             uploadImageTOFirebase(resultUri);
         }
 
