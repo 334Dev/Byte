@@ -28,7 +28,7 @@
     </WebView>
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/postCover"
         android:layout_width="wrap_content"
         android:layout_height="280dp"
         android:scaleType="fitXY"
@@ -49,7 +49,7 @@
         app:srcCompat="@drawable/gradient" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/postTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4">
+        app:layout_constraintTop_toBottomOf="@+id/postCover">
 
         <ImageView
             android:id="@+id/imageView6"
@@ -80,7 +80,7 @@
             app:srcCompat="@drawable/ic_baseline_remove_red_eye_24" />
 
         <TextView
-            android:id="@+id/textView7"
+            android:id="@+id/viewCount"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginEnd="16dp"

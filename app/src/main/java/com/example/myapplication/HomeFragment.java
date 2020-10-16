@@ -21,13 +21,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements LatestAdapter.OnNoteListener {
+public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem {
 
    private RecyclerView recyclerView;
    private List<Model_Latest> item_list;
@@ -52,7 +53,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.OnNoteListen
         recyclerView.setHasFixedSize(true);
         //recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        firestore.collection("Post").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        firestore.collection("Post").orderBy("time", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 for (QueryDocumentSnapshot doc : value) {
@@ -62,12 +63,9 @@ public class HomeFragment extends Fragment implements LatestAdapter.OnNoteListen
                     Model_Latest set = doc.toObject(Model_Latest.class);
                     item_list.add(set);
                     latestAdapter.notifyDataSetChanged();
-
-
                 }
             }
         });
-
 
         recyclerView.setNestedScrollingEnabled(false);
 
@@ -78,14 +76,13 @@ public class HomeFragment extends Fragment implements LatestAdapter.OnNoteListen
 
     }
 
-    public void onNoteClick(int position) {
-        Intent intent = new Intent(getContext(), ViewPost.class);
-        Log.i("QuestionIntent", "onNoteClick:" + position);
-        String ID=item_list.get(position).ID;
-        intent.putExtra("PostId",ID);
-        startActivity(intent);
-    }
 
+    @Override
+    public void selectedItem(Model_Latest model_latest) {
+        Intent i=new Intent(getActivity(),ViewPost.class);
+        i.putExtra("PostId",model_latest.ID);
+        startActivity(i);
+    }
 }
 
 

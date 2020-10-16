@@ -55,12 +55,14 @@ public class CreatePost extends AppCompatActivity {
 
     private RichEditor mEditor;
     private TextView mPreview;
-    private FloatingActionButton done;
+
     private FirebaseFirestore fstore;
     private FirebaseAuth mAuth;
-    StorageReference storageReference;
+    private StorageReference storageReference;
+
     private ProgressBar loading;
-    private String UserID,FileName,TitleURI;
+    private FloatingActionButton done;
+    private String UserID,FileName;
 
     private ImageButton bold_btn;
     private int Bold_flag =0;
