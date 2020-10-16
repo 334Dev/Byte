@@ -79,19 +79,11 @@ public class HomeFragment extends Fragment implements LatestAdapter.OnNoteListen
     }
 
     public void onNoteClick(int position) {
-        Intent intent = new Intent(getActivity(), ViewPost.class);
+        Intent intent = new Intent(getContext(), ViewPost.class);
         Log.i("QuestionIntent", "onNoteClick:" + position);
         String ID=item_list.get(position).ID;
         intent.putExtra("PostId",ID);
         startActivity(intent);
-    }
-
-    private List<Model_Latest> initData() {
-
-
-
-        return item_list;
-
     }
 
 }

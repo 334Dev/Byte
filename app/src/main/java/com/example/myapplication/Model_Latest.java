@@ -1,7 +1,7 @@
 package com.example.myapplication;
 
 public class Model_Latest {
-    Integer img;
+    String img;
     String title;
     String desc;
     String tag;
@@ -15,7 +15,7 @@ public class Model_Latest {
 
     }
 
-    public Model_Latest(Integer img, String title, String desc, String tag, Long time, Integer viewCount, String ID) {
+    public Model_Latest(String img, String title, String desc, String tag, Long time, Integer viewCount, String ID) {
         this.img = img;
         this.title = title;
         this.desc = desc;
@@ -32,11 +32,11 @@ public class Model_Latest {
     public void setID(String ID) {
         this.ID = ID;
     }
-    public Integer getImg() {
+    public String getImg() {
         return img;
     }
 
-    public void setImg(Integer img) {
+    public void setImg(String img) {
         this.img = img;
     }
 
