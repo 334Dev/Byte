@@ -7,21 +7,31 @@ public class Model_Latest {
     String tag;
     Integer time;
     Integer viewCount;
+    String ID;
+
 
     Model_Latest()
     {
 
     }
 
-    public Model_Latest(Integer img, String title, String desc, String tag, Integer time, Integer viewCount) {
+    public Model_Latest(Integer img, String title, String desc, String tag, Integer time, Integer viewCount, String ID) {
         this.img = img;
         this.title = title;
         this.desc = desc;
         this.tag = tag;
         this.time = time;
         this.viewCount = viewCount;
+        this.ID=ID;
     }
 
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
     public Integer getImg() {
         return img;
     }

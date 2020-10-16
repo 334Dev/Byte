@@ -53,7 +53,7 @@ public class loginDetails extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private CheckBox radio1,radio2,radio3,radio4,radio5,radio6,radio7;
     private View parentLayout;
-    private Boolean USERNAME_ALREADY=false;
+    private Integer USERNAME_ALREADY;
 
 
     @Override
@@ -101,71 +101,81 @@ public class loginDetails extends AppCompatActivity {
             startActivityForResult(openGallery,1000);
          }
      });
-
+     USERNAME_ALREADY=1;
      finishbtn.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
+            USERNAME_ALREADY=1;
 
              selectionListUpdate();
              if(Tag.isEmpty()){
                  Snackbar.make(parentLayout, "Select at least one", Snackbar.LENGTH_SHORT).show();
+                 USERNAME_ALREADY=0;
              }
              else if(UserName.getText().toString().isEmpty()){
                  UserName.setError("Username is empty");
-             }
-             else if(checkUsername(UserName.getText().toString())){
-                 UserName.setError("Username already exist");
+                 USERNAME_ALREADY=0;
              }
              else{
-                 FirebaseUser user = mAuth.getCurrentUser();
-                 String UID=user.getUid();
-                 Map<String, Object> map=new HashMap<>();
-                 map.put("Username", UserName.getText().toString());
-                 map.put("Tag",Tag);
-                 map.put("Followers",0);
-                 map.put("Following",0);
-                 map.put("Post",0);
-                 firestore.collection("Users").document(UID).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                 firestore.collection("Users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                      @Override
-                     public void onSuccess(Void aVoid) {
-                         Snackbar.make(parentLayout, "Welcome "+UserName.getText().toString(), Snackbar.LENGTH_SHORT).show();
-                         Intent i=new Intent( loginDetails.this, HomeActivity.class);
-                         startActivity(i);
+                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                         Log.i(TAG, "onSuccess: checkUsername");
+                         List<DocumentSnapshot> snapshotList = queryDocumentSnapshots.getDocuments();
+                         for (DocumentSnapshot snapshot : snapshotList) {
+                             if (snapshot.getString("Username").equals(UserName.getText().toString())) {
+                                 Log.i(TAG, "onSuccess: Equal");
+                                 UserName.setError("Username already exist");
+                                 USERNAME_ALREADY=0;
+                                 Log.i("LastCheck1", "onClick: "+USERNAME_ALREADY);
+                                 break;
+                             }
+                         }
+                         Log.i("LastCheck2", "onClick: "+USERNAME_ALREADY);
+                         if(USERNAME_ALREADY==1) {
+                             registerUser();
+                         }
+                     }
+                 }).addOnFailureListener(new OnFailureListener() {
+                     @Override
+                     public void onFailure(@NonNull Exception e) {
+                         Log.i(TAG, "onFailure: "+e.getMessage());
+                         USERNAME_ALREADY=0;
                      }
                  });
              }
+
          }
      });
 
 
 
     }
-    private boolean checkUsername(final String username) {
-        firestore.collection("Users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+    private void registerUser() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        String UID=user.getUid();
+        Map<String, Object> map=new HashMap<>();
+        map.put("Username", UserName.getText().toString());
+        map.put("Tag",Tag);
+        map.put("Followers",0);
+        map.put("Following",0);
+        map.put("Post",0);
+        firestore.collection("Users").document(UID).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                Log.i(TAG, "onSuccess: checkUsername");
-                if(queryDocumentSnapshots.isEmpty()){
-                    USERNAME_ALREADY=false;
-                }else {
-                    List<DocumentSnapshot> snapshotList = queryDocumentSnapshots.getDocuments();
-                    for (DocumentSnapshot snapshot : snapshotList) {
-                        if (snapshot.getString("Username").equals(username)) {
-                            Log.i(TAG, "onSuccess: Equal");
-                            USERNAME_ALREADY = true;
-                            break;
-                        }
-                    }
-                }
+            public void onSuccess(Void aVoid) {
+                Snackbar.make(parentLayout, "Welcome "+UserName.getText().toString(), Snackbar.LENGTH_SHORT).show();
+                Intent i=new Intent( loginDetails.this, HomeActivity.class);
+                startActivity(i);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                USERNAME_ALREADY=true;
+                Log.i(TAG, "onFailure: "+e.getMessage());
             }
         });
-        return USERNAME_ALREADY;
     }
+
 
     private void selectionListUpdate() {
         Log.i("selection", "selectionListUpdate: True");

@@ -220,15 +220,35 @@ public class CreatePost extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                String text= mEditor.getHtml();
-                Map<String,String> map=new HashMap<>();
+               Long time=System.currentTimeMillis();
+               final Map<String,Object> userMap=new HashMap<>();
+               userMap.put("PostName",FileName);
+                Map<String,Object> map=new HashMap<>();
+                map.put("ID",FileName);
                 map.put("Post",text);
+                map.put("Time",time);
+                map.put("UpVote",0);
+                map.put("Report",0);
+                map.put("Views",0);
                 fstore.collection("Post").document(FileName).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(CreatePost.this,"fdsgffd",Toast.LENGTH_LONG).show();
-                        Intent i=new Intent(CreatePost.this,ViewPost.class);
-                        i.putExtra("PostId",FileName);
-                        startActivity(i);
+                        fstore.collection("Users").document(UserID).collection("UserPost")
+                                .document(FileName).set(userMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(CreatePost.this,"Posted",Toast.LENGTH_LONG).show();
+                                Intent i=new Intent(CreatePost.this,ViewPost.class);
+                                i.putExtra("PostId",FileName);
+                                startActivity(i);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.i("UserPost", "onFailure: "+e.getMessage());
+                            }
+                        });
+
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

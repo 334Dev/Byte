@@ -17,8 +17,10 @@ import java.util.List;
 public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholder> {
 
     private List<Model_Latest> item_list;
-    public LatestAdapter(List<Model_Latest> item_list){
+    private OnNoteListener mOnNoteListener;
+    public LatestAdapter(List<Model_Latest> item_list,OnNoteListener onNoteListener){
         this.item_list=item_list;
+        this.mOnNoteListener = onNoteListener;
     }
 
     @NonNull
@@ -27,7 +29,7 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         //view.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        return new LatestAdapter.mViewholder(view);
+        return new LatestAdapter.mViewholder(view, mOnNoteListener);
     }
 
     @Override
@@ -44,13 +46,17 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
         return item_list.size();
     }
 
-    public class mViewholder extends RecyclerView.ViewHolder {
+    public class mViewholder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         private ImageView thumbView;
         private TextView title,desc,time,viewCount;
         private View view;
-        public mViewholder(@NonNull View itemView) {
+        private OnNoteListener onNoteListener;
+
+        public mViewholder(@NonNull View itemView,OnNoteListener onNoteListener) {
             super(itemView);
             view=itemView;
+            this.onNoteListener = onNoteListener;
         }
         public void setThumbView(Integer imageView){
             thumbView=view.findViewById(R.id.latest_image);
@@ -72,5 +78,13 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
             viewCount=view.findViewById(R.id.view_count);
             viewCount.setText(ViewCount.toString());
         }
+
+        @Override
+        public void onClick(View v) {
+            onNoteListener.onNoteClick(getAdapterPosition());
+        }
+    }
+    public interface OnNoteListener {
+        void onNoteClick(int position);
     }
 }
