@@ -9,7 +9,8 @@
         android:roundIcon="@drawable/byte_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ViewPost"></activity>
+        <activity android:name=".SetPostTitle"></activity>
+        <activity android:name=".ViewPost" />
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginHome" />
-        <activity android:name=".CreatePost"></activity>
+        <activity android:name=".CreatePost" />
         <activity android:name=".loginDetails" />
         <activity android:name=".signin" />
         <activity android:name=".signup" />

@@ -75,7 +75,7 @@ public class ViewPost extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i=new Intent(ViewPost.this, HomeFragment.class);
+        Intent i=new Intent(ViewPost.this, HomeActivity.class);
         startActivity(i);
     }
 }
