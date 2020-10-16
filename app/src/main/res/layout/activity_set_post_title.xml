@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        app:srcCompat="@drawable/stroke_rectangle" />
 
     <TextView
         android:id="@+id/textView10"
@@ -62,6 +62,7 @@
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="Small Description of Article"
+        android:maxLength="35"
         android:inputType="textPersonName"
         android:textColor="@color/plainText"
         android:textColorHint="@color/hintColor"
@@ -69,36 +70,46 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTitle" />
 
-    <EditText
-        android:id="@+id/editTextTag"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        android:fontFamily="@font/helveticaneue_med"
-        android:ems="10"
-        android:hint=" Tag of the Article"
-        android:inputType="textPersonName"
-        android:textColor="@color/plainText"
-        android:textColorHint="@color/hintColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextDesc" />
-
     <Button
-        android:id="@+id/button"
+        android:id="@+id/FinishBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="56dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="56dp"
         android:background="@drawable/accentbtn"
-        android:text="Finish"
+        android:text="Next"
         android:textAllCaps="false"
         android:textColor="@color/Background"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTag" />
+        app:layout_constraintTop_toBottomOf="@+id/spinnerTag" />
+
+    <Spinner
+        android:id="@+id/spinnerTag"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:entries="@array/Tag_Spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/helveticaneue_sem"
+        android:text="Select article category"
+        android:textColor="@color/plainText"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextDesc" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

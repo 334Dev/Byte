@@ -34,7 +34,7 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
 
     @Override
     public void onBindViewHolder(@NonNull mViewholder holder, int position) {
-        holder.setThumbView(item_list.get(position).img);
+        //holder.setThumbView(item_list.get(position).img);
         holder.setTime(item_list.get(position).time);
         holder.setTitle(item_list.get(position).title);
         holder.setDesc(item_list.get(position).desc);

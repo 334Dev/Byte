@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -44,7 +45,7 @@ public class CreatePost extends AppCompatActivity {
     private FirebaseAuth mAuth;
     StorageReference storageReference;
     private ProgressBar loading;
-    private String UserID,FileName;
+    private String UserID,FileName,TitleURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,20 +57,16 @@ public class CreatePost extends AppCompatActivity {
         mEditor.setEditorFontColor(getColor(R.color.plainText));
         mEditor.setBackgroundColor(getColor(R.color.Background));
         loading=findViewById(R.id.createPostLoad);
-
+        mAuth=FirebaseAuth.getInstance();
+        UserID=mAuth.getCurrentUser().getUid();
         done=findViewById(R.id.doneButton);
-        mAuth = FirebaseAuth.getInstance();
-        UserID = mAuth.getCurrentUser().getUid();
-        String TimeMillie= String.valueOf(System.currentTimeMillis());
-        FileName=UserID+TimeMillie;
+        FileName=getIntent().getStringExtra("FileName");
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
 
         mEditor.setPadding(10,10,10,10);
         mEditor.setPlaceholder("Type Here...");
-
-
 
         findViewById(R.id.action_bold).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -221,12 +218,22 @@ public class CreatePost extends AppCompatActivity {
             public void onClick(View view) {
                String text= mEditor.getHtml();
                Long time=System.currentTimeMillis();
+               Intent intent=getIntent();
+               String title=intent.getStringExtra("Title");
+               String desc=intent.getStringExtra("Desc");
+               String tag=intent.getStringExtra("Tag");
+               String img=intent.getStringExtra("TitleImage");
+
                final Map<String,Object> userMap=new HashMap<>();
                userMap.put("PostName",FileName);
                 Map<String,Object> map=new HashMap<>();
                 map.put("ID",FileName);
                 map.put("Post",text);
+                map.put("img",img);
                 map.put("time",time);
+                map.put("title",title);
+                map.put("desc",desc);
+                map.put("tag",tag);
                 map.put("UpVote",0);
                 map.put("Report",0);
                 map.put("viewCount",0);

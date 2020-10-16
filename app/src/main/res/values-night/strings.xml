@@ -1,4 +1,17 @@
 <resources>
     <string name="app_name">Byte</string>
     <string name="default_web_client_id">552303793254-tva3qedjas0dvlfqi4sifs586csgled6.apps.googleusercontent.com</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_userfeed">Your Feed</string>
+    <string name="nav_saved">Saved</string>
+    <string name="nav_profile">Profile</string>
+    <string-array name="Tag_Spinner">
+        <item>Web Development</item>
+        <item>App Development</item>
+        <item>Competitive Coding</item>
+        <item>Politics</item>
+        <item>T.V. Series</item>
+        <item>Literature</item>
+        <item>Automobile</item>
+    </string-array>
 </resources>

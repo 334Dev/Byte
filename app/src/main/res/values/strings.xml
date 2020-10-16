@@ -4,6 +4,14 @@
     <string name="nav_userfeed">Your Feed</string>
     <string name="nav_saved">Saved</string>
     <string name="nav_profile">Profile</string>
-
+    <string-array name="Tag_Spinner">
+        <item>Web Development</item>
+        <item>App Development</item>
+        <item>Competitive Coding</item>
+        <item>Politics</item>
+        <item>T.V. Series</item>
+        <item>Literature</item>
+        <item>Automobile</item>
+    </string-array>
 
 </resources>

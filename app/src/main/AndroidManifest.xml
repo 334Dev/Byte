@@ -9,9 +9,9 @@
         android:roundIcon="@drawable/byte_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SetPostTitle"></activity>
+        <activity android:name=".SplashScreen"></activity>
         <activity android:name=".ViewPost" />
-        <activity android:name=".SplashScreen">
+        <activity android:name=".SetPostTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,6 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginHome" />
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".CreatePost" />
         <activity android:name=".loginDetails" />
         <activity android:name=".signin" />
