@@ -104,7 +104,6 @@ public class CreatePost extends AppCompatActivity {
         mEditor.setPlaceholder("Type Here...");
 
 
-
         bold_btn=findViewById(R.id.action_bold);
         bold_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +122,7 @@ public class CreatePost extends AppCompatActivity {
             }
         });
 
+        //Itlaic Button
          italic_btn=findViewById(R.id.action_italic);
         italic_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,7 +141,6 @@ public class CreatePost extends AppCompatActivity {
             }
         });
 
-
            insert_image_btn=findViewById(R.id.action_insert_image);
         insert_image_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,6 +153,7 @@ public class CreatePost extends AppCompatActivity {
             }
         });
 
+        //Insert YT link
          insert_youtube_btn=findViewById(R.id.action_insert_youtube);
         insert_youtube_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,7 +192,6 @@ public class CreatePost extends AppCompatActivity {
             }
         });
 
-
          insert_link_btn=findViewById(R.id.action_insert_link);
         insert_link_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,9 +207,6 @@ public class CreatePost extends AppCompatActivity {
                 input1.setHint("Enter Link here");
                 alert.setView(input1);
 
-              /*  final EditText input2 = new EditText(CreatePost.this);
-                input2.setHint("Title of Link");
-                alert.setView(input2);*/
 
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {

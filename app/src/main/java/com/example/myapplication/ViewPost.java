@@ -43,20 +43,21 @@ public class ViewPost extends AppCompatActivity {
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
-
+        //passing the text which contain html code to web view
         Intent intent=getIntent();
-        String id=intent.getStringExtra("PostId");
+        String id=intent.getStringExtra("PostId"); // getting PostId from Intent
+
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 @SuppressLint("ResourceType") String color="#"+getResources().getString(R.color.plainText).substring(3);
-                //String color="#ff333333";
                 Log.i("color", "onSuccess: "+color);
                 String text="<font color="+color+">"+documentSnapshot.getString("Post")+"</font>";
 
                   text="<style>a:link{color:"+color+";}</style>"+text;
-                //String text=documentSnapshot.getString("Post");
                 web.loadDataWithBaseURL("",text,"text/html","utf-8",null);
+
+                // "text" will be containing the HTML code for the article
 
 
 
@@ -72,6 +73,8 @@ public class ViewPost extends AppCompatActivity {
 
     }
 
+
+    // Getting back to HomeActivity on back
     @Override
     public void onBackPressed() {
         super.onBackPressed();

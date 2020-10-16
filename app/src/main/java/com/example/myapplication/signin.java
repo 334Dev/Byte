@@ -57,9 +57,9 @@ public class signin extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(email.getText().toString().isEmpty()){
-                    email.setError("Email field is empty");
+                    email.setError("Email field is empty");           //if Email field is Empty
                 }else if(password.getText().toString().isEmpty()){
-                    password.setError("Password field is empty");
+                    password.setError("Password field is empty");      //if Password field is Empty
                 }else {
                     mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -67,6 +67,7 @@ public class signin extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         // Sign in success, update UI with the signed-in user's information
+                                        //and go to HomeActivity
                                         Log.d(TAG, "signInWithEmail:success");
                                         FirebaseUser user = mAuth.getCurrentUser();
                                         Snackbar.make(parentLayout, "Login Successful", Snackbar.LENGTH_SHORT).show();
@@ -83,6 +84,7 @@ public class signin extends AppCompatActivity {
             }
         });
 
+        //SharedElement Transition
         logo=findViewById(R.id.logo);
         signupTxt.setOnClickListener(new View.OnClickListener() {
             @Override

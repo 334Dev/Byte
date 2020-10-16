@@ -114,7 +114,7 @@ public class signup extends AppCompatActivity {
             });
         }
     }
-
+    //Checking username if it already exsist or not
     private boolean checkUsername(final String username) {
         firestore.collection("Users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override

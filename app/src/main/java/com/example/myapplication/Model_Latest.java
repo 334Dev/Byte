@@ -1,19 +1,21 @@
 package com.example.myapplication;
 
 public class Model_Latest {
-    String img;
-    String title;
-    String desc;
-    String tag;
-    Long time;
-    Integer viewCount;
+    String img;  // for storing Img URL
+    String title; // Article Title
+    String desc;  // Article Description
+    String tag;  //predefined Tag for Article
+    Long time;   // store the current Time in ms
+    Integer viewCount; // No of view
     String ID;
 
 
     Model_Latest()
     {
-
+       //Empty Constructor
     }
+
+    //Parametric Constructor
 
     public Model_Latest(String img, String title, String desc, String tag, Long time, Integer viewCount, String ID) {
         this.img = img;
@@ -24,6 +26,8 @@ public class Model_Latest {
         this.viewCount = viewCount;
         this.ID=ID;
     }
+
+    //Getter and Setter
 
     public String getID() {
         return ID;
