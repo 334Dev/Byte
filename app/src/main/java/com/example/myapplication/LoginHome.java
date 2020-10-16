@@ -69,6 +69,7 @@ public class LoginHome extends AppCompatActivity {
 
         firestore=FirebaseFirestore.getInstance();
 
+        //fadeIn animation onCreate
         Animation animation= AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fade_in);
         email.setAnimation(animation);
         google.setAnimation(animation);
@@ -76,6 +77,7 @@ public class LoginHome extends AppCompatActivity {
         mAuth= FirebaseAuth.getInstance();
         parentLayout = findViewById(android.R.id.content);
 
+        //Google SignIn
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -93,6 +95,8 @@ public class LoginHome extends AppCompatActivity {
         email.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //fadeOut animation on Click email (Change Activity)
                 Animation animation1=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fade_out);
                 email.setAnimation(animation1);
                 google.setAnimation(animation1);
@@ -103,6 +107,7 @@ public class LoginHome extends AppCompatActivity {
 
     }
 
+    //transition animation using shared elements
     private void transitionAnimation() {
         Intent sharedintent= new Intent(LoginHome.this,signin.class);
         ActivityOptions options= ActivityOptions.makeSceneTransitionAnimation(LoginHome.this,

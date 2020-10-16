@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,19 +14,21 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholder> {
 
     private List<Model_Latest> item_list;
-    private OnNoteListener mOnNoteListener;
+    private SelectedItem selectedItem;
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
-    public LatestAdapter(List<Model_Latest> item_list,OnNoteListener onNoteListener){
+    public LatestAdapter(List<Model_Latest> item_list, SelectedItem selectedItem){
         this.item_list=item_list;
-        this.mOnNoteListener = onNoteListener;
+        this.selectedItem=selectedItem;
     }
 
     @NonNull
@@ -34,12 +37,12 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         //view.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        return new LatestAdapter.mViewholder(view, mOnNoteListener);
+        return new LatestAdapter.mViewholder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull mViewholder holder, int position) {
-        //holder.setThumbView(item_list.get(position).img);
+        holder.setThumbView(item_list.get(position).img);
         holder.setTime(item_list.get(position).time);
         holder.setTitle(item_list.get(position).title);
         holder.setDesc(item_list.get(position).desc);
@@ -51,21 +54,30 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
         return item_list.size();
     }
 
-    public class mViewholder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public interface SelectedItem{
+        void selectedItem(Model_Latest model_latest);
+    }
+
+    public class mViewholder extends RecyclerView.ViewHolder{
 
         private ImageView thumbView;
         private TextView title,desc,time,viewCount;
         private View view;
-        private OnNoteListener onNoteListener;
 
-        public mViewholder(@NonNull View itemView,OnNoteListener onNoteListener) {
+        public mViewholder(@NonNull View itemView) {
             super(itemView);
             view=itemView;
-            this.onNoteListener = onNoteListener;
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selectedItem.selectedItem(item_list.get(getAdapterPosition()));
+                }
+            });
         }
-        public void setThumbView(Integer imageView){
+
+        public void setThumbView(String imageView){
             thumbView=view.findViewById(R.id.latest_image);
-            thumbView.setImageResource(imageView);
+            Picasso.get().load(imageView).into(thumbView);
         }
         public void setTitle(String Title){
             title=view.findViewById(R.id.post_title);
@@ -78,9 +90,6 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
         public void setTime(Long Time){
 
             time=view.findViewById(R.id.postTime);
-
-
-
             time.setText(getTimeAgo(Time));
         }
         public void setViewCount(Integer ViewCount){
@@ -118,12 +127,7 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
             }
         }
 
-        @Override
-        public void onClick(View v) {
-            onNoteListener.onNoteClick(getAdapterPosition());
-        }
     }
-    public interface OnNoteListener {
-        void onNoteClick(int position);
-    }
+
+
 }

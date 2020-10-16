@@ -55,12 +55,14 @@ public class CreatePost extends AppCompatActivity {
 
     private RichEditor mEditor;
     private TextView mPreview;
-    private FloatingActionButton done;
+
     private FirebaseFirestore fstore;
     private FirebaseAuth mAuth;
-    StorageReference storageReference;
+    private StorageReference storageReference;
+
     private ProgressBar loading;
-    private String UserID,FileName,TitleURI;
+    private FloatingActionButton done;
+    private String UserID,FileName;
 
     private ImageButton bold_btn;
     private int Bold_flag =0;
@@ -75,10 +77,7 @@ public class CreatePost extends AppCompatActivity {
     private int center_alignFlag=0;
 
     private ImageButton insert_image_btn;
-
     private ImageButton insert_youtube_btn;
-
-
     private ImageButton insert_link_btn;
 
 
@@ -86,87 +85,96 @@ public class CreatePost extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_post);
+
+        //mEditor(~RichEditor Library) settings
         mEditor=(RichEditor)findViewById(R.id.editor);
         mEditor.setEditorHeight(200);
         mEditor.setEditorFontSize(16);
         mEditor.setEditorFontColor(getColor(R.color.plainText));
         mEditor.setBackgroundColor(getColor(R.color.Background));
-        loading=findViewById(R.id.createPostLoad);
-        mAuth=FirebaseAuth.getInstance();
-        UserID=mAuth.getCurrentUser().getUid();
-        done=findViewById(R.id.doneButton);
-        FileName=getIntent().getStringExtra("FileName");
-        fstore = FirebaseFirestore.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
-
-
         mEditor.setPadding(10,10,10,10);
         mEditor.setPlaceholder("Type Here...");
 
+        //loading progress bar
+        loading=findViewById(R.id.createPostLoad);
 
+        //firebase instance
+        mAuth=FirebaseAuth.getInstance();
+        fstore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
+        UserID=mAuth.getCurrentUser().getUid();
+
+        //getIntent Filename
+        FileName=getIntent().getStringExtra("FileName");
+
+        done=findViewById(R.id.doneButton);
+
+        //bold Button on Click
         bold_btn=findViewById(R.id.action_bold);
         bold_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Image Button src change unClicked->clicked
+                if(Bold_flag==0) {
+                    Bold_flag = 1;
+                    bold_btn.setImageResource(bold_clicked);
+                }
 
-                   if(Bold_flag==0) {
-                       Bold_flag = 1;
-                      bold_btn.setImageResource(bold_clicked);
-                   }
-                   else {
-                       Bold_flag=0;
-                       bold_btn.setImageResource(ic_baseline_format_bold_24);
-
-                   }
+                //Image Button src change clicked->unClicked
+                else {
+                     Bold_flag=0;
+                     bold_btn.setImageResource(ic_baseline_format_bold_24);
+                }
                 mEditor.setBold();
             }
         });
 
-        //Itlaic Button
-         italic_btn=findViewById(R.id.action_italic);
+        //Italic button onClick
+        italic_btn=findViewById(R.id.action_italic);
         italic_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Image Button src change unClicked->clicked
                 if(italic_flag==0) {
                     italic_flag = 1;
                     italic_btn.setImageResource(italic_clicked);
                 }
+
+                //Image Button src change clicked->unClicked
                 else {
                     italic_flag=0;
                     italic_btn.setImageResource(ic_baseline_format_italic_24);
-
                 }
 
                 mEditor.setItalic();
             }
         });
 
-           insert_image_btn=findViewById(R.id.action_insert_image);
+        //add Image button onClick
+        insert_image_btn=findViewById(R.id.action_insert_image);
         insert_image_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                //intent to gallery
                 Intent openGalleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(openGalleryIntent, 1000);
-
-
             }
         });
 
-        //Insert YT link
-         insert_youtube_btn=findViewById(R.id.action_insert_youtube);
+        //insert Youtube link
+        insert_youtube_btn=findViewById(R.id.action_insert_youtube);
         insert_youtube_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-
+                //show alert box
                 AlertDialog.Builder alert = new AlertDialog.Builder(CreatePost.this);
 
                 alert.setTitle("Youtube");
                 alert.setMessage("Enter the Youtube Link here");
                 final String[] value = new String[1];
 
-                // Set an EditText view to get user input
+                //EditText view to get user input
                 final EditText input = new EditText(CreatePost.this);
                 alert.setView(input);
 
@@ -192,12 +200,13 @@ public class CreatePost extends AppCompatActivity {
             }
         });
 
-         insert_link_btn=findViewById(R.id.action_insert_link);
+        //insert link onClick
+        insert_link_btn=findViewById(R.id.action_insert_link);
         insert_link_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-
+                //show dialog box
                 AlertDialog.Builder alert = new AlertDialog.Builder(CreatePost.this);
 
                 alert.setTitle("Enter Link");
@@ -206,7 +215,6 @@ public class CreatePost extends AppCompatActivity {
                 final EditText input1 = new EditText(CreatePost.this);
                 input1.setHint("Enter Link here");
                 alert.setView(input1);
-
 
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -231,7 +239,7 @@ public class CreatePost extends AppCompatActivity {
                  }
         });
 
-
+        //insert audio file
         findViewById(R.id.action_insert_audio).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -244,6 +252,7 @@ public class CreatePost extends AppCompatActivity {
             }
         });
 
+        //insert video file
         findViewById(R.id.action_insert_video).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -256,16 +265,17 @@ public class CreatePost extends AppCompatActivity {
             }
         });
 
-
-
+        //left align button onClick
         left_align_btn=findViewById(R.id.action_align_left);
-       left_align_btn.setOnClickListener(new View.OnClickListener() {
+        left_align_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Image Button src change unClicked->clicked
                 if(leftAlign_flag==0) {
                     leftAlign_flag = 1;
                     left_align_btn.setImageResource(left_align_clicked);
                 }
+                //Image Button src change clicked->unClicked
                 else {
                     leftAlign_flag=0;
                     left_align_btn.setImageResource(ic_baseline_format_align_left_24);
@@ -277,15 +287,19 @@ public class CreatePost extends AppCompatActivity {
         });
 
 
-
-           center_align_btn=findViewById(R.id.action_align_center);
+        //center align onClick
+        center_align_btn=findViewById(R.id.action_align_center);
         center_align_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Image Button src change unClicked->clicked
                 if(center_alignFlag==0) {
                     center_alignFlag = 1;
                     center_align_btn.setImageResource(center_align_clicked);
                 }
+
+                //Image Button src change clicked->unClicked
                 else {
                     center_alignFlag=0;
                     center_align_btn.setImageResource(ic_baseline_format_align_center_24);
@@ -314,6 +328,7 @@ public class CreatePost extends AppCompatActivity {
 
                final Map<String,Object> userMap=new HashMap<>();
                userMap.put("PostName",FileName);
+               //map for Firestore database
                 Map<String,Object> map=new HashMap<>();
                 map.put("ID",FileName);
                 map.put("Post",text);
@@ -325,6 +340,8 @@ public class CreatePost extends AppCompatActivity {
                 map.put("UpVote",0);
                 map.put("Report",0);
                 map.put("viewCount",0);
+
+                //add post info in firestore as map
                 fstore.collection("Post").document(FileName).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -365,7 +382,9 @@ public class CreatePost extends AppCompatActivity {
         StorageReference reff=storageReference.child("posts").child(FileName);
         if (requestCode == 1000 && resultCode == RESULT_OK) {
             loading.setVisibility(View.VISIBLE);
+            //random name for image
             String randomName= UUID.randomUUID().toString()+".jpg";
+
             Uri resultUri = data.getData();
             reff.child(randomName).putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -400,7 +419,10 @@ public class CreatePost extends AppCompatActivity {
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
             loading.setVisibility(View.VISIBLE);
+
+            //random name for music
             String randomName= UUID.randomUUID().toString()+".mp3";
+
             Uri resultUri = data.getData();
             reff.child(randomName).putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -434,7 +456,10 @@ public class CreatePost extends AppCompatActivity {
 
         if (requestCode == 2 && resultCode == RESULT_OK) {
             loading.setVisibility(View.VISIBLE);
+
+            //random name for video
             String randomName= UUID.randomUUID().toString()+".mp4";
+
             Uri resultUri = data.getData();
             reff.child(randomName).putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
