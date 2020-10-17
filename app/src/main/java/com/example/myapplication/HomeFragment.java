@@ -7,6 +7,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +35,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
    private List<Model_Latest> item_list;
    private LatestAdapter latestAdapter;
    private FirebaseFirestore firestore;
+   private ImageView postSearchBtn;
 
 
     @Nullable
@@ -44,6 +46,16 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         recyclerView=root.findViewById(R.id.latestView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        postSearchBtn=root.findViewById(R.id.postSearchbtn);
+        postSearchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(getActivity(),postSearch.class);
+                startActivity(i);
+            }
+        });
+
         firestore=FirebaseFirestore.getInstance();
 
         item_list=new ArrayList<>();

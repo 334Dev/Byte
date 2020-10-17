@@ -31,7 +31,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -79,6 +82,8 @@ public class CreatePost extends AppCompatActivity {
     private ImageButton insert_image_btn;
     private ImageButton insert_youtube_btn;
     private ImageButton insert_link_btn;
+
+    private List<String> keyword;
 
 
     @Override
@@ -326,6 +331,8 @@ public class CreatePost extends AppCompatActivity {
                String tag=intent.getStringExtra("Tag");
                String img=intent.getStringExtra("TitleImage");
 
+               createKeyword(title);
+
                final Map<String,Object> userMap=new HashMap<>();
                userMap.put("PostName",FileName);
                //map for Firestore database
@@ -340,6 +347,7 @@ public class CreatePost extends AppCompatActivity {
                 map.put("UpVote",0);
                 map.put("Report",0);
                 map.put("viewCount",0);
+                map.put("Keyword",keyword);
 
                 //add post info in firestore as map
                 fstore.collection("Post").document(FileName).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -372,6 +380,29 @@ public class CreatePost extends AppCompatActivity {
         });
 
 
+
+    }
+
+    private void createKeyword(String title) {
+        keyword=new ArrayList<>();
+        String word[]=title.split("\\s+");
+        Collections.addAll(keyword,word);
+        char tit[]=title.toCharArray();
+        String str="";
+        for(int i=0;i<title.length();i++){
+            str=str+tit[i];
+            keyword.add(str);
+        }
+
+        String title2=title.toLowerCase();
+        String word2[]=title2.split("\\s+");
+        Collections.addAll(keyword,word2);
+        char tit2[]=title2.toCharArray();
+        String str2="";
+        for(int i=0;i<title2.length();i++){
+            str2=str2+tit2[i];
+            keyword.add(str2);
+        }
 
     }
 
