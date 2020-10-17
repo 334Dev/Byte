@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
 import com.example.myapplication.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,12 +33,6 @@ public class FeedFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View v=inflater.inflate(R.layout.fragment_feed,container,false);
-
-
-
-
-
-
         return v;
     }
 
