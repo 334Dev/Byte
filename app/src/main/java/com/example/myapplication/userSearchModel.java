@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 public class userSearchModel {
     String Username;
+    String UserId;
 
     public userSearchModel(String username) {
         Username = username;

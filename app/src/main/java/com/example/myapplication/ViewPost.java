@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -22,6 +24,8 @@ public class ViewPost extends AppCompatActivity {
 
      WebView web;
     private FirebaseFirestore fstore;
+    private TextView titleHeader;
+    private ImageView HeaderImage;
     private FirebaseAuth mAuth;
     StorageReference storageReference;
     private String UserID;
@@ -43,6 +47,9 @@ public class ViewPost extends AppCompatActivity {
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
+        HeaderImage=findViewById(R.id.headerimg);
+        titleHeader=findViewById(R.id.postTitle);
+
         //passing the text which contain html code to web view
         Intent intent=getIntent();
         String id=intent.getStringExtra("PostId"); // getting PostId from Intent
@@ -57,7 +64,15 @@ public class ViewPost extends AppCompatActivity {
                   text="<style>a:link{color:"+color+";}</style>"+text;
                 web.loadDataWithBaseURL("",text,"text/html","utf-8",null);
 
+
+
                 // "text" will be containing the HTML code for the article
+
+
+                //getting value of title from firestore and displaying it in title header
+                String t=documentSnapshot.getString("title");
+                titleHeader.setText(t);
+
 
 
 
