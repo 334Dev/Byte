@@ -160,6 +160,7 @@ public class loginDetails extends AppCompatActivity {
         map.put("Followers",0);
         map.put("Following",0);
         map.put("Post",0);
+        map.put("Saved",0);
         firestore.collection("Users").document(UID).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
