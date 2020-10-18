@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -24,7 +25,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -86,31 +89,8 @@ public class AnotherUserProfile extends AppCompatActivity {
             }
         });
 
+        updateUserDetails();
 
-        fstore.collection("Users").document(AnotherUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-
-                // getting value of number of followers,following and posts from database and showing in this activity..
-
-                Double mFollowers=documentSnapshot.getDouble("Followers");
-                Double mFollowing=documentSnapshot.getDouble("Following");
-                Double mPost=documentSnapshot.getDouble("Post");
-                followers.setText(String.format("%.0f", mFollowers));
-                following.setText(String.format("%.0f", mFollowing));
-                posts.setText(String.format("%.0f", mPost));
-
-
-
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
 
 
        /* CollectionReference collectionReference=fstore.collection("Users").document(UserID).collection("Following");
@@ -125,15 +105,14 @@ public class AnotherUserProfile extends AppCompatActivity {
         });*/
 
         fstore.collection("Users").document(UserID).collection("Following")
-                .whereEqualTo("ProfileId",AnotherUserId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .whereEqualTo("ProfileId",AnotherUserId).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                   if(task.getResult()==null)
-                   {
-                       FollowButton.setText("FOllOWING");
-                       Toast.makeText(AnotherUserProfile.this,"You are Following",Toast.LENGTH_SHORT).show();
-
-                   }
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(value.isEmpty()){
+                    Log.i("status", "onEvent: Do not follow");
+                }else{
+                    FollowButton.setText("FOLLOWING");
+                }
             }
         });
 
@@ -165,41 +144,33 @@ public class AnotherUserProfile extends AppCompatActivity {
                            public void onSuccess(DocumentSnapshot documentSnapshot) {
                                Double AnotherFollower = documentSnapshot.getDouble("Followers");
                                fstore.collection("Users").document(AnotherUserId).update("Followers", AnotherFollower + 1);
+                               updateUserDetails();
                            }
                        });
+
                    }
                    else
                    {
 
 
                        fstore.collection("Users").document(UserID).collection("Following")
-                               .whereEqualTo("ProfileId",AnotherUserId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                               .whereEqualTo("ProfileId",AnotherUserId).addSnapshotListener(new EventListener<QuerySnapshot>() {
                            @Override
-                           public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                               if(task.isSuccessful())
-                               {
-
-                                   for(QueryDocumentSnapshot queryDocumentSnapshot:task.getResult()){
-                                      DocumentReference documentReference=fstore.collection("UserID").document(UserID)
-                                              .collection("Following").document(queryDocumentSnapshot.getId());
-                                      documentReference.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                          @Override
-                                          public void onComplete(@NonNull Task<Void> task) {
-                                              Toast.makeText(AnotherUserProfile.this,"Remove From Following list",Toast.LENGTH_SHORT).show();
-                                          }
-                                      }).addOnFailureListener(new OnFailureListener() {
-                                          @Override
-                                          public void onFailure(@NonNull Exception e) {
-                                              Toast.makeText(AnotherUserProfile.this,e.getMessage(),Toast.LENGTH_SHORT).show();
-                                          }
-                                      });
-                                   }
-
+                           public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                                for(DocumentSnapshot doc: value){
+                                    doc.getReference().delete();
+                                }
+                           }
+                       });
+                       fstore.collection("Users").document(AnotherUserId).collection("Followers")
+                               .whereEqualTo("ProfileId",UserID).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                           @Override
+                           public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                               for(DocumentSnapshot doc: value){
+                                   doc.getReference().delete();
                                }
                            }
                        });
-
-
 
 
                        fstore.collection("Users").document(UserID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -214,9 +185,9 @@ public class AnotherUserProfile extends AppCompatActivity {
                            public void onSuccess(DocumentSnapshot documentSnapshot) {
                                Double AnotherFollower = documentSnapshot.getDouble("Followers");
                                fstore.collection("Users").document(AnotherUserId).update("Followers", AnotherFollower -1);
+                               updateUserDetails();
                            }
                        });
-
 
 
                       FollowButton.setText("FOLLOW");
@@ -228,6 +199,34 @@ public class AnotherUserProfile extends AppCompatActivity {
 
 
     }
+
+    private void updateUserDetails() {
+        fstore.collection("Users").document(AnotherUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+
+                // getting value of number of followers,following and posts from database and showing in this activity..
+
+                Double mFollowers=documentSnapshot.getDouble("Followers");
+                Double mFollowing=documentSnapshot.getDouble("Following");
+                Double mPost=documentSnapshot.getDouble("Post");
+                followers.setText(String.format("%.0f", mFollowers));
+                following.setText(String.format("%.0f", mFollowing));
+                posts.setText(String.format("%.0f", mPost));
+
+
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     private void addProfileFollowing() {
         Map<String,Object> map=new HashMap();
