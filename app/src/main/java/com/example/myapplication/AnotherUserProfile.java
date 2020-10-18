@@ -41,7 +41,7 @@ public class AnotherUserProfile extends AppCompatActivity {
     private Button FollowBtn;
     private FirebaseFirestore fstore;
     private FirebaseAuth mAuth;
-    StorageReference storageReference;
+    private StorageReference storageReference;
     private String UserID;
     private String AnotherUserId;
 

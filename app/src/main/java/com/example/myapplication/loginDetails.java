@@ -48,7 +48,6 @@ public class loginDetails extends AppCompatActivity {
     private EditText UserName;
     private FirebaseAuth mAuth;
     private Button finishbtn;
-    private String Tag="";
 
     String UserID;
     StorageReference storageReference;
@@ -57,6 +56,7 @@ public class loginDetails extends AppCompatActivity {
     private View parentLayout;
     private Integer USERNAME_ALREADY;
     private List<String> keyword;
+    private List<String> Tag;
 
 
     @Override
@@ -74,7 +74,7 @@ public class loginDetails extends AppCompatActivity {
         radio6=findViewById(R.id.radioButton6);
         radio7=findViewById(R.id.radioButton7);
 
-
+        Tag=new ArrayList<>();
 
         mAuth = FirebaseAuth.getInstance();
         profileImage = findViewById(R.id.circleImageView);
@@ -197,25 +197,25 @@ public class loginDetails extends AppCompatActivity {
         Log.i("selection", "selectionListUpdate: True");
         if(radio1.isChecked()){
             Log.i(TAG, "selectionListUpdate: web");
-            Tag=Tag+"Web Development$";
+            Tag.add("Web Development");
         }
         if(radio2.isChecked()){
-            Tag=Tag+"App Development$";
+            Tag.add("App Development");
         }
         if(radio3.isChecked()){
-            Tag=Tag+"Competitive Programming$";
+            Tag.add("Competitive Programming");
         }
         if(radio4.isChecked()){
-            Tag=Tag+"Politics$";
+            Tag.add("Politics");
         }
         if(radio5.isChecked()){
-            Tag=Tag+"T.V. Series$";
+            Tag.add("T.V. Series");
         }
         if(radio6.isChecked()){
-            Tag=Tag+"Automobile$";
+            Tag.add("Automobile");
         }
         if(radio7.isChecked()){
-            Tag=Tag+"Literature$";
+            Tag.add("Literature");
         }
         Log.i(TAG, "onClick$"+Tag);
     }
