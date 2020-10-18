@@ -33,6 +33,8 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +56,7 @@ public class loginDetails extends AppCompatActivity {
     private CheckBox radio1,radio2,radio3,radio4,radio5,radio6,radio7;
     private View parentLayout;
     private Integer USERNAME_ALREADY;
+    private List<String> keyword;
 
 
     @Override
@@ -155,12 +158,15 @@ public class loginDetails extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         String UID=user.getUid();
         Map<String, Object> map=new HashMap<>();
+        createKeyword(UserName.getText().toString());
         map.put("Username", UserName.getText().toString());
+        map.put("UserID",mAuth.getCurrentUser().getUid());
         map.put("Tag",Tag);
         map.put("Followers",0);
         map.put("Following",0);
         map.put("Post",0);
         map.put("Saved",0);
+        map.put("keyword",keyword);
         firestore.collection("Users").document(UID).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -174,6 +180,16 @@ public class loginDetails extends AppCompatActivity {
                 Log.i(TAG, "onFailure: "+e.getMessage());
             }
         });
+    }
+
+    private void createKeyword(String Username) {
+        keyword=new ArrayList<>();
+        char tit[]=Username.toCharArray();
+        String str="";
+        for(int i=0;i<Username.length();i++){
+            str=str+tit[i];
+            keyword.add(str);
+        }
     }
 
 

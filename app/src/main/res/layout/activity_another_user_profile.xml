@@ -9,7 +9,7 @@
     tools:context=".signin">
 
     <ImageView
-        android:id="@+id/dogBlurImageView"
+        android:id="@+id/anotherUserCover"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_alignParentTop="true"
@@ -26,14 +26,14 @@
         android:id="@+id/imageView3"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/dogBlurImageView"
+        app:layout_constraintBottom_toBottomOf="@+id/anotherUserCover"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/gradient" />
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/circleImageViewPro"
+        android:id="@+id/anotherProfileImage"
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:layout_marginTop="48dp"
@@ -54,7 +54,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/circleImageViewPro" />
+        app:layout_constraintTop_toBottomOf="@+id/anotherProfileImage" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -64,8 +64,8 @@
         android:orientation="horizontal"
         android:paddingStart="32dp"
         android:paddingEnd="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/circleImageViewPro"
-        app:layout_constraintStart_toStartOf="@+id/circleImageViewPro"
+        app:layout_constraintEnd_toEndOf="@+id/anotherProfileImage"
+        app:layout_constraintStart_toStartOf="@+id/anotherProfileImage"
         app:layout_constraintTop_toBottomOf="@+id/username">
 
         <LinearLayout
@@ -176,13 +176,12 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="409dp"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logoutBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/FollowBtn" />
 
 
 

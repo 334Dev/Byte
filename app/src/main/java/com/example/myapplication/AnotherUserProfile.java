@@ -43,7 +43,6 @@ public class AnotherUserProfile extends AppCompatActivity {
     private FirebaseAuth mAuth;
     StorageReference storageReference;
     private String UserID;
-    private String AnotherUserName;
     private String AnotherUserId;
 
 
@@ -58,27 +57,15 @@ public class AnotherUserProfile extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference();
         FollowBtn=findViewById(R.id.FollowBtn);
 
+        AnotherUserProfileImageView=findViewById(R.id.anotherProfileImage);
+        CoverPhoto=findViewById(R.id.anotherUserCover);
 
         followers=findViewById(R.id.followers);
         following=findViewById(R.id.following);
         posts=findViewById(R.id.post);
 
         Intent intent=getIntent();
-        AnotherUserName=intent.getStringExtra("SearchUserName");
-        fstore.collection("Users").whereEqualTo("Username",AnotherUserName).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                List<DocumentSnapshot> snapshotList= queryDocumentSnapshots.getDocuments();
-                AnotherUserId=snapshotList.get(0).getId();
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(),"Failed",Toast.LENGTH_LONG);
-            }
-        });
+        AnotherUserId=intent.getStringExtra("SearchUserID");
 
         StorageReference profileRef = storageReference.child("users/" +AnotherUserId+ "/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -99,12 +86,12 @@ public class AnotherUserProfile extends AppCompatActivity {
 
                 // getting value of number of followers,following and posts from database and showing in this activity..
 
-                String f1=documentSnapshot.getString("Followers");
-                String f2=documentSnapshot.getString("Following");
-                String p=documentSnapshot.getString("Post");
-                followers.setText(f1);
-                following.setText(f2);
-                posts.setText(p);
+                Double mFollowers=documentSnapshot.getDouble("Followers");
+                Double mFollowing=documentSnapshot.getDouble("Following");
+                Double mPost=documentSnapshot.getDouble("Post");
+                followers.setText(String.format("%.0f", mFollowers));
+                following.setText(String.format("%.0f", mFollowing));
+                posts.setText(String.format("%.0f", mPost));
 
 
 

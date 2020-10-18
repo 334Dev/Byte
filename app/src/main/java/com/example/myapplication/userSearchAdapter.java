@@ -12,9 +12,9 @@ import java.util.List;
 
 public class userSearchAdapter extends RecyclerView.Adapter<userSearchAdapter.mViewholder> {
     private List<userSearchModel> userList;
-    private userSearchAdapter.SelectedItem selectedItem;
+    private SelectedItem selectedItem;
 
-    public userSearchAdapter(List<userSearchModel> userlist, userSearch selectedItem){
+    public userSearchAdapter(List<userSearchModel> userList, SelectedItem selectedItem){
         this.userList=userList;
         this.selectedItem=selectedItem;
     }
@@ -43,7 +43,8 @@ public class userSearchAdapter extends RecyclerView.Adapter<userSearchAdapter.mV
 
     @Override
     public int getItemCount() {
-        return 0;
+
+        return userList.size();
     }
 
     public class mViewholder extends RecyclerView.ViewHolder{
@@ -54,6 +55,12 @@ public class userSearchAdapter extends RecyclerView.Adapter<userSearchAdapter.mV
         public mViewholder(@NonNull View itemView) {
             super(itemView);
             view=itemView;
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selectedItem.selectedItem(userList.get(getAdapterPosition()));
+                }
+            });
         }
         public void setText(String userName)
         {

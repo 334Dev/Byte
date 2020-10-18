@@ -2,10 +2,24 @@ package com.example.myapplication;
 
 public class userSearchModel {
     String Username;
-    String UserId;
+    String UserID;
 
-    public userSearchModel(String username) {
+
+    userSearchModel(){
+        //empty constructor
+    }
+
+    public userSearchModel(String username, String UserID) {
         Username = username;
+        this.UserID=UserID;
+    }
+
+    public String getUserID() {
+        return UserID;
+    }
+
+    public void setUserID(String userID) {
+        UserID = userID;
     }
 
     public String getUsername() {
