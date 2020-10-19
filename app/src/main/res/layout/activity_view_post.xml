@@ -103,6 +103,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
 
+    <ImageView
+        android:id="@+id/imageViewSaved"
+        android:layout_width="45dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="300dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/webView"
+        app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"

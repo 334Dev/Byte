@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ public class ViewPost extends AppCompatActivity {
     private FirebaseFirestore fstore;
     private TextView titleHeader;
     private ImageView HeaderImage;
+    private ImageView saveButton;
     private FirebaseAuth mAuth;
     StorageReference storageReference;
     private String UserID;
@@ -35,6 +37,7 @@ public class ViewPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_post);
 
+        saveButton=findViewById(R.id.imageViewSaved);
         web=findViewById(R.id.webView);
         web.setBackgroundColor(getColor(R.color.Background));
         web.getSettings().setDomStorageEnabled(true);
@@ -84,6 +87,26 @@ public class ViewPost extends AppCompatActivity {
             }
         });
 
+        final int[] isSaved = {0};
+     saveButton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+
+             if(isSaved[0] ==0)
+             {
+                 saveButton.setImageResource(R.drawable.ic_baseline_bookmark_24);
+                 isSaved[0] =1;
+             }
+             else
+             {
+                 saveButton.setImageResource(R.drawable.ic_outline_bookmark_border_24);
+                 isSaved[0] =0;
+             }
+
+
+
+         }
+     });
 
 
     }
