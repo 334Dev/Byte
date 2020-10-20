@@ -11,6 +11,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".userSearch"></activity>
         <activity android:name=".postSearch" />
+        <activity android:name=".AnotherUserProfile"/>
         <activity android:name=".SetPostTitle" />
         <activity android:name=".ViewPost" />
         <activity android:name=".SplashScreen">

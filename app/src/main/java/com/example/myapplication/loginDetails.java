@@ -33,6 +33,8 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +48,6 @@ public class loginDetails extends AppCompatActivity {
     private EditText UserName;
     private FirebaseAuth mAuth;
     private Button finishbtn;
-    private String Tag="";
 
     String UserID;
     StorageReference storageReference;
@@ -54,6 +55,8 @@ public class loginDetails extends AppCompatActivity {
     private CheckBox radio1,radio2,radio3,radio4,radio5,radio6,radio7;
     private View parentLayout;
     private Integer USERNAME_ALREADY;
+    private List<String> keyword;
+    private List<String> Tag;
 
 
     @Override
@@ -71,7 +74,7 @@ public class loginDetails extends AppCompatActivity {
         radio6=findViewById(R.id.radioButton6);
         radio7=findViewById(R.id.radioButton7);
 
-
+        Tag=new ArrayList<>();
 
         mAuth = FirebaseAuth.getInstance();
         profileImage = findViewById(R.id.circleImageView);
@@ -155,12 +158,15 @@ public class loginDetails extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         String UID=user.getUid();
         Map<String, Object> map=new HashMap<>();
+        createKeyword(UserName.getText().toString());
         map.put("Username", UserName.getText().toString());
+        map.put("UserID",mAuth.getCurrentUser().getUid());
         map.put("Tag",Tag);
         map.put("Followers",0);
         map.put("Following",0);
         map.put("Post",0);
         map.put("Saved",0);
+        map.put("keyword",keyword);
         firestore.collection("Users").document(UID).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -176,30 +182,40 @@ public class loginDetails extends AppCompatActivity {
         });
     }
 
+    private void createKeyword(String Username) {
+        keyword=new ArrayList<>();
+        char tit[]=Username.toCharArray();
+        String str="";
+        for(int i=0;i<Username.length();i++){
+            str=str+tit[i];
+            keyword.add(str);
+        }
+    }
+
 
     private void selectionListUpdate() {
         Log.i("selection", "selectionListUpdate: True");
         if(radio1.isChecked()){
             Log.i(TAG, "selectionListUpdate: web");
-            Tag=Tag+"Web Development$";
+            Tag.add("Web Development");
         }
         if(radio2.isChecked()){
-            Tag=Tag+"App Development$";
+            Tag.add("App Development");
         }
         if(radio3.isChecked()){
-            Tag=Tag+"Competitive Programming$";
+            Tag.add("Competitive Programming");
         }
         if(radio4.isChecked()){
-            Tag=Tag+"Politics$";
+            Tag.add("Politics");
         }
         if(radio5.isChecked()){
-            Tag=Tag+"T.V. Series$";
+            Tag.add("T.V. Series");
         }
         if(radio6.isChecked()){
-            Tag=Tag+"Automobile$";
+            Tag.add("Automobile");
         }
         if(radio7.isChecked()){
-            Tag=Tag+"Literature$";
+            Tag.add("Literature");
         }
         Log.i(TAG, "onClick$"+Tag);
     }
