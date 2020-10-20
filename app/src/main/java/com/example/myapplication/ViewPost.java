@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,11 +15,17 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ViewPost extends AppCompatActivity {
 
@@ -26,15 +33,21 @@ public class ViewPost extends AppCompatActivity {
     private FirebaseFirestore fstore;
     private TextView titleHeader;
     private ImageView HeaderImage;
+    private ImageView saveButton;
     private FirebaseAuth mAuth;
+    private View parentLayout;
     StorageReference storageReference;
     private String UserID;
+    private List<String> savedId;
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_post);
+        savedId=new ArrayList<>();
 
+        saveButton=findViewById(R.id.imageViewSaved);
         web=findViewById(R.id.webView);
         web.setBackgroundColor(getColor(R.color.Background));
         web.getSettings().setDomStorageEnabled(true);
@@ -43,8 +56,9 @@ public class ViewPost extends AppCompatActivity {
         web.getSettings().setBuiltInZoomControls(true);
         web.getSettings().setDisplayZoomControls(false);
 
-
+        parentLayout = findViewById(android.R.id.content);
         fstore = FirebaseFirestore.getInstance();
+        mAuth=FirebaseAuth.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
         HeaderImage=findViewById(R.id.headerimg);
@@ -52,7 +66,7 @@ public class ViewPost extends AppCompatActivity {
 
         //passing the text which contain html code to web view
         Intent intent=getIntent();
-        String id=intent.getStringExtra("PostId"); // getting PostId from Intent
+         id=intent.getStringExtra("PostId"); // getting PostId from Intent
 
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -84,6 +98,66 @@ public class ViewPost extends AppCompatActivity {
             }
         });
 
+       getSavedId();
+     saveButton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             getSavedId();
+         }
+     });
+
+
+    }
+
+    private void getSavedId() {
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                savedId= (List<String>) documentSnapshot.get("SavedId");
+
+
+                checkSavedUser();
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("Msg",e.getMessage());
+            }
+        });
+    }
+
+    private void checkSavedUser() {
+
+        if(savedId.contains(mAuth.getCurrentUser().getUid()))
+        {
+            saveButton.setImageResource(R.drawable.ic_baseline_bookmark_24);
+        }
+        else
+        {
+            setPostAsSaved();
+
+        }
+
+
+    }
+
+    private void setPostAsSaved() {
+
+        savedId.add(mAuth.getCurrentUser().getUid());
+        Map<String,Object> map=new HashMap<>();
+        map.put("SavedId",savedId);
+        fstore.collection("Post").document(id).update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                saveButton.setImageResource(R.drawable.ic_baseline_bookmark_24);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Snackbar.make(parentLayout, "saved Failed", Snackbar.LENGTH_SHORT).show();
+            }
+        });
 
 
     }
