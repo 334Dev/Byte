@@ -53,8 +53,8 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
     private TextView userName;
     private Button Logout;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    String UserID;
-    StorageReference storageReference;
+    private String UserID;
+    private StorageReference storageReference;
     private FirebaseFirestore fstore;
     private ImageView coverImage;
     private TextView post,followers,following;
@@ -94,7 +94,6 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
         UserID = mAuth.getCurrentUser().getUid();
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
-
 
 
         profileRecyclerView=root.findViewById(R.id.ProfileRecyclerView);

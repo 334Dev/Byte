@@ -196,10 +196,10 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                     if(Tag.contains(doc.getString("tag"))) {
                         Model_Latest set = doc.toObject(Model_Latest.class);
                         upVote_list.add(set);
+                        upVoteAdapter.notifyDataSetChanged();
                     }
                 }
 
-                upVoteAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -251,7 +251,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                     .orderBy("time", Query.Direction.DESCENDING)
                     .whereIn("tag",Tag)
                     .startAfter(lastLatestPost)
-                    .limit(1);
+                    .limit(5);
             Log.i("PostLoad", "setLatestPost: "+lastLatestPost.getId());
         }
 
@@ -277,6 +277,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
             }
         });
     }
+
 
 
     @Override

@@ -113,12 +113,12 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
             if (LastPost == null) {
                 query = firestore.collection("Post")
                         .whereIn("Owner", following)
-                        .orderBy("time")
+                        .orderBy("time", Query.Direction.DESCENDING)
                         .limit(10);
             } else {
                 query = firestore.collection("Post")
                         .whereIn("Owner", following)
-                        .orderBy("time")
+                        .orderBy("time", Query.Direction.DESCENDING)
                         .startAt(LastPost)
                         .limit(10);
             }
