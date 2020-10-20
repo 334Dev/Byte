@@ -91,6 +91,7 @@ public class CreatePost extends AppCompatActivity {
     private List<String> keyword;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -368,7 +369,6 @@ public class CreatePost extends AppCompatActivity {
                 map.put("Keyword",keyword);
                 map.put("trend",date.getTime());
                 map.put("SavedId",savedId);
-                map.put("Owner", UserID);
 
                 //add post info in firestore as map
                 fstore.collection("Post").document(FileName).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {

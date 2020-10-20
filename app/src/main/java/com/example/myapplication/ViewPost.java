@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -99,22 +100,62 @@ public class ViewPost extends AppCompatActivity {
         });
 
        getSavedId();
+
      saveButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
-             checkSavedUser();
+
+             if(saveButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_bookmark_24).getConstantState()){
+                 Toast.makeText(getApplicationContext(),"if block",Toast.LENGTH_LONG).show();
+                 Map<String,Object> map=new HashMap<>();
+                 map.put("SavedId", FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
+                 fstore.collection("Post").document(id).update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                     @Override
+                     public void onSuccess(Void aVoid) {
+                         saveButton.setImageResource(R.drawable.ic_outline_bookmark_border_24);
+                     }
+                 }).addOnFailureListener(new OnFailureListener() {
+                     @Override
+                     public void onFailure(@NonNull Exception e) {
+                         Snackbar.make(parentLayout, "saved Failed", Snackbar.LENGTH_SHORT).show();
+                     }
+                 });
+
+
+             }
+              else{
+                 savedId.add(mAuth.getCurrentUser().getUid());
+                 Map<String,Object> map=new HashMap<>();
+                 map.put("SavedId",savedId);
+                 fstore.collection("Post").document(id).update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                     @Override
+                     public void onSuccess(Void aVoid) {
+                         saveButton.setImageResource(R.drawable.ic_baseline_bookmark_24);
+                     }
+                 }).addOnFailureListener(new OnFailureListener() {
+                     @Override
+                     public void onFailure(@NonNull Exception e) {
+                         Snackbar.make(parentLayout, "saved Failed", Snackbar.LENGTH_SHORT).show();
+                     }
+                 });
+             }
          }
      });
 
 
     }
 
+
     private void getSavedId() {
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 savedId= (List<String>) documentSnapshot.get("SavedId");
+                if(savedId.contains(mAuth.getCurrentUser().getUid()))
+                {
+                    saveButton.setImageResource(R.drawable.ic_baseline_bookmark_24);
 
+                }
 
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -125,40 +166,7 @@ public class ViewPost extends AppCompatActivity {
         });
     }
 
-    private void checkSavedUser() {
 
-        if(savedId.contains(mAuth.getCurrentUser().getUid()))
-        {
-            saveButton.setImageResource(R.drawable.ic_baseline_bookmark_24);
-        }
-        else
-        {
-            setPostAsSaved();
-
-        }
-
-
-    }
-
-    private void setPostAsSaved() {
-
-        savedId.add(mAuth.getCurrentUser().getUid());
-        Map<String,Object> map=new HashMap<>();
-        map.put("SavedId",savedId);
-        fstore.collection("Post").document(id).update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                saveButton.setImageResource(R.drawable.ic_baseline_bookmark_24);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Snackbar.make(parentLayout, "saved Failed", Snackbar.LENGTH_SHORT).show();
-            }
-        });
-
-
-    }
 
 
     // Getting back to HomeActivity on back
