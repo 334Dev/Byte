@@ -31,8 +31,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +55,7 @@ import static com.example.myapplication.R.drawable.image_insert_clicked;
 import static com.example.myapplication.R.drawable.italic_clicked;
 import static com.example.myapplication.R.drawable.left_align_clicked;
 import static com.example.myapplication.R.drawable.link_clicked;
+import static com.example.myapplication.R.drawable.logo;
 import static com.example.myapplication.R.drawable.youtube_clicked;
 
 public class CreatePost extends AppCompatActivity {
@@ -331,6 +335,17 @@ public class CreatePost extends AppCompatActivity {
                String tag=intent.getStringExtra("Tag");
                String img=intent.getStringExtra("TitleImage");
 
+                Date date=new Date();
+                SimpleDateFormat format=new SimpleDateFormat("dd/MM/yyyy");
+                String sDate=format.format(date);
+
+                try {
+                    date=format.parse(sDate);
+                    Log.i("millieTime", "onClick: "+date.getTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
                createKeyword(title);
 
                final Map<String,Object> userMap=new HashMap<>();
@@ -348,6 +363,7 @@ public class CreatePost extends AppCompatActivity {
                 map.put("Report",0);
                 map.put("viewCount",0);
                 map.put("Keyword",keyword);
+                map.put("trend",date.getTime());
 
                 //add post info in firestore as map
                 fstore.collection("Post").document(FileName).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {

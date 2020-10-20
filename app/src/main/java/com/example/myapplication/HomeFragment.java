@@ -1,6 +1,9 @@
 package com.example.myapplication;
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -8,7 +11,9 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,14 +34,17 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem, trendViewPagerAdapter.SelectedPager {
 
-   private RecyclerView recyclerView;
-   private List<Model_Latest> item_list;
-   private LatestAdapter latestAdapter;
+   private RecyclerView recyclerView, upVoteRecycler;
+   private List<Model_Latest> item_list, upVote_list;
+   private LatestAdapter latestAdapter, upVoteAdapter;
    private FirebaseFirestore firestore;
    private ImageView postSearchBtn;
    private FirebaseAuth mAuth;
@@ -44,6 +52,11 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
    private ViewPager2 trendViewPager;
    private List<trendViewPagerModel> pagerModels;
    private trendViewPagerAdapter pagerAdapter;
+   private DocumentSnapshot lastLatestPost;
+
+   //loading dialog box
+   private AlertDialog.Builder builder;
+    private AlertDialog show;
 
     @Nullable
     @Override
@@ -51,12 +64,25 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         View root=inflater.inflate(R.layout.fragment_home,container,false);
 
         trendViewPager=root.findViewById(R.id.trendViewPager);
-        //View pager basic settings
+
+        upVoteRecycler=root.findViewById(R.id.upvoteView);
+        upVoteRecycler.setHasFixedSize(true);
+        upVoteRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        upVote_list=new ArrayList<>();
+        upVoteAdapter=new LatestAdapter(upVote_list,this);
+        upVoteRecycler.setAdapter(upVoteAdapter);
+
+        //Loading Dialog Box
+        builder=new AlertDialog.Builder(getContext());
+        builder.setView(R.layout.loading_dailog);
+        builder.setCancelable(true);
+        show = builder.show();
+        show.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
 
 
         pagerModels=new ArrayList<>();
-
 
         recyclerView=root.findViewById(R.id.latestView);
         recyclerView.setHasFixedSize(true);
@@ -89,6 +115,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                 Tag= (List<String>) documentSnapshot.get("Tag");
                 setLatestPost();
                 setupViewPager();
+                setUpVotePost();
 
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -99,6 +126,21 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         });
 
         recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager linearLayoutManager= (LinearLayoutManager) recyclerView.getLayoutManager();
+                if(linearLayoutManager.findLastCompletelyVisibleItemPosition()==recyclerView.getChildCount()){
+                    setLatestPost();
+                }
+            }
+        });
 
 
 
@@ -109,25 +151,53 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
 
     }
 
+    private void setUpVotePost() {
+        firestore.collection("Post")
+                .orderBy("UpVote", Query.Direction.DESCENDING)
+                .whereIn("tag",Tag)
+                .limit(2).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                for (QueryDocumentSnapshot doc : value) {
+
+                    Log.i("dataRecieveCHeck", "onEvent:" + value.size());
+                    if(Tag.contains(doc.getString("tag"))) {
+                        Model_Latest set = doc.toObject(Model_Latest.class);
+                        upVote_list.add(set);
+                        upVoteAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        });
+    }
+
     private void setupViewPager() {
-            firestore.collection("Post")
-                    .orderBy("time", Query.Direction.DESCENDING)
-                    .orderBy("UpVote", Query.Direction.DESCENDING)
-                    .limit(4).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        Date date=new Date();
+        Calendar calendar=Calendar.getInstance();
+        calendar.set(date.getYear(),date.getMonth(),date.getDay(),00,00,0);
+        Log.i("Date", "setupViewPager: "+date);
+
+        Query query=firestore.collection("Post")
+                .orderBy("trend", Query.Direction.DESCENDING)
+                .whereIn("tag",Tag);
+
+            query.limit(6).addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
                     for (QueryDocumentSnapshot doc : value) {
 
                         Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                        if(Tag.contains(doc.getString("tag"))) {
+                        //if(Tag.contains(doc.getString("tag"))) {
                             trendViewPagerModel set = doc.toObject(trendViewPagerModel.class);
                             pagerModels.add(set);
                             pagerAdapter.notifyDataSetChanged();
-                        }
+                        //}
                     }
                 }
             });
             Log.i("ViewPager", "setupViewPager: "+pagerModels.size());
+        //View pager basic settings
         pagerAdapter=new trendViewPagerAdapter(pagerModels,this);
         trendViewPager.setAdapter(pagerAdapter);
         trendViewPager.setPadding(0,0,0,0);
@@ -138,21 +208,33 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
     }
 
     private void setLatestPost() {
+        Query query = null;
+        if(lastLatestPost==null){
+            query=firestore.collection("Post")
+                    .orderBy("time", Query.Direction.DESCENDING)
+                    .whereIn("tag",Tag)
+                    .limit(10);
+        }else{
+            firestore.collection("Post")
+                    .orderBy("time", Query.Direction.DESCENDING)
+                    .whereIn("tag",Tag)
+                    .startAfter(lastLatestPost)
+                    .limit(10);
+        }
 
-        firestore.collection("Post")
-                .orderBy("time", Query.Direction.DESCENDING)
-                .limit(30).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 for (QueryDocumentSnapshot doc : value) {
 
                     Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                    if(Tag.contains(doc.getString("tag"))) {
                         Model_Latest set = doc.toObject(Model_Latest.class);
                         item_list.add(set);
                         latestAdapter.notifyDataSetChanged();
-                    }
+                        show.dismiss();
+
                 }
+                lastLatestPost=value.getDocuments().get(value.size()-1);
             }
         });
     }

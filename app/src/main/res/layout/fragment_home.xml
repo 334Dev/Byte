@@ -10,142 +10,6 @@
     android:layout_height="match_parent">
 
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView2"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        app:cardBackgroundColor="@color/Background"
-        app:cardCornerRadius="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView1">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/imageCard2"
-                android:layout_width="96dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                app:cardCornerRadius="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/image2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@drawable/iceland" />
-
-            </androidx.cardview.widget.CardView>
-
-            <TextView
-                android:id="@+id/head2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:fontFamily="@font/helveticaneue_sem"
-                android:text="Iceland"
-                android:textColor="@color/plainText"
-                android:textSize="18sp"
-                app:layout_constraintStart_toEndOf="@+id/imageCard2"
-                app:layout_constraintTop_toTopOf="@+id/imageCard2" />
-
-            <TextView
-                android:id="@+id/desc2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/helveticaneue_med"
-                android:text="Iceland is the dream destination of many \npeople and one must definetly visit this  ..."
-                android:textColor="@color/plainText"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageCard2"
-                app:layout_constraintTop_toBottomOf="@+id/head2" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView1"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        app:cardBackgroundColor="@color/Background"
-        app:cardCornerRadius="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
-                android:layout_width="96dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                app:cardCornerRadius="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/image1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@drawable/iceland" />
-
-            </androidx.cardview.widget.CardView>
-
-            <TextView
-                android:id="@+id/head1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:fontFamily="@font/helveticaneue_sem"
-                android:text="Iceland"
-                android:textColor="@color/plainText"
-                android:textSize="18sp"
-                app:layout_constraintStart_toEndOf="@+id/cardView"
-                app:layout_constraintTop_toTopOf="@+id/cardView" />
-
-            <TextView
-                android:id="@+id/desc1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/helveticaneue_med"
-                android:text="Iceland is the dream destination of many \npeople and one must definetly visit this  ..."
-                android:textColor="@color/plainText"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cardView"
-                app:layout_constraintTop_toBottomOf="@+id/head1" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
@@ -186,21 +50,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/helveticaneue_sem"
         android:text="Latest Post"
         android:textColor="@color/plainText"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView2" />
+        app:layout_constraintTop_toBottomOf="@+id/upvoteView" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/latestView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
@@ -214,6 +76,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_search_24" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/upvoteView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

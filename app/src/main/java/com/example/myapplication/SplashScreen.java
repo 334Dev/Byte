@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
@@ -19,7 +20,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SplashScreen extends AppCompatActivity {
@@ -31,6 +35,9 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
         logo=findViewById(R.id.splashLogo);
         mAuth=FirebaseAuth.getInstance();
+
+
+
         Handler mHandler= new Handler();  //Splash screen change act. delay 1 second
         mHandler.postDelayed(new Runnable() {
             @Override
