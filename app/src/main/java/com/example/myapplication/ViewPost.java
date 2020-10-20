@@ -102,7 +102,7 @@ public class ViewPost extends AppCompatActivity {
      saveButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
-             getSavedId();
+             checkSavedUser();
          }
      });
 
@@ -115,8 +115,6 @@ public class ViewPost extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 savedId= (List<String>) documentSnapshot.get("SavedId");
 
-
-                checkSavedUser();
 
             }
         }).addOnFailureListener(new OnFailureListener() {
