@@ -31,6 +31,7 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
         this.selectedItem=selectedItem;
     }
 
+
     @NonNull
     @Override
     public mViewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

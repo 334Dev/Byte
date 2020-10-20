@@ -225,16 +225,20 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                for (QueryDocumentSnapshot doc : value) {
+                if(value.isEmpty()){
+                    Log.i("Post", "onEvent: Empty");
+                }else {
+                    for (QueryDocumentSnapshot doc : value) {
 
-                    Log.i("dataRecieveCHeck", "onEvent:" + value.size());
+                        Log.i("dataRecieveCHeck", "onEvent:" + value.size());
                         Model_Latest set = doc.toObject(Model_Latest.class);
                         item_list.add(set);
                         latestAdapter.notifyDataSetChanged();
                         show.dismiss();
 
+                    }
+                    lastLatestPost = value.getDocuments().get(value.size() - 1);
                 }
-                lastLatestPost=value.getDocuments().get(value.size()-1);
             }
         });
     }
