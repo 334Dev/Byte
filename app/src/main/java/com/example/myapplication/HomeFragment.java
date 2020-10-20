@@ -53,10 +53,11 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
    private List<trendViewPagerModel> pagerModels;
    private trendViewPagerAdapter pagerAdapter;
    private DocumentSnapshot lastLatestPost;
+   private Query query;
 
    //loading dialog box
    private AlertDialog.Builder builder;
-    private AlertDialog show;
+   private AlertDialog show;
 
     @Nullable
     @Override
@@ -208,7 +209,6 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
     }
 
     private void setLatestPost() {
-        Query query = null;
         if(lastLatestPost==null){
             query=firestore.collection("Post")
                     .orderBy("time", Query.Direction.DESCENDING)
@@ -218,7 +218,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
             firestore.collection("Post")
                     .orderBy("time", Query.Direction.DESCENDING)
                     .whereIn("tag",Tag)
-                    .startAfter(lastLatestPost)
+                    .startAt(lastLatestPost)
                     .limit(10);
         }
 
