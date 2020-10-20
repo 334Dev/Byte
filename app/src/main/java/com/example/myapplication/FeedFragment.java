@@ -133,6 +133,7 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
                             feedModels.add(set);
                             feedAdapter.notifyDataSetChanged();
                         }
+                        LastPost=value.getDocuments().get(value.size()-1);
                     }
                 }
             });
