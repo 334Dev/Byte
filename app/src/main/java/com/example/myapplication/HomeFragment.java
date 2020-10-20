@@ -11,12 +11,16 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.Scroller;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,6 +58,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
    private trendViewPagerAdapter pagerAdapter;
    private DocumentSnapshot lastLatestPost;
    private Query query;
+   private NestedScrollView scrollHome;
 
    //loading dialog box
    private AlertDialog.Builder builder;
@@ -66,6 +71,8 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
 
         trendViewPager=root.findViewById(R.id.trendViewPager);
 
+        scrollHome=root.findViewById(R.id.scrollHome);
+
         upVoteRecycler=root.findViewById(R.id.upvoteView);
         upVoteRecycler.setHasFixedSize(true);
         upVoteRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -73,6 +80,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         upVote_list=new ArrayList<>();
         upVoteAdapter=new LatestAdapter(upVote_list,this);
         upVoteRecycler.setAdapter(upVoteAdapter);
+        upVoteRecycler.setNestedScrollingEnabled(false);
 
         //Loading Dialog Box
         builder=new AlertDialog.Builder(getContext());
@@ -127,7 +135,22 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         });
 
         recyclerView.setNestedScrollingEnabled(false);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+        scrollHome.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged()
+            {
+                View view = (View)scrollHome.getChildAt(scrollHome.getChildCount() - 1);
+
+                int diff = (view.getBottom() - (scrollHome.getHeight() + scrollHome
+                        .getScrollY()));
+
+                if (diff == 0) {
+                    setLatestPost();
+                }
+            }
+        });
+        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -140,8 +163,16 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                 if(linearLayoutManager.findLastCompletelyVisibleItemPosition()==recyclerView.getChildCount()){
                     setLatestPost();
                 }
+                View view = (View)scrollHome.getChildAt(scrollHome.getChildCount() - 1);
+
+                int diff = (view.getBottom() - (scrollHome.getHeight() + scrollHome
+                        .getScrollY()));
+
+                if (diff == 0) {
+                    setLatestPost();
+                }
             }
-        });
+        });*/
 
 
 
@@ -165,9 +196,10 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                     if(Tag.contains(doc.getString("tag"))) {
                         Model_Latest set = doc.toObject(Model_Latest.class);
                         upVote_list.add(set);
-                        upVoteAdapter.notifyDataSetChanged();
                     }
                 }
+
+                upVoteAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -215,22 +247,23 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                     .whereIn("tag",Tag)
                     .limit(10);
         }else{
-            firestore.collection("Post")
+            query=firestore.collection("Post")
                     .orderBy("time", Query.Direction.DESCENDING)
                     .whereIn("tag",Tag)
-                    .startAt(lastLatestPost)
-                    .limit(10);
+                    .startAfter(lastLatestPost)
+                    .limit(1);
+            Log.i("PostLoad", "setLatestPost: "+lastLatestPost.getId());
         }
 
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if(value.isEmpty()){
-                    Log.i("Post", "onEvent: Empty");
+                    Log.i("PostEmpty", "onEvent: Empty");
                 }else {
                     for (QueryDocumentSnapshot doc : value) {
 
-                        Log.i("dataRecieveCHeck", "onEvent:" + value.size());
+                        Log.i("PostL", "onEvent:" + doc.getId());
                         Model_Latest set = doc.toObject(Model_Latest.class);
                         item_list.add(set);
                         latestAdapter.notifyDataSetChanged();
@@ -238,6 +271,8 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
 
                     }
                     lastLatestPost = value.getDocuments().get(value.size() - 1);
+                    Log.i("PostLast", "onEvent: "+item_list.size());
+                    Log.i("PostLast", "onEvent: "+lastLatestPost.getId());
                 }
             }
         });
