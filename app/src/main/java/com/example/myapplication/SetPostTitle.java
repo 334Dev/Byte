@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -29,8 +30,13 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
+
+import id.zelory.compressor.Compressor;
+
 
 public class SetPostTitle extends AppCompatActivity{
 
@@ -44,6 +50,8 @@ public class SetPostTitle extends AppCompatActivity{
     private Integer IMAGE_ADDED=0;
     private StorageReference storageReference;
     private FirebaseAuth mAuth;
+    private Bitmap compressedImageFile;
+    private byte[] finalImage;
 
 
     @Override
@@ -98,7 +106,7 @@ public class SetPostTitle extends AppCompatActivity{
                 }else if(post_Desc.isEmpty()){
                     Desc.setError("Field Empty");
                 }else{
-                    storageReference.child("posts").child(FileName).child("title.jpg").putFile(titleUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    storageReference.child("posts").child(FileName).child("title.jpg").putBytes(finalImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             if(taskSnapshot.getMetadata().getReference()!=null){
@@ -140,8 +148,23 @@ public class SetPostTitle extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode==RESULT_OK){
             CropImage.ActivityResult result=CropImage.getActivityResult(data);
-
             Uri resultUri=result.getUri();
+
+            File actualImage=new File(resultUri.getPath());
+            try {
+                compressedImageFile = new Compressor(this)
+                        .setMaxWidth(640)
+                        .setMaxHeight(480)
+                        .setQuality(70)
+                        .compressToBitmap(actualImage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
+            compressedImageFile.compress(Bitmap.CompressFormat.JPEG,80,byteArrayOutputStream);
+            finalImage=byteArrayOutputStream.toByteArray();
+
             titleUri=resultUri;
             Picasso.get().load(resultUri).into(TitleImage);
             IMAGE_ADDED=1;

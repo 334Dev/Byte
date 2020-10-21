@@ -59,6 +59,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
    private DocumentSnapshot lastLatestPost;
    private Query query;
    private NestedScrollView scrollHome;
+   private Integer index=0;
 
    //loading dialog box
    private AlertDialog.Builder builder;
@@ -246,36 +247,65 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                     .orderBy("time", Query.Direction.DESCENDING)
                     .whereIn("tag",Tag)
                     .limit(10);
+            query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                    if(value.isEmpty()){
+                        Log.i("PostEmpty", "onEvent: Empty");
+                    }else {
+                        for (QueryDocumentSnapshot doc : value) {
+
+                            Log.i("PostL", "onEvent:" + doc.getId());
+                            Model_Latest set = doc.toObject(Model_Latest.class);
+                            item_list.add(set);
+                            latestAdapter.notifyDataSetChanged();
+                            show.dismiss();
+
+                        }
+                        index=index+value.size()-1;
+                        Log.i("PostIndex", "onEvent: "+index);
+                        lastLatestPost = value.getDocuments().get(value.size() - 1);
+                        Log.i("PostLast", "onEvent: "+item_list.size());
+                        Log.i("PostLast", "onEvent: "+lastLatestPost.getId());
+                    }
+                }
+            });
+
         }else{
             query=firestore.collection("Post")
                     .orderBy("time", Query.Direction.DESCENDING)
                     .whereIn("tag",Tag)
                     .startAfter(lastLatestPost)
-                    .limit(5);
-            Log.i("PostLoad", "setLatestPost: "+lastLatestPost.getId());
-        }
+                    .limit(10);
+            query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                    if(value.isEmpty()){
+                        Log.i("PostEmpty", "onEvent: Empty");
+                    }else {
+                        List<Model_Latest> inputList;
+                        inputList=new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : value) {
 
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if(value.isEmpty()){
-                    Log.i("PostEmpty", "onEvent: Empty");
-                }else {
-                    for (QueryDocumentSnapshot doc : value) {
+                            Log.i("PostL", "onEvent:" + doc.getId());
+                            Model_Latest set = doc.toObject(Model_Latest.class);
+                            inputList.add(set);
+                            show.dismiss();
 
-                        Log.i("PostL", "onEvent:" + doc.getId());
-                        Model_Latest set = doc.toObject(Model_Latest.class);
-                        item_list.add(set);
-                        latestAdapter.notifyDataSetChanged();
-                        show.dismiss();
+                        }
+                        item_list.addAll(index,inputList);
+                        latestAdapter.notifyItemRangeChanged(index,value.size());
 
+                        index=index+value.size();
+                        lastLatestPost = value.getDocuments().get(value.size() - 1);
+
+                        Log.i("PostIndex", "onEvent: "+index);
+                        Log.i("PostLast", "onEvent: "+item_list.size());
+                        Log.i("PostLast", "onEvent: "+lastLatestPost.getId());
                     }
-                    lastLatestPost = value.getDocuments().get(value.size() - 1);
-                    Log.i("PostLast", "onEvent: "+item_list.size());
-                    Log.i("PostLast", "onEvent: "+lastLatestPost.getId());
                 }
-            }
-        });
+            });
+        }
     }
 
 

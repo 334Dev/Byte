@@ -437,7 +437,9 @@ public class CreatePost extends AppCompatActivity {
             //random name for image
             String randomName= UUID.randomUUID().toString()+".jpg";
 
+            //Image
             Uri resultUri = data.getData();
+
             reff.child(randomName).putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
