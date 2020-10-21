@@ -13,8 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -35,12 +37,15 @@ public class ViewPost extends AppCompatActivity {
     private TextView titleHeader;
     private ImageView HeaderImage;
     private ImageView saveButton;
+    private ImageView upvoteButton;
+    private TextView upvoteCountText;
     private FirebaseAuth mAuth;
     private View parentLayout;
     StorageReference storageReference;
     private String UserID;
-    private List<String> savedId;
+    private List<String> savedId,upvote;
     private String id;
+    private int numberOfUpvotes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +69,9 @@ public class ViewPost extends AppCompatActivity {
 
         HeaderImage=findViewById(R.id.headerimg);
         titleHeader=findViewById(R.id.postTitle);
+
+        upvoteButton=findViewById(R.id.Upvotebtn);
+        upvoteCountText=findViewById(R.id.UpvoteCount);
 
         //passing the text which contain html code to web view
         Intent intent=getIntent();
@@ -99,7 +107,77 @@ public class ViewPost extends AppCompatActivity {
             }
         });
 
-       getSavedId();
+        getSavedId();
+
+        //Searching if already upvoted
+
+        updateUpVoteCounts();
+
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                upvote= (List<String>) documentSnapshot.get("UpVote");
+
+                if(upvote.contains(mAuth.getCurrentUser().getUid()))
+                {
+                    upvoteButton.setImageResource(R.drawable.upvoted);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("Msg",e.getMessage());
+            }
+        });
+
+
+
+
+        upvoteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.upvoted).getConstantState()){
+                    Map<String,Object> UpvoteMap=new HashMap<>();
+                    UpvoteMap.put("UpVote",FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
+                    fstore.collection("Post").document(id).update(UpvoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            upvoteButton.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+                            upvote.clear();
+                              updateUpVoteCounts();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                             Snackbar.make(parentLayout,"There is Some Problem happening",Snackbar.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                   else{
+                       upvote.add(mAuth.getCurrentUser().getUid());
+                       Map<String,Object> UpvoteMap=new HashMap<>();
+                       UpvoteMap.put("UpVote",upvote);
+                       fstore.collection("Post").document(id).update(UpvoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                           @Override
+                           public void onSuccess(Void aVoid) {
+                               upvoteButton.setImageResource(R.drawable.upvoted);
+                               updateUpVoteCounts();
+
+                           }
+                       }).addOnFailureListener(new OnFailureListener() {
+                           @Override
+                           public void onFailure(@NonNull Exception e) {
+                               Snackbar.make(parentLayout,"There is some problem happpening",Snackbar.LENGTH_SHORT).show();
+                           }
+                       });
+                }
+
+            }
+
+        });
+
+
+
 
      saveButton.setOnClickListener(new View.OnClickListener() {
          @Override
@@ -113,6 +191,7 @@ public class ViewPost extends AppCompatActivity {
                      @Override
                      public void onSuccess(Void aVoid) {
                          saveButton.setImageResource(R.drawable.ic_outline_bookmark_border_24);
+
                      }
                  }).addOnFailureListener(new OnFailureListener() {
                      @Override
@@ -143,6 +222,32 @@ public class ViewPost extends AppCompatActivity {
      });
 
 
+    }
+
+    private void updateUpVoteCounts() {
+
+           fstore.collection("Post").document(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+               @Override
+               public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    DocumentSnapshot documentSnapshot=task.getResult();
+                     List<String> upvotesList= (List<String>) documentSnapshot.get("UpVote");
+                     numberOfUpvotes=upvotesList.size();
+
+               }
+           });
+
+            fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    Double upvoteCounts = documentSnapshot.getDouble("UpVoteCount");
+
+                    fstore.collection("Post").document(id).update("UpVoteCount", numberOfUpvotes);
+
+
+                   upvoteCountText.setText(Integer.toString(numberOfUpvotes));
+
+                }
+            });
     }
 
 
