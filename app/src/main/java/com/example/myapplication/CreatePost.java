@@ -87,6 +87,7 @@ public class CreatePost extends AppCompatActivity {
     private ImageButton insert_youtube_btn;
     private ImageButton insert_link_btn;
     private List<String> savedId;
+    private List<String> UpVote;
 
     private List<String> keyword;
 
@@ -99,7 +100,10 @@ public class CreatePost extends AppCompatActivity {
 
         //mEditor(~RichEditor Library) settings
         savedId=new ArrayList<>();
+        UpVote=new ArrayList<>();
         savedId.add("demoUser");
+        UpVote.add("demoUser");
+
         mEditor=(RichEditor)findViewById(R.id.editor);
         mEditor.setEditorHeight(200);
         mEditor.setEditorFontSize(16);
@@ -363,12 +367,13 @@ public class CreatePost extends AppCompatActivity {
                 map.put("title",title);
                 map.put("desc",desc);
                 map.put("tag",tag);
-                map.put("UpVote",0);
+                map.put("UpVote",UpVote);
                 map.put("Report",0);
                 map.put("viewCount",0);
                 map.put("Keyword",keyword);
                 map.put("trend",date.getTime());
                 map.put("SavedId",savedId);
+                map.put("UpVoteCount",0);
 
                 //add post info in firestore as map
                 fstore.collection("Post").document(FileName).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
