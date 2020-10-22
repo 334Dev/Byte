@@ -40,6 +40,7 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
     private List<String> following;
     private Query query;
     private DocumentSnapshot LastPost;
+    private Integer index=0;
 
     @Nullable
     @Override
@@ -115,28 +116,63 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
                         .whereIn("Owner", following)
                         .orderBy("time", Query.Direction.DESCENDING)
                         .limit(10);
+                query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if(value.isEmpty()){
+                            Log.i("PostEmpty", "onEvent: Empty");
+                        }else {
+                            for (QueryDocumentSnapshot doc : value) {
+
+                                Log.i("PostL", "onEvent:" + doc.getId());
+                                trendViewPagerModel set = doc.toObject(trendViewPagerModel.class);
+                                feedModels.add(set);
+                                feedAdapter.notifyDataSetChanged();
+
+                            }
+                            index=index+value.size()-1;
+                            Log.i("PostIndex", "onEvent: "+index);
+                            LastPost = value.getDocuments().get(value.size() - 1);
+                            Log.i("PostLast", "onEvent: "+feedModels.size());
+                            Log.i("PostLast", "onEvent: "+LastPost.getId());
+                        }
+                    }
+                });
             } else {
                 query = firestore.collection("Post")
                         .whereIn("Owner", following)
                         .orderBy("time", Query.Direction.DESCENDING)
                         .startAt(LastPost)
                         .limit(10);
-            }
-            query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                    if (value.isEmpty()) {
-                        Log.i("FeedPost", "onEvent: Empty");
-                    } else {
-                        for (QueryDocumentSnapshot doc : value) {
-                            trendViewPagerModel set = doc.toObject(trendViewPagerModel.class);
-                            feedModels.add(set);
-                            feedAdapter.notifyDataSetChanged();
+                query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if(value.isEmpty()){
+                            Log.i("PostEmpty", "onEvent: Empty");
+                        }else {
+                            List<trendViewPagerModel> inputList;
+                            inputList=new ArrayList<>();
+                            for (QueryDocumentSnapshot doc : value) {
+
+                                Log.i("PostL", "onEvent:" + doc.getId());
+                                trendViewPagerModel set = doc.toObject(trendViewPagerModel.class);
+                                inputList.add(set);
+
+                            }
+                            feedModels.addAll(index,inputList);
+                            feedAdapter.notifyItemRangeChanged(index,value.size());
+
+                            index=index+value.size();
+                            LastPost = value.getDocuments().get(value.size() - 1);
+
+                            Log.i("PostIndex", "onEvent: "+index);
+                            Log.i("PostLast", "onEvent: "+feedModels.size());
+                            Log.i("PostLast", "onEvent: "+LastPost.getId());
                         }
-                        LastPost=value.getDocuments().get(value.size()-1);
                     }
-                }
-            });
+                });
+            }
+
         }
     }
 

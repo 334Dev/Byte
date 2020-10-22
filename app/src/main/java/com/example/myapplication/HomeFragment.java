@@ -151,36 +151,8 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                 }
             }
         });
-        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                LinearLayoutManager linearLayoutManager= (LinearLayoutManager) recyclerView.getLayoutManager();
-                if(linearLayoutManager.findLastCompletelyVisibleItemPosition()==recyclerView.getChildCount()){
-                    setLatestPost();
-                }
-                View view = (View)scrollHome.getChildAt(scrollHome.getChildCount() - 1);
-
-                int diff = (view.getBottom() - (scrollHome.getHeight() + scrollHome
-                        .getScrollY()));
-
-                if (diff == 0) {
-                    setLatestPost();
-                }
-            }
-        });*/
-
-
-
 
         return root;
-
-
 
     }
 
