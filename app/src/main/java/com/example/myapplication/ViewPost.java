@@ -39,7 +39,7 @@ public class ViewPost extends AppCompatActivity {
     private FirebaseFirestore fstore;
     private TextView titleHeader;
     private ImageView HeaderImage;
-
+   private TextView ViewCount;
     private ImageView saveButton;
     private ImageView upvoteButton;
     private TextView upvoteCountText;
@@ -73,6 +73,7 @@ public class ViewPost extends AppCompatActivity {
 
         HeaderImage=findViewById(R.id.postCover);
         titleHeader=findViewById(R.id.postTitle);
+        ViewCount=findViewById(R.id.viewCount);
 
 
         upvoteButton=findViewById(R.id.Upvotebtn);
@@ -155,6 +156,23 @@ public class ViewPost extends AppCompatActivity {
             }
         });
 
+
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                 Double Views=documentSnapshot.getDouble("viewCount");
+                fstore.collection("Post").document(id).update("viewCount",Views+1);
+                Views=documentSnapshot.getDouble("viewCount");
+                ViewCount.setText(String.format("%.0f",Views));
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("View Not Updated","View Not Updated");
+            }
+        });
 
 
 

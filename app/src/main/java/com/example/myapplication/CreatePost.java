@@ -369,7 +369,7 @@ public class CreatePost extends AppCompatActivity {
                 map.put("tag",tag);
                 map.put("UpVote",UpVote);
                 map.put("Report",0);
-                map.put("viewCount",0);
+                map.put("viewCount",1);
                 map.put("Keyword",keyword);
                 map.put("trend",date.getTime());
                 map.put("SavedId",savedId);
