@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -19,9 +20,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -44,10 +49,11 @@ public class ViewPost extends AppCompatActivity {
     private ImageView upvoteButton;
     private TextView upvoteCountText;
     private FirebaseAuth mAuth;
+
     private View parentLayout;
     StorageReference storageReference;
     private String UserID;
-    private List<String> savedId,upvote;
+    private List<String> savedId,upvotearray;
     private String id;
     private int numberOfUpvotes;
 
@@ -56,6 +62,9 @@ public class ViewPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_post);
         savedId=new ArrayList<>();
+        mAuth = FirebaseAuth.getInstance();
+        UserID=mAuth.getCurrentUser().getUid();
+
 
         saveButton=findViewById(R.id.imageViewSaved);
         web=findViewById(R.id.webView);
@@ -139,22 +148,20 @@ public class ViewPost extends AppCompatActivity {
 
         updateUpVoteCounts();
 
-        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                upvote= (List<String>) documentSnapshot.get("UpVote");
 
-                if(upvote.contains(mAuth.getCurrentUser().getUid()))
-                {
+
+        fstore.collection("Post").document(id).collection("upVotes")
+                .whereEqualTo("ProfileId",UserID).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(value.isEmpty()){
+                    Log.i("status", "onEvent: Has not upVoted");
+                }else{
                     upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
                 }
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.i("Msg",e.getMessage());
-            }
         });
+
 
 
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -179,41 +186,15 @@ public class ViewPost extends AppCompatActivity {
         upvoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.thumbs_up_clicked).getConstantState()){
-                    Map<String,Object> UpvoteMap=new HashMap<>();
-                    UpvoteMap.put("UpVote",FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
-                    fstore.collection("Post").document(id).update(UpvoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
-                            upvote.clear();
-                              updateUpVoteCounts();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                             Snackbar.make(parentLayout,"There is Some Problem happening",Snackbar.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-                   else{
-                       upvote.add(mAuth.getCurrentUser().getUid());
-                       Map<String,Object> UpvoteMap=new HashMap<>();
-                       UpvoteMap.put("UpVote",upvote);
-                       fstore.collection("Post").document(id).update(UpvoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                           @Override
-                           public void onSuccess(Void aVoid) {
-                               upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
-                               updateUpVoteCounts();
+                if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_thumb_up_alt_24).getConstantState()){
+                     addUserUpvote();
 
-                           }
-                       }).addOnFailureListener(new OnFailureListener() {
-                           @Override
-                           public void onFailure(@NonNull Exception e) {
-                               Snackbar.make(parentLayout,"There is some problem happpening",Snackbar.LENGTH_SHORT).show();
-                           }
-                       });
-                }
+                   }
+
+                   else {
+                         Log.i("Else Working","else eordd");
+                         removeUserUpdate();
+                       }
 
             }
 
@@ -267,30 +248,81 @@ public class ViewPost extends AppCompatActivity {
 
     }
 
+    private void addUserUpvote() {
+
+        Map<String,Object> UpvoteMap=new HashMap<>();
+        UpvoteMap.put("ProfileId",UserID);
+        fstore.collection("Post").document(id).collection("upVotes").document(UserID).set(UpvoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Double upvotesCounts = documentSnapshot.getDouble("UpVote");
+                        fstore.collection("Post").document(id).update("UpVote", upvotesCounts + 1);
+                        upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
+
+                        updateUpVoteCounts();
+                    }
+                });
+            }
+        });
+
+
+
+
+    }
+
+    private void removeUserUpdate() {
+
+        fstore.collection("Post").document(id).collection("upVotes")
+                .whereEqualTo("ProfileId",UserID).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                for(DocumentSnapshot doc: value){
+                    doc.getReference().delete();
+                }
+            }
+        });
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Double upvotesCounts = documentSnapshot.getDouble("UpVote");
+                fstore.collection("Post").document(id).update("UpVote", upvotesCounts -1);
+                upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
+                updateUpVoteCounts();
+            }
+        });
+
+
+
+
+    }
+
     private void updateUpVoteCounts() {
 
-           fstore.collection("Post").document(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-               @Override
-               public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    DocumentSnapshot documentSnapshot=task.getResult();
-                     List<String> upvotesList= (List<String>) documentSnapshot.get("UpVote");
-                     numberOfUpvotes=upvotesList.size();
-
-               }
-           });
-
-            fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    Double upvoteCounts = documentSnapshot.getDouble("UpVoteCount");
-
-                    fstore.collection("Post").document(id).update("UpVoteCount", numberOfUpvotes);
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
 
 
-                   upvoteCountText.setText(Integer.toString(numberOfUpvotes));
+                // getting value of number of UpVote from database and showing in this activity..
 
-                }
-            });
+                Double mUpvote=documentSnapshot.getDouble("UpVote");
+
+
+                upvoteCountText.setText(String.format("%.0f",mUpvote));
+
+
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 
