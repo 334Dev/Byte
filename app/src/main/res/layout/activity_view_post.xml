@@ -35,7 +35,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/iceland" />
+        app:srcCompat="@drawable/iceland"
+       />
 
     <ImageView
         android:id="@+id/headerimg"
@@ -161,13 +162,13 @@
 
     <ImageView
         android:id="@+id/Upvotebtn"
-        android:layout_width="45dp"
-        android:layout_height="46dp"
+        android:layout_width="37dp"
+        android:layout_height="40dp"
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewSaved"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageViewSaved"
-        app:srcCompat="@drawable/ic_baseline_arrow_upward_24" />
+        app:srcCompat="@drawable/ic_baseline_thumb_up_alt_24" />
 
     <TextView
         android:id="@+id/UpvoteCount"

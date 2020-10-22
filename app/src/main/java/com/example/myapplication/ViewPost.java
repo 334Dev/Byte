@@ -24,11 +24,14 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import jp.wasabeef.picasso.transformations.BlurTransformation;
 
 public class ViewPost extends AppCompatActivity {
 
@@ -36,6 +39,7 @@ public class ViewPost extends AppCompatActivity {
     private FirebaseFirestore fstore;
     private TextView titleHeader;
     private ImageView HeaderImage;
+
     private ImageView saveButton;
     private ImageView upvoteButton;
     private TextView upvoteCountText;
@@ -67,8 +71,9 @@ public class ViewPost extends AppCompatActivity {
         mAuth=FirebaseAuth.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
-        HeaderImage=findViewById(R.id.headerimg);
+        HeaderImage=findViewById(R.id.postCover);
         titleHeader=findViewById(R.id.postTitle);
+
 
         upvoteButton=findViewById(R.id.Upvotebtn);
         upvoteCountText=findViewById(R.id.UpvoteCount);
@@ -107,6 +112,26 @@ public class ViewPost extends AppCompatActivity {
             }
         });
 
+        //Header Image
+
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                String coverImgRef=documentSnapshot.getString("img");
+               Picasso.get().load(coverImgRef).into(HeaderImage);
+
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                 Snackbar.make(parentLayout,"Failed to load cover image",Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+
+
         getSavedId();
 
         //Searching if already upvoted
@@ -120,7 +145,7 @@ public class ViewPost extends AppCompatActivity {
 
                 if(upvote.contains(mAuth.getCurrentUser().getUid()))
                 {
-                    upvoteButton.setImageResource(R.drawable.upvoted);
+                    upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -136,13 +161,13 @@ public class ViewPost extends AppCompatActivity {
         upvoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.upvoted).getConstantState()){
+                if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.thumbs_up_clicked).getConstantState()){
                     Map<String,Object> UpvoteMap=new HashMap<>();
                     UpvoteMap.put("UpVote",FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
                     fstore.collection("Post").document(id).update(UpvoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            upvoteButton.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+                            upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
                             upvote.clear();
                               updateUpVoteCounts();
                         }
@@ -160,7 +185,7 @@ public class ViewPost extends AppCompatActivity {
                        fstore.collection("Post").document(id).update(UpvoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                            @Override
                            public void onSuccess(Void aVoid) {
-                               upvoteButton.setImageResource(R.drawable.upvoted);
+                               upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
                                updateUpVoteCounts();
 
                            }
