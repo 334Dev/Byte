@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import jp.wasabeef.picasso.transformations.BlurTransformation;
 
@@ -55,19 +57,27 @@ public class ViewPost extends AppCompatActivity {
     private String UserID;
     private List<String> savedId,upvotearray;
     private String id;
-    private int numberOfUpvotes;
+    private Double upVoteCount;
+    private Boolean VOTE_FLAG=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_post);
         savedId=new ArrayList<>();
+
+        //firebase instantiation
         mAuth = FirebaseAuth.getInstance();
         UserID=mAuth.getCurrentUser().getUid();
-
+        fstore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         saveButton=findViewById(R.id.imageViewSaved);
+
+        //webView to show the article
         web=findViewById(R.id.webView);
+
+        //webView settings
         web.setBackgroundColor(getColor(R.color.Background));
         web.getSettings().setDomStorageEnabled(true);
         web.getSettings().setJavaScriptEnabled(true);
@@ -76,9 +86,6 @@ public class ViewPost extends AppCompatActivity {
         web.getSettings().setDisplayZoomControls(false);
 
         parentLayout = findViewById(android.R.id.content);
-        fstore = FirebaseFirestore.getInstance();
-        mAuth=FirebaseAuth.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
 
         HeaderImage=findViewById(R.id.postCover);
         titleHeader=findViewById(R.id.postTitle);
@@ -88,10 +95,12 @@ public class ViewPost extends AppCompatActivity {
         upvoteButton=findViewById(R.id.Upvotebtn);
         upvoteCountText=findViewById(R.id.UpvoteCount);
 
-        //passing the text which contain html code to web view
+        //getting postID intent
         Intent intent=getIntent();
-         id=intent.getStringExtra("PostId"); // getting PostId from Intent
+        id=intent.getStringExtra("PostId"); // getting PostId from Intent
 
+
+        //passing the text which contain html code to web view
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -101,19 +110,11 @@ public class ViewPost extends AppCompatActivity {
 
                   text="<style>a:link{color:"+color+";}</style>"+text;
                 web.loadDataWithBaseURL("",text,"text/html","utf-8",null);
-
-
-
                 // "text" will be containing the HTML code for the article
-
-
                 //getting value of title from firestore and displaying it in title header
+
                 String t=documentSnapshot.getString("title");
                 titleHeader.setText(t);
-
-
-
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -122,16 +123,13 @@ public class ViewPost extends AppCompatActivity {
             }
         });
 
-        //Header Image
 
+        //Header Image
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 String coverImgRef=documentSnapshot.getString("img");
                Picasso.get().load(coverImgRef).into(HeaderImage);
-
-
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -140,30 +138,19 @@ public class ViewPost extends AppCompatActivity {
             }
         });
 
-
-
+        //checking if post already saved
         getSavedId();
 
-        //Searching if already upvoted
-
+        //updating the value of upvotes
         updateUpVoteCounts();
 
 
-
-        fstore.collection("Post").document(id).collection("upVotes")
-                .whereEqualTo("ProfileId",UserID).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if(value.isEmpty()){
-                    Log.i("status", "onEvent: Has not upVoted");
-                }else{
-                    upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
-                }
-            }
-        });
+        //check already Up voted
+        onCreateCheckUpVote();
 
 
 
+        //setting up total views
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -182,19 +169,19 @@ public class ViewPost extends AppCompatActivity {
         });
 
 
-
+        //upVote setonClickListener
         upvoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_thumb_up_alt_24).getConstantState()){
-                     addUserUpvote();
-
-                   }
-
-                   else {
-                         Log.i("Else Working","else eordd");
-                         removeUserUpdate();
-                       }
+                if(VOTE_FLAG){
+                    Log.i("onClickUpVote","remove user");
+                    removeUserUpdate();
+                    Log.i("removeUser", "onClick: ");
+                }
+                else {
+                    Log.i("AddUser","onClick");
+                    addUserUpvote();
+                }
 
             }
 
@@ -202,7 +189,7 @@ public class ViewPost extends AppCompatActivity {
 
 
 
-
+    //saveButton OnClick
      saveButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
@@ -248,73 +235,94 @@ public class ViewPost extends AppCompatActivity {
 
     }
 
-    private void addUserUpvote() {
-
-        Map<String,Object> UpvoteMap=new HashMap<>();
-        UpvoteMap.put("ProfileId",UserID);
-        fstore.collection("Post").document(id).collection("upVotes").document(UserID).set(UpvoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+    private void onCreateCheckUpVote() {
+        fstore.collection("Post").document(id).collection("upVotes")
+                .whereEqualTo("ProfileId",UserID).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(Void aVoid) {
-                fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Double upvotesCounts = documentSnapshot.getDouble("UpVote");
-                        fstore.collection("Post").document(id).update("UpVote", upvotesCounts + 1);
-                        upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
-
-                        updateUpVoteCounts();
-                    }
-                });
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(value.isEmpty()){
+                    Log.i("status", "onEvent: Has not upVoted");
+                    VOTE_FLAG=false;
+                }else{
+                    //set button drawable if already voted
+                    upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
+                    VOTE_FLAG=true;
+                }
             }
         });
+    }
 
+    private void addUserUpvote() {
+        fstore=FirebaseFirestore.getInstance();
+        Map<String,Object> UpvoteMap=new HashMap<>();
+        UpvoteMap.put("ProfileId",UserID);
+        String name= UUID.randomUUID().toString();
+        fstore.collection("Post").document(id).collection("upVotes").document(name).set(UpvoteMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            //setUpVote
+                            fstore.collection("Post").document(id).update("UpVote", upVoteCount + 1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
+                                    upVoteCount=upVoteCount+1;
+                                    upvoteCountText.setText(String.format("%.0f",upVoteCount));
+                                    VOTE_FLAG=true;
+                                    Log.i("AddUser", "onSuccess"+VOTE_FLAG);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.i("AddUser", "onFailure: "+e.getMessage());
+                                }
+                            });
 
-
-
+                        }
+                    }
+                });
     }
 
     private void removeUserUpdate() {
-
+        fstore=FirebaseFirestore.getInstance();
         fstore.collection("Post").document(id).collection("upVotes")
                 .whereEqualTo("ProfileId",UserID).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 for(DocumentSnapshot doc: value){
                     doc.getReference().delete();
+                    fstore.collection("Post").document(id).update("UpVote", upVoteCount -1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
+                            upVoteCount=upVoteCount-1;
+                            upvoteCountText.setText(String.format("%.0f",upVoteCount));
+                            VOTE_FLAG=false;
+                            Log.i("removeUser", "onSuccess"+VOTE_FLAG);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i("removeUser", "onFailure: "+e.getMessage());
+                        }
+                    });
                 }
             }
         });
-        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Double upvotesCounts = documentSnapshot.getDouble("UpVote");
-                fstore.collection("Post").document(id).update("UpVote", upvotesCounts -1);
-                upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
-                updateUpVoteCounts();
-            }
-        });
-
-
-
 
     }
 
+
+    // getting value of number of UpVote from database and showing in this activity..
     private void updateUpVoteCounts() {
 
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-
-                // getting value of number of UpVote from database and showing in this activity..
-
-                Double mUpvote=documentSnapshot.getDouble("UpVote");
-
-
-                upvoteCountText.setText(String.format("%.0f",mUpvote));
-
-
-
+                upVoteCount=documentSnapshot.getDouble("UpVote");
+                upvoteCountText.setText(String.format("%.0f",upVoteCount));
 
             }
         }).addOnFailureListener(new OnFailureListener() {
