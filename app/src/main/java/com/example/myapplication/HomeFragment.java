@@ -112,6 +112,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
 
         item_list=new ArrayList<>();
         latestAdapter= new LatestAdapter(item_list,this);
+        latestAdapter.setHasStableIds(true);
         recyclerView.setAdapter(latestAdapter);
 
         recyclerView.setHasFixedSize(true);

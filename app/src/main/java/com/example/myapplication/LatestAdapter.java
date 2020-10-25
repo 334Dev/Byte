@@ -59,6 +59,21 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
         void selectedItem(Model_Latest model_latest);
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
+    public void setHasStableIds(boolean hasStableIds) {
+        super.setHasStableIds(hasStableIds);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     public class mViewholder extends RecyclerView.ViewHolder{
 
         private ImageView thumbView;
