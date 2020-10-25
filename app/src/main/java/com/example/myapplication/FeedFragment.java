@@ -31,11 +31,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FeedFragment extends Fragment implements trendViewPagerAdapter.SelectedPager {
+public class FeedFragment extends Fragment implements LatestAdapter.SelectedItem {
     private ImageView search;
     private RecyclerView feedRecycler;
-    private trendViewPagerAdapter feedAdapter;
-    private List<trendViewPagerModel> feedModels;
+    private LatestAdapter feedAdapter;
+    private List<Model_Latest> feedModels;
     private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;
     private String UserID;
@@ -62,7 +62,7 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
         UserID=mAuth.getCurrentUser().getUid();
 
         feedModels=new ArrayList<>();
-        feedAdapter= new trendViewPagerAdapter(feedModels,this);
+        feedAdapter= new LatestAdapter(feedModels,this);
         feedRecycler.setAdapter(feedAdapter);
         feedRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         feedRecycler.setHasFixedSize(true);
@@ -129,7 +129,7 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
                             for (QueryDocumentSnapshot doc : value) {
 
                                 Log.i("PostL", "onEvent:" + doc.getId());
-                                trendViewPagerModel set = doc.toObject(trendViewPagerModel.class);
+                                Model_Latest set = doc.toObject(Model_Latest.class);
                                 feedModels.add(set);
                                 feedAdapter.notifyDataSetChanged();
 
@@ -158,12 +158,12 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
                 if(value.isEmpty()){
                     Log.i("PostEmpty", "onEvent: Empty");
                 }else {
-                    List<trendViewPagerModel> inputList;
+                    List<Model_Latest> inputList;
                     inputList=new ArrayList<>();
                     for (QueryDocumentSnapshot doc : value) {
 
                         Log.i("PostL", "onEvent:" + doc.getId());
-                        trendViewPagerModel set = doc.toObject(trendViewPagerModel.class);
+                        Model_Latest set = doc.toObject(Model_Latest.class);
                         inputList.add(set);
 
                     }
@@ -183,9 +183,9 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
 
 
     @Override
-    public void selectedpager(trendViewPagerModel model) {
+    public void selectedItem(Model_Latest model_latest) {
         Intent i=new Intent(getActivity(),ViewPost.class);
-        i.putExtra("PostId",model.getID());
+        i.putExtra("PostId",model_latest.getID());
         startActivity(i);
     }
 }
