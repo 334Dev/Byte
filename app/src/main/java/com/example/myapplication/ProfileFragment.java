@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.InetAddresses;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -11,9 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +69,8 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
     private RecyclerView profileRecyclerView;
     private DocumentSnapshot lastProfilePost;
     private Query query;
+    private ScrollView scrollView;
+    private Integer index=0;
 
     @Nullable
     @Override
@@ -78,6 +83,8 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
         Logout = root.findViewById(R.id.logoutBtn);
         SavedBtn=root.findViewById(R.id.SavedBtn);
         coverImage=root.findViewById(R.id.dogBlurImageView);
+
+        scrollView= root.findViewById(R.id.scrollProfile);
 
         //Post, Follower, Following
         post=root.findViewById(R.id.post);
@@ -109,18 +116,17 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
 
         profileRecyclerView.setNestedScrollingEnabled(false);
 
-        profileRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
+            public void onScrollChanged()
+            {
+                View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
 
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                LinearLayoutManager linearLayoutManager= (LinearLayoutManager) profileRecyclerView.getLayoutManager();
-                if(linearLayoutManager.findLastCompletelyVisibleItemPosition()==profileRecyclerView.getChildCount()){
-                    setProfilePosts();
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
+                        .getScrollY()));
+
+                if (diff == 0) {
+                    loadProfilePost();
                 }
             }
         });
@@ -176,23 +182,43 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
 
     }
 
+    private void loadProfilePost() {
+        query=fstore.collection("Post")
+                .orderBy("time", Query.Direction.DESCENDING)
+                .whereEqualTo("Owner",UserID)
+                .startAfter(lastProfilePost)
+                .limit(1000);
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                    List<Model_Latest> inputList;
+                    inputList=new ArrayList<>();
+
+                    for (QueryDocumentSnapshot doc : value) {
+
+                        Log.i("dataRecieveCHeck", "onEvent:" + value.size());
+                        Model_Latest set = doc.toObject(Model_Latest.class);
+                        inputList.add(set);
+                        show.dismiss();
+
+                    }
+                    ProfilePostsItem.addAll(index,inputList);
+                    ProfilePostsAdapter.notifyItemRangeChanged(index,value.size());
+                    index=index+value.size();
+                    lastProfilePost = value.getDocuments().get(value.size() - 1);
+
+
+            }
+        });
+
+    }
+
     private void setProfilePosts() {
 
-
-         if(lastProfilePost==null)
-         {
              query=fstore.collection("Post")
                      .orderBy("time", Query.Direction.DESCENDING)
                      .whereEqualTo("Owner",UserID)
                      .limit(1000);
-
-         }else{
-             query=fstore.collection("Post")
-                     .orderBy("time", Query.Direction.DESCENDING)
-                     .whereEqualTo("Owner",UserID)
-                     .startAfter(lastProfilePost)
-                     .limit(1000);
-         }
 
          query.addSnapshotListener(new EventListener<QuerySnapshot>() {
              @Override
@@ -210,6 +236,7 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
                        show.dismiss();
 
                    }
+                   index=index+value.size()-1;
                    lastProfilePost = value.getDocuments().get(value.size() - 1);
                }
 

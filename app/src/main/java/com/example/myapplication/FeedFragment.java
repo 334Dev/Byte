@@ -6,7 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,6 +43,7 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
     private Query query;
     private DocumentSnapshot LastPost;
     private Integer index=0;
+    private ScrollView scrollView;
 
     @Nullable
     @Override
@@ -54,6 +57,8 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
         mAuth=FirebaseAuth.getInstance();
         firestore=FirebaseFirestore.getInstance();
 
+        scrollView=v.findViewById(R.id.scrollFeed);
+
         UserID=mAuth.getCurrentUser().getUid();
 
         feedModels=new ArrayList<>();
@@ -61,6 +66,7 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
         feedRecycler.setAdapter(feedAdapter);
         feedRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         feedRecycler.setHasFixedSize(true);
+        feedRecycler.setNestedScrollingEnabled(false);
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,18 +94,17 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
             }
         });
 
-        feedRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
+            public void onScrollChanged()
+            {
+                View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
 
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                LinearLayoutManager linearLayoutManager= (LinearLayoutManager) recyclerView.getLayoutManager();
-                if(linearLayoutManager.findLastCompletelyVisibleItemPosition()==recyclerView.getChildCount()){
-                    getFollowingPosts();
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
+                        .getScrollY()));
+
+                if (diff == 0) {
+                    loadFollowingPost();
                 }
             }
         });
@@ -111,7 +116,6 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
         if(following.isEmpty()){
             Toast.makeText(getContext(),"You Don't follow anyone",Toast.LENGTH_LONG).show();
         }else {
-            if (LastPost == null) {
                 query = firestore.collection("Post")
                         .whereIn("Owner", following)
                         .orderBy("time", Query.Direction.DESCENDING)
@@ -138,42 +142,43 @@ public class FeedFragment extends Fragment implements trendViewPagerAdapter.Sele
                         }
                     }
                 });
-            } else {
-                query = firestore.collection("Post")
-                        .whereIn("Owner", following)
-                        .orderBy("time", Query.Direction.DESCENDING)
-                        .startAt(LastPost)
-                        .limit(10);
-                query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if(value.isEmpty()){
-                            Log.i("PostEmpty", "onEvent: Empty");
-                        }else {
-                            List<trendViewPagerModel> inputList;
-                            inputList=new ArrayList<>();
-                            for (QueryDocumentSnapshot doc : value) {
-
-                                Log.i("PostL", "onEvent:" + doc.getId());
-                                trendViewPagerModel set = doc.toObject(trendViewPagerModel.class);
-                                inputList.add(set);
-
-                            }
-                            feedModels.addAll(index,inputList);
-                            feedAdapter.notifyItemRangeChanged(index,value.size());
-
-                            index=index+value.size();
-                            LastPost = value.getDocuments().get(value.size() - 1);
-
-                            Log.i("PostIndex", "onEvent: "+index);
-                            Log.i("PostLast", "onEvent: "+feedModels.size());
-                            Log.i("PostLast", "onEvent: "+LastPost.getId());
-                        }
-                    }
-                });
-            }
 
         }
+    }
+
+    public void loadFollowingPost(){
+        query = firestore.collection("Post")
+                .whereIn("Owner", following)
+                .orderBy("time", Query.Direction.DESCENDING)
+                .startAt(LastPost)
+                .limit(10);
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(value.isEmpty()){
+                    Log.i("PostEmpty", "onEvent: Empty");
+                }else {
+                    List<trendViewPagerModel> inputList;
+                    inputList=new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : value) {
+
+                        Log.i("PostL", "onEvent:" + doc.getId());
+                        trendViewPagerModel set = doc.toObject(trendViewPagerModel.class);
+                        inputList.add(set);
+
+                    }
+                    feedModels.addAll(index,inputList);
+                    feedAdapter.notifyItemRangeChanged(index,value.size());
+
+                    index=index+value.size();
+                    LastPost = value.getDocuments().get(value.size() - 1);
+
+                    Log.i("PostIndex", "onEvent: "+index);
+                    Log.i("PostLast", "onEvent: "+feedModels.size());
+                    Log.i("PostLast", "onEvent: "+LastPost.getId());
+                }
+            }
+        });
     }
 
 

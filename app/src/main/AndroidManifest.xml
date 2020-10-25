@@ -9,7 +9,7 @@
         android:roundIcon="@drawable/byte_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ShowSavedPost"></activity>
+        <activity android:name=".createQuick"></activity>
         <activity android:name=".userSearch" />
         <activity android:name=".postSearch" />
         <activity android:name=".AnotherUserProfile" />
