@@ -78,7 +78,7 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
         profileImageView = root.findViewById(R.id.circleImageViewPro);
         userName = root.findViewById(R.id.username);
         Logout = root.findViewById(R.id.logoutBtn);
-        SavedBtn=root.findViewById(R.id.SavedBtn);
+        SavedBtn=root.findViewById(R.id.SavedPostBtn);
         coverImage=root.findViewById(R.id.dogBlurImageView);
 
         scrollView= root.findViewById(R.id.scrollProfile);
@@ -170,8 +170,8 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
         SavedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(getContext(),ShowSavedPost.class);
-                startActivity(intent);
+                Intent i=new Intent(getActivity(),ShowSavedPost.class);
+                startActivity(i);
             }
         });
 

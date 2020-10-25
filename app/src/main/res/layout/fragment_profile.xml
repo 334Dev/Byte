@@ -182,7 +182,7 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
     <Button
-        android:id="@+id/SavedBtn"
+        android:id="@+id/SavedPostBtn"
         android:layout_width="0dp"
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
@@ -204,7 +204,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SavedBtn" >
+        app:layout_constraintTop_toBottomOf="@+id/SavedPostBtn" >
 
     </androidx.recyclerview.widget.RecyclerView>
 
