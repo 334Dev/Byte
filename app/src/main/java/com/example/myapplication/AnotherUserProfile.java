@@ -1,29 +1,29 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,6 +35,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.picasso.transformations.BlurTransformation;
 
-public class AnotherUserProfile extends AppCompatActivity {
+public class AnotherUserProfile extends AppCompatActivity implements LatestAdapter.SelectedItem {
 
     private TextView posts;
     private TextView followers;
@@ -53,8 +54,18 @@ public class AnotherUserProfile extends AppCompatActivity {
     private FirebaseFirestore fstore;
     private FirebaseAuth mAuth;
     private StorageReference storageReference;
+    private AlertDialog.Builder builder;
+    private AlertDialog show;
     private String UserID;
     private String AnotherUserId;
+    private LatestAdapter AnotherProfilePostsAdapter;
+    private List<Model_Latest> AnotherProfilePostsItem;
+    private RecyclerView AnotherProfileRecyclerView;
+    private DocumentSnapshot lastAnotherProfilePost;
+    private Query query;
+    private ScrollView scrollView;
+    private Integer index=0;
+
 
 
     @Override
@@ -75,8 +86,45 @@ public class AnotherUserProfile extends AppCompatActivity {
         following=findViewById(R.id.following);
         posts=findViewById(R.id.post);
 
+        builder=new AlertDialog.Builder(AnotherUserProfile.this);
+        builder.setView(R.layout.loading_dailog);
+        builder.setCancelable(true);
+        show = builder.show();
+        show.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        AnotherProfileRecyclerView=findViewById(R.id.AnotherProfileRecyclerView);
+        AnotherProfileRecyclerView.setHasFixedSize(true);
+        AnotherProfileRecyclerView.setLayoutManager(new LinearLayoutManager(AnotherUserProfile.this));
+        scrollView=findViewById(R.id.scrollAnotherProfile);
+
+        AnotherProfilePostsItem=new ArrayList<>();
+        AnotherProfilePostsAdapter=new LatestAdapter(AnotherProfilePostsItem,this);
+        AnotherProfileRecyclerView.setAdapter(AnotherProfilePostsAdapter);
+        AnotherProfileRecyclerView.setHasFixedSize(true);
+        AnotherProfileRecyclerView.setNestedScrollingEnabled(false);
+
+
         Intent intent=getIntent();
         AnotherUserId=intent.getStringExtra("SearchUserID");
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged()
+            {
+                View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
+
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
+                        .getScrollY()));
+
+                if (diff == 0) {
+                    loadAnotherProfilePost();
+                }
+            }
+        });
+
+        setAnotherProfilePosts();
+
+
 
         StorageReference profileRef = storageReference.child("users/" +AnotherUserId+ "/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -200,6 +248,75 @@ public class AnotherUserProfile extends AppCompatActivity {
 
     }
 
+    private void loadAnotherProfilePost() {
+
+        query=fstore.collection("Post")
+                .orderBy("time", Query.Direction.DESCENDING)
+                .whereEqualTo("Owner",AnotherUserId)
+                .startAfter(lastAnotherProfilePost)
+                .limit(1000);
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                List<Model_Latest> inputList;
+                inputList=new ArrayList<>();
+
+                for (QueryDocumentSnapshot doc : value) {
+
+                    Log.i("dataRecieveCHeck", "onEvent:" + value.size());
+                    Model_Latest set = doc.toObject(Model_Latest.class);
+                    inputList.add(set);
+                    show.dismiss();
+
+                }
+                AnotherProfilePostsItem.addAll(index,inputList);
+                AnotherProfilePostsAdapter.notifyItemRangeChanged(index,value.size());
+                index=index+value.size();
+                lastAnotherProfilePost = value.getDocuments().get(value.size() - 1);
+
+
+            }
+        });
+
+
+
+    }
+
+    private void setAnotherProfilePosts() {
+
+
+        query=fstore.collection("Post")
+                .orderBy("time", Query.Direction.DESCENDING)
+                .whereEqualTo("Owner",AnotherUserId)
+                .limit(1000);
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(value.isEmpty())
+                    Toast.makeText(AnotherUserProfile.this,"User have no posts",Toast.LENGTH_SHORT).show();
+                else {
+
+                    for (QueryDocumentSnapshot doc : value) {
+
+                        Log.i("dataRecieveCHeck", "onEvent:" + value.size());
+                        Model_Latest set = doc.toObject(Model_Latest.class);
+                        AnotherProfilePostsItem.add(set);
+                        AnotherProfilePostsAdapter.notifyDataSetChanged();
+                        show.dismiss();
+
+                    }
+                    index=index+value.size()-1;
+                    lastAnotherProfilePost = value.getDocuments().get(value.size() - 1);
+                }
+
+            }
+        });
+
+
+
+    }
+
     private void updateUserDetails() {
         fstore.collection("Users").document(AnotherUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -273,4 +390,13 @@ public class AnotherUserProfile extends AppCompatActivity {
 
 
         }
+
+    @Override
+    public void selectedItem(Model_Latest model_latest) {
+
+        Intent i=new Intent(AnotherUserProfile.this,ViewPost.class);
+        i.putExtra("PostId",model_latest.ID);
+        startActivity(i);
+
+    }
 }
