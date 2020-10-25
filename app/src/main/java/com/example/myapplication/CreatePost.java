@@ -1,32 +1,30 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -49,14 +47,8 @@ import static com.example.myapplication.R.drawable.ic_baseline_format_align_cent
 import static com.example.myapplication.R.drawable.ic_baseline_format_align_left_24;
 import static com.example.myapplication.R.drawable.ic_baseline_format_bold_24;
 import static com.example.myapplication.R.drawable.ic_baseline_format_italic_24;
-import static com.example.myapplication.R.drawable.ic_baseline_image_24;
-import static com.example.myapplication.R.drawable.ic_baseline_play_circle_filled_24;
-import static com.example.myapplication.R.drawable.image_insert_clicked;
 import static com.example.myapplication.R.drawable.italic_clicked;
 import static com.example.myapplication.R.drawable.left_align_clicked;
-import static com.example.myapplication.R.drawable.link_clicked;
-import static com.example.myapplication.R.drawable.logo;
-import static com.example.myapplication.R.drawable.youtube_clicked;
 
 public class CreatePost extends AppCompatActivity {
 
@@ -344,7 +336,7 @@ public class CreatePost extends AppCompatActivity {
                String img=intent.getStringExtra("TitleImage");
 
                 Date date=new Date();
-                SimpleDateFormat format=new SimpleDateFormat("dd/MM/yyyy");
+                final SimpleDateFormat format=new SimpleDateFormat("dd/MM/yyyy");
                 String sDate=format.format(date);
 
                 try {
@@ -373,6 +365,7 @@ public class CreatePost extends AppCompatActivity {
                 map.put("Keyword",keyword);
                 map.put("trend",date.getTime());
                 map.put("SavedId",savedId);
+                map.put("Owner",UserID);
 
 
                 //add post info in firestore as map
@@ -394,6 +387,20 @@ public class CreatePost extends AppCompatActivity {
                                 Log.i("UserPost", "onFailure: "+e.getMessage());
                             }
                         });
+                       //Updating no of posts to that user
+                        fstore.collection("Users").document(UserID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Double Postno=documentSnapshot.getDouble("Post");
+                                fstore.collection("Users").document(UserID).update("Post",Postno+1);
+
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(CreatePost.this,"Failed to update post number",Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -402,6 +409,8 @@ public class CreatePost extends AppCompatActivity {
                         Toast.makeText(CreatePost.this,e.getMessage(),Toast.LENGTH_LONG).show();
                     }
                 });
+
+
             }
         });
 
