@@ -2,9 +2,11 @@ package com.example.myapplication;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -23,9 +25,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ShowSavedPost extends AppCompatActivity {
+public class ShowSavedPost extends AppCompatActivity implements LatestAdapter.SelectedItem {
 
     private RecyclerView savedrecyclerView;
     private Model_Latest savedModel;
@@ -48,30 +51,30 @@ public class ShowSavedPost extends AppCompatActivity {
         setContentView(R.layout.activity_show_saved_post);
 
         savedrecyclerView=findViewById(R.id.savedPostsRecycler);
+        savedrecyclerView.setHasFixedSize(true);
+        savedrecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        SavedPostsItem=new ArrayList<>();
+        savedAdapter=new LatestAdapter(SavedPostsItem,this);
+        savedAdapter.setHasStableIds(true);
+        savedrecyclerView.setAdapter(savedAdapter);
+        savedrecyclerView.setHasFixedSize(true);
         scrollView=findViewById(R.id.scrollSaved);
 
         mAuth = FirebaseAuth.getInstance();
         UserID = mAuth.getCurrentUser().getUid();
         fstore = FirebaseFirestore.getInstance();
 
+        /*
         builder=new AlertDialog.Builder(getApplicationContext());
         builder.setView(R.layout.loading_dailog);
         builder.setCancelable(true);
-        show = builder.show();
+        //show = builder.show();
+
         show.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        */
 
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged()
-            {
-                View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
 
-                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
-                        .getScrollY()));
-
-                setSavedPost();
-            }
-        });
 
         setSavedPost();
 
@@ -80,9 +83,7 @@ public class ShowSavedPost extends AppCompatActivity {
     private void setSavedPost() {
 
         query=fstore.collection("Post")
-                .orderBy("time", Query.Direction.DESCENDING)
-                .whereEqualTo("Owner",UserID)
-                .limit(1000);
+                .whereArrayContains("SavedId",UserID);
 
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -97,7 +98,7 @@ public class ShowSavedPost extends AppCompatActivity {
                         Model_Latest set = doc.toObject(Model_Latest.class);
                         SavedPostsItem.add(set);
                         savedAdapter.notifyDataSetChanged();
-                        show.dismiss();
+                        //show.dismiss();
 
                     }
                     index=index+value.size()-1;
@@ -107,5 +108,12 @@ public class ShowSavedPost extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void selectedItem(Model_Latest model_latest) {
+        Intent i=new Intent(getApplicationContext(),ViewPost.class);
+        i.putExtra("PostId",model_latest.ID);
+        startActivity(i);
     }
 }
