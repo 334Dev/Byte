@@ -52,6 +52,7 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
     private CircleImageView profileImageView;
     private TextView userName;
     private Button Logout;
+    private Button SavedBtn;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String UserID;
     private StorageReference storageReference;
@@ -75,6 +76,7 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
         profileImageView = root.findViewById(R.id.circleImageViewPro);
         userName = root.findViewById(R.id.username);
         Logout = root.findViewById(R.id.logoutBtn);
+        SavedBtn=root.findViewById(R.id.SavedBtn);
         coverImage=root.findViewById(R.id.dogBlurImageView);
 
         //Post, Follower, Following
@@ -158,6 +160,14 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
 
 
 
+            }
+        });
+
+        SavedBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getContext(),ShowSavedPost.class);
+                startActivity(intent);
             }
         });
 

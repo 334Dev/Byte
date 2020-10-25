@@ -8,14 +8,27 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.List;
 
 public class SavedFragment extends Fragment {
+    private RecyclerView recyclerView;
+    private FirebaseFirestore firestore;
+    private FirebaseAuth mAuth;
+    
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.fragment_saved,container,false);
+
+        recyclerView=v.findViewById(R.id.savedRecyclerView);
+        recyclerView.setHasFixedSize(true);
 
 
 
@@ -27,4 +40,10 @@ public class SavedFragment extends Fragment {
         return v;
 
     }
-}
+
+
+    private void setSavedPost() {
+
+
+    }
+ }
