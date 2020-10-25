@@ -191,19 +191,22 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                     List<Model_Latest> inputList;
                     inputList=new ArrayList<>();
+                    if(value.isEmpty()){
+                        Log.i("onLoad", "onEvent: Empty");
+                    }else {
+                        for (QueryDocumentSnapshot doc : value) {
 
-                    for (QueryDocumentSnapshot doc : value) {
+                            Log.i("dataRecieveCHeck", "onEvent:" + value.size());
+                            Model_Latest set = doc.toObject(Model_Latest.class);
+                            inputList.add(set);
+                            show.dismiss();
 
-                        Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                        Model_Latest set = doc.toObject(Model_Latest.class);
-                        inputList.add(set);
-                        show.dismiss();
-
+                        }
+                        ProfilePostsItem.addAll(index, inputList);
+                        ProfilePostsAdapter.notifyItemRangeChanged(index, value.size());
+                        index = index + value.size();
+                        lastProfilePost = value.getDocuments().get(value.size() - 1);
                     }
-                    ProfilePostsItem.addAll(index,inputList);
-                    ProfilePostsAdapter.notifyItemRangeChanged(index,value.size());
-                    index=index+value.size();
-                    lastProfilePost = value.getDocuments().get(value.size() - 1);
 
 
             }
