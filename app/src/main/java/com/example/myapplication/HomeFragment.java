@@ -147,7 +147,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                         .getScrollY()));
 
                 if (diff == 0) {
-                    setLatestPost();
+                    loadLatestPost();
                 }
             }
         });
@@ -214,7 +214,6 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
     }
 
     private void setLatestPost() {
-        if(lastLatestPost==null){
             query=firestore.collection("Post")
                     .orderBy("time", Query.Direction.DESCENDING)
                     .whereIn("tag",Tag)
@@ -243,41 +242,43 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                 }
             });
 
-        }else{
-            query=firestore.collection("Post")
-                    .orderBy("time", Query.Direction.DESCENDING)
-                    .whereIn("tag",Tag)
-                    .startAfter(lastLatestPost)
-                    .limit(10);
-            query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                    if(value.isEmpty()){
-                        Log.i("PostEmpty", "onEvent: Empty");
-                    }else {
-                        List<Model_Latest> inputList;
-                        inputList=new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : value) {
 
-                            Log.i("PostL", "onEvent:" + doc.getId());
-                            Model_Latest set = doc.toObject(Model_Latest.class);
-                            inputList.add(set);
-                            show.dismiss();
+    }
 
-                        }
-                        item_list.addAll(index,inputList);
-                        latestAdapter.notifyItemRangeChanged(index,value.size());
+    private void loadLatestPost(){
+        query=firestore.collection("Post")
+                .orderBy("time", Query.Direction.DESCENDING)
+                .whereIn("tag",Tag)
+                .startAfter(lastLatestPost)
+                .limit(10);
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(value.isEmpty()){
+                    Log.i("PostEmpty", "onEvent: Empty");
+                }else {
+                    List<Model_Latest> inputList;
+                    inputList=new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : value) {
 
-                        index=index+value.size();
-                        lastLatestPost = value.getDocuments().get(value.size() - 1);
+                        Log.i("PostL", "onEvent:" + doc.getId());
+                        Model_Latest set = doc.toObject(Model_Latest.class);
+                        inputList.add(set);
+                        show.dismiss();
 
-                        Log.i("PostIndex", "onEvent: "+index);
-                        Log.i("PostLast", "onEvent: "+item_list.size());
-                        Log.i("PostLast", "onEvent: "+lastLatestPost.getId());
                     }
+                    item_list.addAll(index,inputList);
+                    latestAdapter.notifyItemRangeChanged(index,value.size());
+
+                    index=index+value.size();
+                    lastLatestPost = value.getDocuments().get(value.size() - 1);
+
+                    Log.i("PostIndex", "onEvent: "+index);
+                    Log.i("PostLast", "onEvent: "+item_list.size());
+                    Log.i("PostLast", "onEvent: "+lastLatestPost.getId());
                 }
-            });
-        }
+            }
+        });
     }
 
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Create Post"
+        android:icon="@drawable/edit"
+        android:id="@+id/postFAB"/>
+    <item
+        android:title="Create Quick"
+        android:icon="@drawable/quick"
+        android:id="@+id/quickFAB"/>
+
+</menu>

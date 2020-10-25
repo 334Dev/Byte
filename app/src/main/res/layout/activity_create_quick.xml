@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/activity_create_quick_scene"
+    tools:context=".createQuick">
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/quickDoneBtn"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:clickable="true"
+        app:fabCustomSize="54dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_done_24"
+        app:useCompatPadding="false" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/slideup_top"
+            android:fontFamily="@font/montserrat_medium"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:text="Edit Here"
+            android:textAlignment="center"
+            android:textColor="@color/Background"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/quickCoverImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/iceland" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/quickCoverImage"
+        app:layout_constraintEnd_toEndOf="@+id/quickCoverImage"
+        app:layout_constraintStart_toStartOf="@+id/quickCoverImage"
+        app:layout_constraintTop_toTopOf="@+id/quickCoverImage"
+        app:srcCompat="@drawable/gradient" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="@font/helveticaneue_med"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam neque leo, rhoncus a arcu non, molestie mattis purus. Mauris vitae lorem sit amet ipsum luctus convallis quis id lectus. Phasellus sed hendrerit lacus. Quisque eget mauris ut leo porttitor."
+        android:textColor="@color/plainText"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/quickCoverImage"
+        app:layout_constraintEnd_toEndOf="@+id/quickCoverImage"
+        app:layout_constraintStart_toStartOf="@+id/quickCoverImage" />
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/helveticaneue_sem"
+        android:text="Loreum ipsum"
+        android:textColor="@color/plainText"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView4"
+        app:layout_constraintStart_toStartOf="@+id/quickCoverImage" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/plainText"
+        android:orientation="vertical"
+        android:weightSum="3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/quickAddImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="60dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/accentbtn"
+            android:fontFamily="@font/helveticaneue_med"
+            android:text="Add Image"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/createQuick_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:fontFamily="@font/helveticaneue_light"
+            android:hint="Title"
+            android:inputType="textPersonName"
+            android:textColor="@color/Background" />
+
+        <EditText
+            android:id="@+id/createQuick_desc"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:fontFamily="@font/helveticaneue_light"
+            android:gravity="top"
+            android:hint="Description"
+            android:inputType="textMultiLine"
+            android:maxLength="250"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/Background" />
+
+    </LinearLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>

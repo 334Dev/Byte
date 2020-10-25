@@ -3,26 +3,27 @@ package com.example.myapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
 
 public class HomeActivity extends AppCompatActivity {
 
     private HomeFragment homefragment;
     private FeedFragment feedFragment;
-    private SavedFragment savedFragment;
+    private quickFragment quickFragment;
     private ProfileFragment profileFragment;
-    private FloatingActionButton addBtn;
+    private SpeedDialView addBtn;
+    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,23 +31,64 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         homefragment=new HomeFragment();
         feedFragment=new FeedFragment();
-        savedFragment=new SavedFragment();
+        quickFragment =new quickFragment();
         profileFragment=new ProfileFragment();
         addBtn=findViewById(R.id.AddPostButton);
 
-
-        addBtn.setOnClickListener(new View.OnClickListener() {
+        addBtn.inflate(R.menu.floatingbtn_menu);
+        addBtn.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(HomeActivity.this,SetPostTitle.class);
-                startActivity(intent);
+            public boolean onActionSelected(SpeedDialActionItem actionItem) {
+                if(actionItem.getId()==R.id.postFAB){
+                    Intent intent=new Intent(HomeActivity.this,SetPostTitle.class);
+                    startActivity(intent);
+                }
+                if(actionItem.getId()==R.id.quickFAB){
+                    Intent intent=new Intent(HomeActivity.this,createQuick.class);
+                    startActivity(intent);
+                }
+                return false;
             }
         });
 
-        BottomNavigationView bottomNav= findViewById(R.id.nav_bottom_id);
-        bottomNav.setOnNavigationItemSelectedListener(navListener);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
+        bottomNav= findViewById(R.id.nav_bottom_id);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,homefragment).commit();
+
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                switch (item.getItemId())
+                {
+                    case R.id.nav_home_id:
+                        replaceFragment(homefragment);
+                        break;
+                    case R.id.nav_profile_id:
+                        replaceFragment(profileFragment);
+                        break;
+                    case R.id.nav_feed_id:
+                        replaceFragment(feedFragment);
+                        break;
+                    case R.id.nav_saved_id:
+                        replaceFragment(quickFragment);
+                        break;
+                    default:
+                        return false;
+                }
+
+                return true;
+            }
+        });
+
+    }
+
+    public void replaceFragment(Fragment fragment){
+
+        FragmentTransaction fragmentTransaction=getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
 
     }
 
@@ -57,30 +99,5 @@ public class HomeActivity extends AppCompatActivity {
         moveTaskToBack(true);
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    Fragment selectedFragment =null;
 
-                    switch (item.getItemId()) 
-                    {
-                        case R.id.nav_home_id:
-                            selectedFragment=homefragment;
-                            break;
-                        case R.id.nav_profile_id:
-                            selectedFragment=profileFragment;
-                            break;
-                        case R.id.nav_feed_id:
-                            selectedFragment=feedFragment;
-                            break;
-                        case R.id.nav_saved_id:
-                            selectedFragment=savedFragment;
-                            break;
-                    }
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
-                            ,selectedFragment).commit();
-                    return true;
-                }
-            };
 }

@@ -7,20 +7,20 @@
     tools:context=".HomeActivity">
 
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="54dp"
-        android:layout_height="54dp"
-        android:layout_marginEnd="32dp"
+    <com.leinardi.android.speeddial.SpeedDialView
+        android:id="@+id/AddPostButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:clickable="true"
         app:fabCustomSize="54dp"
-        android:id="@+id/AddPostButton"
         app:layout_constraintBottom_toBottomOf="@+id/fragment_container"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_add_24"
+        app:sdMainFabClosedSrc="@drawable/ic_baseline_add_24"
         app:useCompatPadding="false" />
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -34,7 +34,7 @@
 
 
 
-    </LinearLayout>
+    </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_bottom_id"
