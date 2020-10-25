@@ -50,8 +50,8 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
    private List<Model_Latest> item_list, upVote_list;
    private LatestAdapter latestAdapter, upVoteAdapter;
    private FirebaseFirestore firestore;
-   private ImageView postSearchBtn;
    private FirebaseAuth mAuth;
+    private ImageView postSearchBtn;
    private List<String> Tag;
    private ViewPager2 trendViewPager;
    private List<trendViewPagerModel> pagerModels;

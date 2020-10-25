@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +60,7 @@ public class ViewPost extends AppCompatActivity {
     private String id;
     private Double upVoteCount;
     private Boolean VOTE_FLAG=false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,19 +191,22 @@ public class ViewPost extends AppCompatActivity {
 
 
 
+
+
     //saveButton OnClick
      saveButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
 
              if(saveButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_bookmark_24).getConstantState()){
-                 Toast.makeText(getApplicationContext(),"if block",Toast.LENGTH_LONG).show();
+                 //Toast.makeText(getApplicationContext(),"if block",Toast.LENGTH_LONG).show();
                  Map<String,Object> map=new HashMap<>();
                  map.put("SavedId", FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
                  fstore.collection("Post").document(id).update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                      @Override
                      public void onSuccess(Void aVoid) {
                          saveButton.setImageResource(R.drawable.ic_outline_bookmark_border_24);
+                         savedId.clear();
 
                      }
                  }).addOnFailureListener(new OnFailureListener() {
