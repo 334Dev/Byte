@@ -285,18 +285,18 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     }
 
-    private void addCommenttoFstore(String username) {
+    private void addCommenttoFstore(final String username) {
         fstore=FirebaseFirestore.getInstance();
         Date date=new Date();
         SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy hh:mm");
-        String sDate=sdf.format(date);
+        final String sDate=sdf.format(date);
         try {
             date=sdf.parse(sDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         Log.i("Comments", "addCommenttoFstore: "+sDate);
-        Map<String, Object> map=new HashMap<>();
+        final Map<String, Object> map=new HashMap<>();
         map.put("username",username);
         map.put("date",sDate);
         map.put("comment",addComment.getText().toString());
@@ -306,6 +306,9 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(getApplicationContext(), "Comment added", Toast.LENGTH_SHORT).show();
+                        commentModels.add(new commentModel(addComment.getText().toString(),sDate,username));
+                        commentadapter.notifyDataSetChanged();
+                        addComment.setText("");
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override

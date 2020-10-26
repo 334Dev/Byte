@@ -64,6 +64,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
    //loading dialog box
    private AlertDialog.Builder builder;
    private AlertDialog show;
+   private Integer LAST_SIZE=0;
 
     @Nullable
     @Override
@@ -250,7 +251,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         query=firestore.collection("Post")
                 .orderBy("time", Query.Direction.DESCENDING)
                 .whereIn("tag",Tag)
-                .startAfter(lastLatestPost)
+                .startAt(lastLatestPost)
                 .limit(10);
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -268,11 +269,10 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                         show.dismiss();
 
                     }
-                    item_list.addAll(index,inputList);
-                    latestAdapter.notifyItemRangeChanged(index,value.size());
+                        item_list.addAll(index, inputList);
+                        latestAdapter.notifyItemRangeChanged(index, value.size());
 
-                    index=index+value.size();
-                    lastLatestPost = value.getDocuments().get(value.size() - 1);
+                        index = index + value.size();
 
                     Log.i("PostIndex", "onEvent: "+index);
                     Log.i("PostLast", "onEvent: "+item_list.size());
