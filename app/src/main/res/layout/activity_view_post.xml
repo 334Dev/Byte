@@ -162,7 +162,7 @@
         android:padding="10dp"
         android:paddingTop="16dp"
         android:textColorHint="@color/hintColor"
-        android:maxLength="200"
+        android:maxLength=""
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
 
