@@ -1,11 +1,5 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,17 +11,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -41,7 +36,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class ViewPost extends AppCompatActivity implements commentAdapter.SelectedItem {
 
@@ -61,7 +55,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
     private List<String> savedId,upvotearray;
     private String id;
     private Double upVoteCount;
-    private Boolean VOTE_FLAG=false;
+
 
     //comments
     private TextView addComment;
@@ -186,17 +180,12 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         //checking if post already saved
         getSavedId();
 
-        //updating the value of upvotes
-        updateUpVoteCounts();
-
-
-        //check already Up voted
-        onCreateCheckUpVote();
+        getUpvoteArray();
 
         //set Comments
         setComments();
 
-
+        setUpvoteCount();
         //setting up total views
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -216,24 +205,60 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         });
 
 
-        //upVote setonClickListener
-        upvoteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(VOTE_FLAG){
-                    Log.i("onClickUpVote","remove user");
-                    removeUserUpdate();
-                    Log.i("removeUser", "onClick: ");
-                }
-                else {
-                    Log.i("AddUser","onClick");
-                    addUserUpvote();
-                }
-
-            }
-
-        });
-
+         upvoteButton.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.thumbs_up_clicked).getConstantState()){
+                     Map<String,Object> upVoteMap=new HashMap<>();
+                     upVoteMap.put("UpVoteArray",FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
+                     fstore.collection("Post").document(id).update(upVoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                         @Override
+                         public void onSuccess(Void aVoid) {
+                             upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
+                             upvotearray.clear();
+                             fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                 @Override
+                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                      upVoteCount= (Double) documentSnapshot.get("UpVote");
+                                      fstore.collection("Post").document(id).update("UpVote",upVoteCount-1);
+                                      setUpvoteCount();
+                                 }
+                             });
+                         }
+                     }).addOnFailureListener(new OnFailureListener() {
+                         @Override
+                         public void onFailure(@NonNull Exception e) {
+                             Snackbar.make(parentLayout,"Upvote Failed",Snackbar.LENGTH_SHORT).show();
+                         }
+                     });
+                 }
+                 else if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_thumb_up_alt_24).getConstantState())
+                 {
+                     upvotearray.add(mAuth.getCurrentUser().getUid());
+                     Map<String,Object> upVoteMap=new HashMap<>();
+                     upVoteMap.put("UpVoteArray",upvotearray);
+                     fstore.collection("Post").document(id).update(upVoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                         @Override
+                         public void onSuccess(Void aVoid) {
+                             upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
+                             fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                 @Override
+                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                     upVoteCount= (Double) documentSnapshot.get("UpVote");
+                                     fstore.collection("Post").document(id).update("UpVote",upVoteCount+1);
+                                     setUpvoteCount();
+                                 }
+                             });
+                         }
+                     }).addOnFailureListener(new OnFailureListener() {
+                         @Override
+                         public void onFailure(@NonNull Exception e) {
+                             Snackbar.make(parentLayout,"Failed",Snackbar.LENGTH_SHORT).show();
+                         }
+                     });
+                 }
+             }
+         });
 
 
 
@@ -281,6 +306,47 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
              }
          }
      });
+
+
+    }
+
+    private void setUpvoteCount() {
+
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                  upVoteCount= (Double) documentSnapshot.get("UpVote");
+                  upvoteCountText.setText(String.format("%.0f",upVoteCount));
+
+            }
+        });
+
+
+    }
+
+    private void getUpvoteArray() {
+
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                upvotearray= (List<String>) documentSnapshot.get("UpVoteArray");
+                if(upvotearray.contains(mAuth.getCurrentUser().getUid()))
+                {
+                    upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
+
+                }
+                else{
+
+                    upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("Msg",e.getMessage());
+            }
+        });
 
 
     }
@@ -341,106 +407,8 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         });
     }
 
-    private void onCreateCheckUpVote() {
-        fstore.collection("Post").document(id).collection("upVotes")
-                .whereEqualTo("ProfileId",UserID).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if(value.isEmpty()){
-                    Log.i("status", "onEvent: Has not upVoted");
-                    VOTE_FLAG=false;
-                }else{
-                    //set button drawable if already voted
-                    upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
-                    VOTE_FLAG=true;
-                }
-            }
-        });
-    }
 
-    private void addUserUpvote() {
-        fstore=FirebaseFirestore.getInstance();
-        Map<String,Object> UpvoteMap=new HashMap<>();
-        UpvoteMap.put("ProfileId",UserID);
-        String name= UUID.randomUUID().toString();
-        fstore.collection("Post").document(id).collection("upVotes").document(name).set(UpvoteMap)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            //setUpVote
-                            fstore.collection("Post").document(id).update("UpVote", upVoteCount + 1).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
-                                    upVoteCount=upVoteCount+1;
-                                    upvoteCountText.setText(String.format("%.0f",upVoteCount));
-                                    VOTE_FLAG=true;
-                                    Log.i("AddUser", "onSuccess"+VOTE_FLAG);
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.i("AddUser", "onFailure: "+e.getMessage());
-                                }
-                            });
-
-                        }
-                    }
-                });
-    }
-
-    private void removeUserUpdate() {
-        fstore=FirebaseFirestore.getInstance();
-        fstore.collection("Post").document(id).collection("upVotes")
-                .whereEqualTo("ProfileId",UserID).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                for(DocumentSnapshot doc: value){
-                    doc.getReference().delete();
-                    fstore.collection("Post").document(id).update("UpVote", upVoteCount -1).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
-                            upVoteCount=upVoteCount-1;
-                            upvoteCountText.setText(String.format("%.0f",upVoteCount));
-                            VOTE_FLAG=false;
-                            Log.i("removeUser", "onSuccess"+VOTE_FLAG);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.i("removeUser", "onFailure: "+e.getMessage());
-                        }
-                    });
-                }
-            }
-        });
-
-    }
-
-
-    // getting value of number of UpVote from database and showing in this activity..
-    private void updateUpVoteCounts() {
-
-        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                upVoteCount=documentSnapshot.getDouble("UpVote");
-                upvoteCountText.setText(String.format("%.0f",upVoteCount));
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-
-    private void getSavedId() {
+   private void getSavedId() {
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
