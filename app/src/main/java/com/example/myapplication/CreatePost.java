@@ -79,6 +79,7 @@ public class CreatePost extends AppCompatActivity {
     private ImageButton insert_youtube_btn;
     private ImageButton insert_link_btn;
     private List<String> savedId;
+    private List<String> upvoteArray;
 
 
     private List<String> keyword;
@@ -92,8 +93,10 @@ public class CreatePost extends AppCompatActivity {
 
         //mEditor(~RichEditor Library) settings
         savedId=new ArrayList<>();
+        upvoteArray=new ArrayList<>();
 
         savedId.add("demoUser");
+        upvoteArray.add("demoUser");
 
 
         mEditor=(RichEditor)findViewById(R.id.editor);
@@ -360,6 +363,7 @@ public class CreatePost extends AppCompatActivity {
                 map.put("desc",desc);
                 map.put("tag",tag);
                 map.put("UpVote",0);
+                map.put("UpVoteArray",upvoteArray);
                 map.put("Report",0);
                 map.put("viewCount",1);
                 map.put("Keyword",keyword);

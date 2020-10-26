@@ -132,7 +132,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/webView"
-        app:srcCompat="@drawable/ic_baseline_thumb_up_alt_24" />
+        app:srcCompat="@drawable/ic_baseline_sync_problem_24" />
 
     <TextView
         android:id="@+id/UpvoteCount"
@@ -159,7 +159,7 @@
         android:hint="Enter your Comment.."
 
         android:inputType="textMultiLine"
-        android:maxLength="150"
+        android:maxLength="200"
         android:paddingStart="16dp"
         android:paddingTop="16dp"
         android:paddingEnd="16dp"

@@ -17,7 +17,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -61,7 +65,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
     private List<String> savedId,upvotearray;
     private String id;
     private Double upVoteCount;
-    private Boolean VOTE_FLAG=false;
+
 
     //comments
     private TextView addComment;
@@ -186,17 +190,12 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         //checking if post already saved
         getSavedId();
 
-        //updating the value of upvotes
-        updateUpVoteCounts();
-
-
-        //check already Up voted
-        onCreateCheckUpVote();
+        getUpvoteArray();
 
         //set Comments
         setComments();
 
-
+        setUpvoteCount();
         //setting up total views
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -216,24 +215,60 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         });
 
 
-        //upVote setonClickListener
-        upvoteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(VOTE_FLAG){
-                    Log.i("onClickUpVote","remove user");
-                    removeUserUpdate();
-                    Log.i("removeUser", "onClick: ");
-                }
-                else {
-                    Log.i("AddUser","onClick");
-                    addUserUpvote();
-                }
-
-            }
-
-        });
-
+         upvoteButton.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.thumbs_up_clicked).getConstantState()){
+                     Map<String,Object> upVoteMap=new HashMap<>();
+                     upVoteMap.put("UpVoteArray",FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
+                     fstore.collection("Post").document(id).update(upVoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                         @Override
+                         public void onSuccess(Void aVoid) {
+                             upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
+                             upvotearray.clear();
+                             fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                 @Override
+                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                      upVoteCount= (Double) documentSnapshot.get("UpVote");
+                                      fstore.collection("Post").document(id).update("UpVote",upVoteCount-1);
+                                      setUpvoteCount();
+                                 }
+                             });
+                         }
+                     }).addOnFailureListener(new OnFailureListener() {
+                         @Override
+                         public void onFailure(@NonNull Exception e) {
+                             Snackbar.make(parentLayout,"Upvote Failed",Snackbar.LENGTH_SHORT).show();
+                         }
+                     });
+                 }
+                 else if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_thumb_up_alt_24).getConstantState())
+                 {
+                     upvotearray.add(mAuth.getCurrentUser().getUid());
+                     Map<String,Object> upVoteMap=new HashMap<>();
+                     upVoteMap.put("UpVoteArray",upvotearray);
+                     fstore.collection("Post").document(id).update(upVoteMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                         @Override
+                         public void onSuccess(Void aVoid) {
+                             upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
+                             fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                 @Override
+                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                     upVoteCount= (Double) documentSnapshot.get("UpVote");
+                                     fstore.collection("Post").document(id).update("UpVote",upVoteCount+1);
+                                     setUpvoteCount();
+                                 }
+                             });
+                         }
+                     }).addOnFailureListener(new OnFailureListener() {
+                         @Override
+                         public void onFailure(@NonNull Exception e) {
+                             Snackbar.make(parentLayout,"Failed",Snackbar.LENGTH_SHORT).show();
+                         }
+                     });
+                 }
+             }
+         });
 
 
 
@@ -285,7 +320,48 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     }
 
-    private void addCommenttoFstore(final String username) {
+    private void setUpvoteCount() {
+
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                  upVoteCount= (Double) documentSnapshot.get("UpVote");
+                  upvoteCountText.setText(String.format("%.0f",upVoteCount));
+
+            }
+        });
+
+
+    }
+
+    private void getUpvoteArray() {
+
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                upvotearray= (List<String>) documentSnapshot.get("UpVoteArray");
+                if(upvotearray.contains(mAuth.getCurrentUser().getUid()))
+                {
+                    upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
+
+                }
+                else{
+
+                    upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("Msg",e.getMessage());
+            }
+        });
+
+
+    }
+
+    private void addCommenttoFstore(String username) {
         fstore=FirebaseFirestore.getInstance();
         Date date=new Date();
         SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy hh:mm");
@@ -443,7 +519,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
     }
 
 
-    private void getSavedId() {
+   private void getSavedId() {
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {

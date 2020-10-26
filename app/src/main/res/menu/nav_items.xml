@@ -11,8 +11,8 @@
         android:title="Your Feed"
         android:id="@+id/nav_feed_id"/>
     <item
-        android:icon="@drawable/ic_baseline_bookmark_24"
-        android:title="@string/nav_saved"
+        android:icon="@drawable/quick"
+        android:title="Quick"
         android:id="@+id/nav_saved_id"/>
     <item
         android:icon="@drawable/ic_baseline_person_24"
