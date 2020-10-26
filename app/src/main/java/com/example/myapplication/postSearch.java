@@ -79,6 +79,7 @@ public class postSearch extends AppCompatActivity implements LatestAdapter.Selec
         firestore.collection("Post").whereArrayContains("Keyword",searchtxt).limit(10).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                searchModels.clear();
                 for (QueryDocumentSnapshot doc : value) {
 
                     Log.i("searchCheck", "onEvent:" + value.size());

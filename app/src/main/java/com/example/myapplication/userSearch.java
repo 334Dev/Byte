@@ -85,6 +85,7 @@ public class userSearch extends AppCompatActivity implements userSearchAdapter.S
                  .limit(10).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                userModel.clear();
                 for (QueryDocumentSnapshot doc : value) {
 
                     if(doc.getString("UserID").equals(mAuth.getCurrentUser().getUid())){
