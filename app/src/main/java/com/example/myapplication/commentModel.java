@@ -1,15 +1,15 @@
 package com.example.myapplication;
 
-public class Model_Comment {
+public class commentModel {
     private String comment;
     private String date;
     private String username;
 
-    public Model_Comment() {
+    public commentModel() {
 
     }
 
-    public Model_Comment(String comment, String date, String username) {
+    public commentModel(String comment, String date, String username) {
         this.comment = comment;
         this.date = date;
         this.username = username;

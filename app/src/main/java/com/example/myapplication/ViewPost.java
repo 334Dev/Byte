@@ -3,6 +3,8 @@ package com.example.myapplication;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -21,45 +23,52 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
-import jp.wasabeef.picasso.transformations.BlurTransformation;
+public class ViewPost extends AppCompatActivity implements commentAdapter.SelectedItem {
 
-public class ViewPost extends AppCompatActivity {
-
-     WebView web;
+    private WebView web;
     private FirebaseFirestore fstore;
     private TextView titleHeader;
     private ImageView HeaderImage;
-   private TextView ViewCount;
+    private TextView ViewCount;
     private ImageView saveButton;
     private ImageView upvoteButton;
     private TextView upvoteCountText;
     private FirebaseAuth mAuth;
 
     private View parentLayout;
-    StorageReference storageReference;
+    private StorageReference storageReference;
     private String UserID;
     private List<String> savedId,upvotearray;
     private String id;
     private Double upVoteCount;
     private Boolean VOTE_FLAG=false;
+
+    //comments
+    private TextView addComment;
+    private Button sendComment;
+    private RecyclerView commentRecycler;
+    private List<commentModel> commentModels;
+    private commentAdapter commentadapter;
 
 
     @Override
@@ -67,6 +76,40 @@ public class ViewPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_post);
         savedId=new ArrayList<>();
+
+        //comments
+        addComment=findViewById(R.id.addComment);
+        sendComment=findViewById(R.id.sendComment);
+        commentRecycler=findViewById(R.id.commentRecycler);
+
+        commentRecycler.setLayoutManager(new LinearLayoutManager(ViewPost.this));
+
+        commentModels=new ArrayList<>();
+        commentadapter=new commentAdapter(commentModels,this);
+        commentRecycler.setAdapter(commentadapter);
+
+        commentRecycler.setNestedScrollingEnabled(false);
+        commentRecycler.setHasFixedSize(true);
+
+
+        sendComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(addComment.getText().toString().isEmpty()){
+                    addComment.setError("Comment is Empty");
+                }else{
+                    fstore.collection("Users").document(UserID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            String username=documentSnapshot.getString("Username");
+                            addCommenttoFstore(username);
+                        }
+                    });
+                }
+            }
+        });
+
+
 
         //firebase instantiation
         mAuth = FirebaseAuth.getInstance();
@@ -150,6 +193,8 @@ public class ViewPost extends AppCompatActivity {
         //check already Up voted
         onCreateCheckUpVote();
 
+        //set Comments
+        setComments();
 
 
         //setting up total views
@@ -238,6 +283,62 @@ public class ViewPost extends AppCompatActivity {
      });
 
 
+    }
+
+    private void addCommenttoFstore(String username) {
+        fstore=FirebaseFirestore.getInstance();
+        Date date=new Date();
+        SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy hh:mm");
+        String sDate=sdf.format(date);
+        try {
+            date=sdf.parse(sDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Log.i("Comments", "addCommenttoFstore: "+sDate);
+        Map<String, Object> map=new HashMap<>();
+        map.put("username",username);
+        map.put("date",sDate);
+        map.put("comment",addComment.getText().toString());
+
+        fstore.collection("Post").document(id).collection("Comments").document().set(map)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getApplicationContext(), "Comment added", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("Comments", "onFailure: "+e.getMessage());
+            }
+        });
+
+    }
+
+    private void setComments() {
+        fstore=FirebaseFirestore.getInstance();
+        fstore.collection("Post").document(id).collection("Comments")
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if(queryDocumentSnapshots.isEmpty()){
+                    Log.i("Comments", "onSuccess: No Comments");
+                }else{
+                    List<DocumentSnapshot> value =queryDocumentSnapshots.getDocuments();
+                    for(DocumentSnapshot docs: value){
+                        commentModels.add(docs.toObject(commentModel.class));
+                        commentadapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("Comments", "onFailure: "+e.getMessage());
+            }
+        });
     }
 
     private void onCreateCheckUpVote() {
@@ -368,5 +469,10 @@ public class ViewPost extends AppCompatActivity {
         super.onBackPressed();
         Intent i=new Intent(ViewPost.this, HomeActivity.class);
         startActivity(i);
+    }
+
+    @Override
+    public void selectedItem(commentModel commentModel_) {
+        //future
     }
 }

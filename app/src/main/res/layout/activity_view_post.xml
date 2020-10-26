@@ -116,14 +116,14 @@
         app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/commentRecycler"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/sendComment" />
 
     <ImageView
         android:id="@+id/Upvotebtn"
@@ -149,30 +149,34 @@
         app:layout_constraintTop_toTopOf="@+id/Upvotebtn" />
 
     <EditText
-        android:id="@+id/textView14"
+        android:id="@+id/addComment"
         android:layout_width="393dp"
         android:layout_height="112dp"
 
         android:layout_marginTop="16dp"
         android:background="@drawable/commentbox"
+        android:fontFamily="@font/helveticaneue_med"
         android:gravity="top"
         android:hint="Enter your Comment.."
+
         android:inputType="textMultiLine"
-
-        android:padding="10dp"
+        android:maxLength="150"
+        android:paddingStart="16dp"
         android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+
+
+        android:paddingBottom="16dp"
+        android:textColor="@color/plainText"
         android:textColorHint="@color/hintColor"
-        android:maxLength=""
-        android:textSize="12sp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-
-
         app:layout_constraintHorizontal_bias="0.478"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/sendComment"
         android:layout_width="137dp"
         android:layout_height="0dp"
 
@@ -185,8 +189,8 @@
         android:textAllCaps="false"
         android:textColor="@color/Background"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/textView14"
-        app:layout_constraintTop_toBottomOf="@+id/textView14" />
+        app:layout_constraintEnd_toEndOf="@+id/addComment"
+        app:layout_constraintTop_toBottomOf="@+id/addComment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
