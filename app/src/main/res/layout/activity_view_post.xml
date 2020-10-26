@@ -97,78 +97,42 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/helveticaneu_bold"
         android:text="Comments"
         android:textColor="@color/plainText"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+        app:layout_constraintTop_toBottomOf="@+id/Upvotebtn" />
 
     <ImageView
         android:id="@+id/imageViewSaved"
         android:layout_width="45dp"
         android:layout_height="60dp"
-        android:layout_marginStart="300dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView9"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.757"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/webView"
-        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/webView">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"></LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-        </LinearLayout>
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/button" />
 
     <ImageView
         android:id="@+id/Upvotebtn"
         android:layout_width="37dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageViewSaved"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageViewSaved"
+        app:layout_constraintTop_toBottomOf="@+id/webView"
         app:srcCompat="@drawable/ic_baseline_thumb_up_alt_24" />
 
     <TextView
@@ -183,6 +147,46 @@
         app:layout_constraintBottom_toBottomOf="@+id/Upvotebtn"
         app:layout_constraintStart_toEndOf="@+id/Upvotebtn"
         app:layout_constraintTop_toTopOf="@+id/Upvotebtn" />
+
+    <EditText
+        android:id="@+id/textView14"
+        android:layout_width="393dp"
+        android:layout_height="112dp"
+
+        android:layout_marginTop="16dp"
+        android:background="@drawable/commentbox"
+        android:gravity="top"
+        android:hint="Enter your Comment.."
+        android:inputType="textMultiLine"
+
+        android:padding="10dp"
+        android:paddingTop="16dp"
+        android:textColorHint="@color/hintColor"
+        android:maxLength=""
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+
+
+        app:layout_constraintHorizontal_bias="0.478"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="137dp"
+        android:layout_height="0dp"
+
+        android:layout_marginTop="8dp"
+        android:background="@drawable/whitebtn"
+
+        android:fontFamily="@font/helveticaneu_bold"
+
+        android:text="Send"
+        android:textAllCaps="false"
+        android:textColor="@color/Background"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/textView14"
+        app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
