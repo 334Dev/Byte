@@ -157,7 +157,7 @@ public class AnotherUserProfile extends AppCompatActivity implements LatestAdapt
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if(value.isEmpty()){
-                    Log.i("status", "onEvent: Do not follow");
+                    FollowButton.setText("FOLLOW");
                 }else{
                     FollowButton.setText("FOLLOWING");
                 }
@@ -185,6 +185,7 @@ public class AnotherUserProfile extends AppCompatActivity implements LatestAdapt
                            public void onSuccess(DocumentSnapshot documentSnapshot) {
                                Double HisFollowing = documentSnapshot.getDouble("Following");
                                fstore.collection("Users").document(UserID).update("Following", HisFollowing + 1);
+                               FollowButton.setText("FOLLOWING");
                            }
                        });
                        fstore.collection("Users").document(AnotherUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -197,7 +198,7 @@ public class AnotherUserProfile extends AppCompatActivity implements LatestAdapt
                        });
 
                    }
-                   else
+                   else if(FollowButton.getText().toString().equals("FOLLOWING"))
                    {
 
 
@@ -226,6 +227,7 @@ public class AnotherUserProfile extends AppCompatActivity implements LatestAdapt
                            public void onSuccess(DocumentSnapshot documentSnapshot) {
                                Double HisFollowing = documentSnapshot.getDouble("Following");
                                fstore.collection("Users").document(UserID).update("Following", HisFollowing -1);
+                               FollowButton.setText("FOLLOW");
                            }
                        });
                        fstore.collection("Users").document(AnotherUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -238,8 +240,11 @@ public class AnotherUserProfile extends AppCompatActivity implements LatestAdapt
                        });
 
 
-                      FollowButton.setText("FOLLOW");
 
+
+                   }
+                   else if(FollowButton.getText().toString().equals("LOADING...")){
+                       Toast.makeText(AnotherUserProfile.this,"Ruko zara sabar kro",Toast.LENGTH_SHORT);
                    }
 
                }
