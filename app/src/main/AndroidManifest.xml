@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.myApplication">
+    package="com.example.myapplication">
 
     <application
         android:allowBackup="true"
@@ -9,29 +9,29 @@
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.myApplication.CreateQuick"></activity>
-        <activity android:name="com.example.myApplication.UserSearch" />
-        <activity android:name="com.example.myApplication.ShowSavedPost" />
-        <activity android:name="com.example.myApplication.PostSearch" />
-        <activity android:name="com.example.myApplication.AnotherUserProfile" />
-        <activity android:name="com.example.myApplication.SetPostTitle" />
-        <activity android:name="com.example.myApplication.ViewPost" />
-        <activity android:name="com.example.myApplication.SplashScreen">
+        <activity android:name="com.example.myapplication.CreateQuick"></activity>
+        <activity android:name="com.example.myapplication.UserSearch" />
+        <activity android:name="com.example.myapplication.ShowSavedPost" />
+        <activity android:name="com.example.myapplication.PostSearch" />
+        <activity android:name="com.example.myapplication.AnotherUserProfile" />
+        <activity android:name="com.example.myapplication.SetPostTitle" />
+        <activity android:name="com.example.myapplication.ViewPost" />
+        <activity android:name="com.example.myapplication.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.myApplication.LoginHome" />
+        <activity android:name="com.example.myapplication.LoginHome" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name="com.example.myApplication.CreatePost" />
-        <activity android:name="com.example.myApplication.LoginDetails" />
-        <activity android:name="com.example.myApplication.SignIn" />
-        <activity android:name="com.example.myApplication.SignUp" />
-        <activity android:name="com.example.myApplication.HomeActivity" />
+        <activity android:name="com.example.myapplication.CreatePost" />
+        <activity android:name="com.example.myapplication.LoginDetails" />
+        <activity android:name="com.example.myapplication.SignIn" />
+        <activity android:name="com.example.myapplication.SignUp" />
+        <activity android:name="com.example.myapplication.HomeActivity" />
     </application>
 
 </manifest>
