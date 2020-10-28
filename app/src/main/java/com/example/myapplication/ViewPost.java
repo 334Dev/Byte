@@ -32,6 +32,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,9 +80,9 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         addComment=findViewById(R.id.addComment);
         sendComment=findViewById(R.id.sendComment);
         commentRecycler=findViewById(R.id.commentRecycler);
-
         commentRecycler.setLayoutManager(new LinearLayoutManager(ViewPost.this));
 
+        //model class and adapter for comments
         commentModels=new ArrayList<>();
         commentadapter=new commentAdapter(commentModels,this);
         commentRecycler.setAdapter(commentadapter);
@@ -89,7 +90,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         commentRecycler.setNestedScrollingEnabled(false);
         commentRecycler.setHasFixedSize(true);
 
-
+        //post your comment
         sendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,6 +101,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             String username=documentSnapshot.getString("Username");
+                            //method to add comment to database
                             addCommenttoFstore(username);
                         }
                     });
@@ -235,31 +237,24 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                    alert.setView(input);
                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog, int whichButton) {
+
                            String reportReason = input.getText().toString();
+                           Log.i("reportPost", "onClick: "+reportReason);
                            reportUser.add(mAuth.getCurrentUser().getUid());
-                          // reportList.add(reportReason);
                            Snackbar.make(parentLayout,reportReason,Snackbar.LENGTH_LONG);
                            final Map<String, Object> reportMap = new HashMap<>();
-                          // final Map<String, Object> reportReasonMap = new HashMap<>();
-                           reportMap.put("reportUser", reportUser);
-                          // reportReasonMap.put("reportList", reportList);
-                           fstore.collection("Post").document(id).update(reportMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                           fstore.collection("Post").document(id).update("reportList",FieldValue.arrayUnion(reportReason)).addOnSuccessListener(new OnSuccessListener<Void>() {
                                @Override
                                public void onSuccess(Void aVoid) {
-                                   /*fstore.collection("Post").document(id).update(reportReasonMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                       @Override
-                                       public void onSuccess(Void aVoid) {*/
                                            fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                @Override
                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                    Double reportCount = documentSnapshot.getDouble("Report");
                                                    fstore.collection("Post").document(id).update("Report", reportCount + 1);
-                                                   getReportArray();
+                                                   setReportArray();
+                                                   
                                                }
                                            });
-                                /*       }
-                                   });*/
-
                                }
                            });
 
@@ -386,6 +381,15 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
      });
 
 
+    }
+
+    private void setReportArray() {
+        fstore.collection("Post").document(id).update("reportUser", FieldValue.arrayUnion(UserID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                reportBtn.setImageResource(R.drawable.reported);
+            }
+        });
     }
 
     private void getReportArray() {

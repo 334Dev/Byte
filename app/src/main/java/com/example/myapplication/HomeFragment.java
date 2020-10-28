@@ -57,17 +57,14 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
    private ViewPager2 trendViewPager;
    private List<trendViewPagerModel> pagerModels;
    private trendViewPagerAdapter pagerAdapter;
-   private DocumentSnapshot lastLatestPost;
    private Query query;
    private NestedScrollView scrollHome;
-   private Integer index=0;
    private static Integer LAST_VISIBLE=1;
     private DocumentSnapshot lastVisible;
 
    //loading dialog box
    private AlertDialog.Builder builder;
    private AlertDialog show;
-   private Integer LAST_SIZE=0;
 
 
     @Nullable
@@ -95,8 +92,6 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         builder.setCancelable(true);
         show = builder.show();
         show.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-
 
         pagerModels=new ArrayList<>();
 
