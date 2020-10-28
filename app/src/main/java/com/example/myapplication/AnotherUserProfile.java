@@ -29,7 +29,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -65,6 +64,7 @@ public class AnotherUserProfile extends AppCompatActivity implements latestAdapt
     private Query query;
     private ScrollView scrollView;
     private Integer index=0;
+    private static Integer LAST_VISIBLE=1;
 
 
 
@@ -140,17 +140,6 @@ public class AnotherUserProfile extends AppCompatActivity implements latestAdapt
         updateUserDetails();
 
 
-
-       /* CollectionReference collectionReference=fstore.collection("Users").document(UserID).collection("Following");
-        final Query query=collectionReference.whereEqualTo("ProfileId",AnotherUserId);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                        FollowButton.setText("FOLLOWING");
-                }
-            }
-        });*/
 
         fstore.collection("Users").document(UserID).collection("Following")
                 .whereEqualTo("ProfileId",AnotherUserId).addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -255,71 +244,90 @@ public class AnotherUserProfile extends AppCompatActivity implements latestAdapt
 
     private void loadAnotherProfilePost() {
 
-        query=fstore.collection("Post")
+        Query nextquery=fstore.collection("Post")
                 .orderBy("time", Query.Direction.DESCENDING)
                 .whereEqualTo("Owner",AnotherUserId)
                 .startAfter(lastAnotherProfilePost)
-                .limit(1000);
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                List<modelLatest> inputList;
-                inputList=new ArrayList<>();
+                .limit(10);
+           nextquery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+               @Override
+               public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                   if(queryDocumentSnapshots.isEmpty()){
+                       Log.i("AnotherProfilePost", "onSuccess: Empty");
+                   }else if(AnotherProfilePostsItem.size()%10==0) {
+                       List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
+                       for(DocumentSnapshot doc: snapshots){
+                          AnotherProfilePostsItem.add(doc.toObject(modelLatest.class));
+                       }
+                       AnotherProfilePostsAdapter.notifyDataSetChanged();
+                       lastAnotherProfilePost=snapshots.get(snapshots.size()-1);
+                       if(snapshots.size()<10){
+                           Log.i("ANotherProfilePost", "onScrollChanged: limit reached");
+                           LAST_VISIBLE=0;
+                       }
+                       scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                           @Override
+                           public void onScrollChanged()
+                           {
+                               View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
 
-                for (QueryDocumentSnapshot doc : value) {
+                               int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
+                                       .getScrollY()));
 
-                    Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                    modelLatest set = doc.toObject(modelLatest.class);
-                    inputList.add(set);
-                    show.dismiss();
-
-                }
-                AnotherProfilePostsItem.addAll(index,inputList);
-                AnotherProfilePostsAdapter.notifyItemRangeChanged(index,value.size());
-                index=index+value.size();
-                lastAnotherProfilePost = value.getDocuments().get(value.size() - 1);
-
-
-            }
-        });
-
+                               if (diff == 0 && LAST_VISIBLE==1 ) {
+                                   Log.i("LatestPost", "onScrollChanged: More");
+                                   loadAnotherProfilePost();
+                               }
+                           }
+                       });
+                   }
+               }
+           });
 
 
     }
 
     private void setAnotherProfilePosts() {
 
-
+           LAST_VISIBLE=1;
         query=fstore.collection("Post")
                 .orderBy("time", Query.Direction.DESCENDING)
                 .whereEqualTo("Owner",AnotherUserId)
-                .limit(1000);
+                .limit(10);
 
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if(value.isEmpty())
-                    Toast.makeText(AnotherUserProfile.this,"User have no posts",Toast.LENGTH_SHORT).show();
-                else {
+             query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                 @Override
+                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                     if(queryDocumentSnapshots.isEmpty()){
+                         Log.i("Another User Posts","No  Posts");
+                     }
+                     else{
+                         List<DocumentSnapshot> snapshotList=queryDocumentSnapshots.getDocuments();
+                         for(DocumentSnapshot snapshot:snapshotList){
+                             AnotherProfilePostsItem.add(snapshot.toObject(modelLatest.class));
+                         }
+                         AnotherProfilePostsAdapter.notifyDataSetChanged();
+                         lastAnotherProfilePost = snapshotList.get(snapshotList.size() -1);
+                         show.dismiss();
+                         if(snapshotList.size()<10){
+                             LAST_VISIBLE=0;
+                         }
+                          scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                              @Override
+                              public void onScrollChanged() {
+                                  View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
 
-                    for (QueryDocumentSnapshot doc : value) {
+                                  int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
+                                          .getScrollY()));
 
-                        Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                        modelLatest set = doc.toObject(modelLatest.class);
-                        AnotherProfilePostsItem.add(set);
-                        AnotherProfilePostsAdapter.notifyDataSetChanged();
-                        show.dismiss();
-
-                    }
-                    index=index+value.size()-1;
-                    lastAnotherProfilePost = value.getDocuments().get(value.size() - 1);
-                }
-
-            }
-        });
-
-
-
+                                  if (diff == 0 && LAST_VISIBLE==1 ) {
+                                      loadAnotherProfilePost();
+                                  }
+                              }
+                          });
+                     }
+                 }
+             });
     }
 
     private void updateUserDetails() {
@@ -348,53 +356,6 @@ public class AnotherUserProfile extends AppCompatActivity implements latestAdapt
             }
         });
     }
-
-
-    private void addProfileFollowing() {
-        Map<String,Object> map=new HashMap();
-        map.put("ProfileId",AnotherUserId);
-
-        Map<String,Object> map1=new HashMap();
-        map1.put("ProfileId",UserID);
-
-        fstore.collection("Users").document(UserID).collection("Following").add(map);
-        fstore.collection("Users").document(AnotherUserId).collection("Followers").add(map1);
-        fstore.collection("Users").document(UserID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                String f2=documentSnapshot.getString("Following");
-                int fllwing=Integer.parseInt(f2);
-                fllwing=fllwing+1;
-                String UpdatedFollowing=Integer.toString(fllwing);
-                fstore.collection("Users").document(UserID).update("Following",fllwing);
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-
-        fstore.collection("Users").document(AnotherUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                String f3=documentSnapshot.getString("Followers");
-                int fllowers=Integer.parseInt(f3);
-                 fllowers=fllowers+1;
-                String UpdatedFollowers=Integer.toString(fllowers);
-                fstore.collection("Users").document(UserID).update("Followers",fllowers);
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-
-
-        }
 
     @Override
     public void selectedItem(modelLatest model_latest) {

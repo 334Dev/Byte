@@ -33,7 +33,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -233,15 +232,32 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         deletePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Owner.equals(UserID)){
-                    fstore.collection("Post").document(id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            decreaseTotalPost();
+                AlertDialog.Builder alert1 = new AlertDialog.Builder(ViewPost.this);
 
+                // alert dialog box for Confirming deletion of the post
+                alert1.setTitle("Delete the Post");
+                alert1.setMessage("Are you sure to delete this post?");
+
+                alert1.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if(Owner.equals(UserID)){
+                            fstore.collection("Post").document(id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    decreaseTotalPost();
+                                }
+                            });
                         }
-                    });
-                }
+                       }
+                });
+
+                alert1.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //Cancelled
+                    }
+                });
+                  alert1.show();
             }
         });
 
@@ -265,7 +281,8 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                 }
 
                //else
-                else if(reportBtn.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_report_24).getConstantState()){                   AlertDialog.Builder alert = new AlertDialog.Builder(ViewPost.this);
+                else if(reportBtn.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_report_24).getConstantState()){
+                    AlertDialog.Builder alert = new AlertDialog.Builder(ViewPost.this);
 
                    // alert dialog box for entering the report text
                    alert.setTitle("Report the post");
@@ -359,7 +376,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                                  @Override
                                  public void onSuccess(DocumentSnapshot documentSnapshot) {
                                      //getting upVote count
-                                     upVoteCount= (Double) documentSnapshot.get("UpVote");
+                                     upVoteCount=documentSnapshot.getDouble("UpVote");
 
                                      //getting trend points of the post
                                      trend=documentSnapshot.getDouble("trend");
