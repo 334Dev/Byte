@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,14 +45,16 @@ public class LoginDetails extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private Button finishbtn;
 
-    String UserID;
-    StorageReference storageReference;
+    private String UserID;
+    private StorageReference storageReference;
     private FirebaseFirestore firestore;
     private CheckBox radio1,radio2,radio3,radio4,radio5,radio6,radio7;
     private View parentLayout;
     private Integer USERNAME_ALREADY;
     private List<String> keyword;
     private List<String> Tag;
+    private ProgressBar loading;
+    private Integer UPLOADING=1;
 
 
     @Override
@@ -60,6 +63,9 @@ public class LoginDetails extends AppCompatActivity {
         setContentView(R.layout.activity_login_details);
 
         parentLayout = findViewById(android.R.id.content);
+
+        loading=findViewById(R.id.detailsLoading);
+        loading.setVisibility(View.INVISIBLE);
 
         radio1=findViewById(R.id.radioButton1);
         radio2=findViewById(R.id.radioButton2);
@@ -94,7 +100,7 @@ public class LoginDetails extends AppCompatActivity {
      profileImage.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-
+            UPLOADING=0;
              CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1,1).start(LoginDetails.this);
          }
      });
@@ -113,7 +119,11 @@ public class LoginDetails extends AppCompatActivity {
                  UserName.setError("Username is empty");
                  USERNAME_ALREADY=0;
              }
+             else if(UPLOADING!=1){
+                 Snackbar.make(parentLayout, "Image is uploading", Snackbar.LENGTH_SHORT).show();
+             }
              else{
+                 loading.setVisibility(View.VISIBLE);
                  firestore.collection("Users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                      @Override
                      public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -138,6 +148,7 @@ public class LoginDetails extends AppCompatActivity {
                      public void onFailure(@NonNull Exception e) {
                          Log.i(TAG, "onFailure: "+e.getMessage());
                          USERNAME_ALREADY=0;
+                         loading.setVisibility(View.INVISIBLE);
                      }
                  });
              }
@@ -168,11 +179,13 @@ public class LoginDetails extends AppCompatActivity {
                 Snackbar.make(parentLayout, "Welcome "+UserName.getText().toString(), Snackbar.LENGTH_SHORT).show();
                 Intent i=new Intent( LoginDetails.this, HomeActivity.class);
                 startActivity(i);
+                loading.setVisibility(View.INVISIBLE);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.i(TAG, "onFailure: "+e.getMessage());
+                loading.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -231,7 +244,7 @@ public class LoginDetails extends AppCompatActivity {
     }
 
     private void uploadImageTOFirebase(Uri imageUri) {
-
+            loading.setVisibility(View.VISIBLE);
             final StorageReference Fileref=storageReference.child("users/"+mAuth.getCurrentUser().getUid()+"/profile.jpg");
             Fileref.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -239,7 +252,9 @@ public class LoginDetails extends AppCompatActivity {
                     Fileref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
+                            UPLOADING=1;
                             Picasso.get().load(uri).into(profileImage);
+                            loading.setVisibility(View.INVISIBLE);
                         }
                     });
 

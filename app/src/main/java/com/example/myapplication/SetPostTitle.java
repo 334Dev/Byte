@@ -61,6 +61,8 @@ public class SetPostTitle extends AppCompatActivity{
         Tag = findViewById(R.id.spinnerTag);
         Desc = findViewById(R.id.editTextDesc);
         finishBtn=findViewById(R.id.FinishBtn);
+        loading=findViewById(R.id.titleLoading);
+        loading.setVisibility(View.INVISIBLE);
 
         mAuth = FirebaseAuth.getInstance();
         UserID = mAuth.getCurrentUser().getUid();
@@ -91,7 +93,6 @@ public class SetPostTitle extends AppCompatActivity{
         finishBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 //Field Checker
                 post_Title = Title.getText().toString();
                 post_Desc = Desc.getText().toString();
@@ -103,6 +104,8 @@ public class SetPostTitle extends AppCompatActivity{
                 }else if(post_Desc.isEmpty()){
                     Desc.setError("Field Empty");
                 }else{
+
+                    loading.setVisibility(View.VISIBLE);
                     storageReference.child("posts").child(FileName).child("title.jpg").putBytes(finalImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -118,6 +121,7 @@ public class SetPostTitle extends AppCompatActivity{
                                         i.putExtra("Title",post_Title);
                                         i.putExtra("Desc",post_Desc);
                                         startActivity(i);
+                                        loading.setVisibility(View.INVISIBLE);
                                         finish();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
@@ -132,7 +136,6 @@ public class SetPostTitle extends AppCompatActivity{
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(getApplicationContext(), "Failed to upload", Toast.LENGTH_LONG).show();
-                            loading.setVisibility(View.INVISIBLE);
                         }
                     });
 

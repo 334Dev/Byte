@@ -237,9 +237,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                     fstore.collection("Post").document(id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Snackbar.make(parentLayout,"Deleted Successfully",Snackbar.LENGTH_SHORT).show();
-                            Intent i= new Intent(ViewPost.this, HomeActivity.class);
-                            startActivity(i);
+                            decreaseTotalPost();
 
                         }
                     });
@@ -433,6 +431,17 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
      });
 
 
+    }
+
+    private void decreaseTotalPost() {
+        fstore.collection("Users").document(UserID).update("Post",FieldValue.increment(-1)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Snackbar.make(parentLayout,"Deleted Successfully",Snackbar.LENGTH_SHORT).show();
+                Intent i= new Intent(ViewPost.this, HomeActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     private void getPostOwner() {

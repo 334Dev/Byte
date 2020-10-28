@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -41,6 +42,7 @@ public class LoginHome extends AppCompatActivity {
     private int RC_SIGN_IN=101;
     private String UserID;
     private FirebaseFirestore firestore;
+    private ProgressBar loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,8 @@ public class LoginHome extends AppCompatActivity {
                     .setInterpolator(new DecelerateInterpolator());
         }
 
+        loading=findViewById(R.id.loginHomeLoading);
+        loading.setVisibility(View.INVISIBLE);
         register=findViewById(R.id.login2);
         password=findViewById(R.id.passwordUp2);
         emailT=findViewById(R.id.emailUp2);
@@ -140,6 +144,7 @@ public class LoginHome extends AppCompatActivity {
         }
     }
     private void firebaseAuthWithGoogle(String idToken) {
+        loading.setVisibility(View.VISIBLE);
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -155,11 +160,13 @@ public class LoginHome extends AppCompatActivity {
                                         Snackbar.make(parentLayout, "Authentication Successful.", Snackbar.LENGTH_SHORT).show();
                                         Intent i=new Intent(LoginHome.this, HomeActivity.class);
                                         startActivity(i);
+                                        loading.setVisibility(View.INVISIBLE);
                                     }else{
                                         // Sign in success, update UI with the signed-in user's information
                                         Snackbar.make(parentLayout, "Authentication Successful.", Snackbar.LENGTH_SHORT).show();
                                         Intent i=new Intent(LoginHome.this, LoginDetails.class);
                                         startActivity(i);
+                                        loading.setVisibility(View.INVISIBLE);
                                     }
                                 }
                             });
@@ -169,6 +176,7 @@ public class LoginHome extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Snackbar.make(parentLayout, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            loading.setVisibility(View.INVISIBLE);
 
                         }
 

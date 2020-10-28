@@ -368,6 +368,7 @@ public class CreatePost extends AppCompatActivity {
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                loading.setVisibility(View.VISIBLE);
                String text= mEditor.getHtml();
                Long time=System.currentTimeMillis();
                Intent intent=getIntent();
@@ -424,6 +425,9 @@ public class CreatePost extends AppCompatActivity {
                                 Intent i=new Intent(CreatePost.this,ViewPost.class);
                                 i.putExtra("PostId",FileName);
                                 startActivity(i);
+
+                                loading.setVisibility(View.INVISIBLE);
+
                                 finish();
                             }
                         }).addOnFailureListener(new OnFailureListener() {

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
     private FirebaseFirestore firestore;
     private View parentLayout;
     private Boolean USERNAME_ALREADY=false;
+    private ProgressBar loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
+        loading=findViewById(R.id.signupLoading);
+        loading.setVisibility(View.INVISIBLE);
         signinText=findViewById(R.id.signinText);
         email=findViewById(R.id.emailin);
         password=findViewById(R.id.passwordin);
@@ -92,6 +96,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
         } else if (Password.length() < 6) {
             password.setError("Minimum 6 character");
         } else {
+            loading.setVisibility(View.VISIBLE);
             mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -100,9 +105,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
                         Snackbar.make(parentLayout, "Authentication Successful", Snackbar.LENGTH_SHORT).show();
                         Intent i=new Intent(SignUp.this, LoginDetails.class);
                         startActivity(i);
+                        loading.setVisibility(View.INVISIBLE);
 
                     } else {
                         Snackbar.make(parentLayout, "Authentication Failed", Snackbar.LENGTH_SHORT).show();
+                        loading.setVisibility(View.INVISIBLE);
                     }
                 }
             });

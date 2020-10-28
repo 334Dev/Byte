@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,6 +30,7 @@ public class SignIn extends AppCompatActivity {
     private ImageView logo;
     private FirebaseAuth mAuth;
     private View parentLayout;
+    private ProgressBar loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,8 @@ public class SignIn extends AppCompatActivity {
             getWindow().getSharedElementReturnTransition().setDuration(1000)
                     .setInterpolator(new DecelerateInterpolator());
         }
+        loading=findViewById(R.id.siginLoading);
+        loading.setVisibility(View.INVISIBLE);
         mAuth=FirebaseAuth.getInstance();
         parentLayout = findViewById(android.R.id.content);
 
@@ -57,6 +61,7 @@ public class SignIn extends AppCompatActivity {
                 }else if(password.getText().toString().isEmpty()){
                     password.setError("Password field is empty");      //if Password field is Empty
                 }else {
+                    loading.setVisibility(View.VISIBLE);
                     mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -69,14 +74,17 @@ public class SignIn extends AppCompatActivity {
                                         Snackbar.make(parentLayout, "Login Successful", Snackbar.LENGTH_SHORT).show();
                                         Intent i=new Intent(SignIn.this, HomeActivity.class);
                                         startActivity(i);
+                                        loading.setVisibility(View.INVISIBLE);
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w(TAG, "signInWithEmail:failure", task.getException());
                                         Snackbar.make(parentLayout, "Login Failed", Snackbar.LENGTH_SHORT).show();
+                                        loading.setVisibility(View.INVISIBLE);
                                     }
                                 }
                             });
                 }
+
             }
         });
 
