@@ -47,7 +47,7 @@ import jp.wasabeef.picasso.transformations.BlurTransformation;
 
 import static android.app.Activity.RESULT_OK;
 
-public class ProfileFragment extends Fragment implements LatestAdapter.SelectedItem{
+public class ProfileFragment extends Fragment implements latestAdapter.SelectedItem{
 
     private CircleImageView profileImageView;
     private TextView userName;
@@ -61,8 +61,8 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
     private TextView post,followers,following;
     private AlertDialog.Builder builder;
     private AlertDialog show;
-    private LatestAdapter ProfilePostsAdapter;
-    private List<Model_Latest> ProfilePostsItem;
+    private latestAdapter ProfilePostsAdapter;
+    private List<modelLatest> ProfilePostsItem;
     private RecyclerView profileRecyclerView;
     private DocumentSnapshot lastProfilePost;
     private Query query;
@@ -107,7 +107,7 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
         profileRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         ProfilePostsItem=new ArrayList<>();
-        ProfilePostsAdapter=new LatestAdapter(ProfilePostsItem,this);
+        ProfilePostsAdapter=new latestAdapter(ProfilePostsItem,this);
         profileRecyclerView.setAdapter(ProfilePostsAdapter);
         profileRecyclerView.setHasFixedSize(true);
 
@@ -189,7 +189,7 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                    List<Model_Latest> inputList;
+                    List<modelLatest> inputList;
                     inputList=new ArrayList<>();
                     if(value.isEmpty()){
                         Log.i("onLoad", "onEvent: Empty");
@@ -197,7 +197,7 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
                         for (QueryDocumentSnapshot doc : value) {
 
                             Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                            Model_Latest set = doc.toObject(Model_Latest.class);
+                            modelLatest set = doc.toObject(modelLatest.class);
                             inputList.add(set);
                             show.dismiss();
 
@@ -231,7 +231,7 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
                    for (QueryDocumentSnapshot doc : value) {
 
                        Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                       Model_Latest set = doc.toObject(Model_Latest.class);
+                       modelLatest set = doc.toObject(modelLatest.class);
                        ProfilePostsItem.add(set);
                        ProfilePostsAdapter.notifyDataSetChanged();
                        show.dismiss();
@@ -305,7 +305,7 @@ public class ProfileFragment extends Fragment implements LatestAdapter.SelectedI
     }
 
     @Override
-    public void selectedItem(Model_Latest model_latest) {
+    public void selectedItem(modelLatest model_latest) {
 
         Intent i=new Intent(getActivity(),ViewPost.class);
         i.putExtra("PostId",model_latest.ID);

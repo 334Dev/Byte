@@ -7,7 +7,6 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -22,18 +21,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 public class LoginHome extends AppCompatActivity {
     private Button google, email,register;
@@ -109,7 +104,7 @@ public class LoginHome extends AppCompatActivity {
 
     //transition animation using shared elements
     private void transitionAnimation() {
-        Intent sharedintent= new Intent(LoginHome.this,signin.class);
+        Intent sharedintent= new Intent(LoginHome.this, SignIn.class);
         ActivityOptions options= ActivityOptions.makeSceneTransitionAnimation(LoginHome.this,
                 new android.util.Pair<View, String>(logo, "logoTransition"),
                 //new android.util.Pair<View, String>(google, "google"),
@@ -163,7 +158,7 @@ public class LoginHome extends AppCompatActivity {
                                     }else{
                                         // Sign in success, update UI with the signed-in user's information
                                         Snackbar.make(parentLayout, "Authentication Successful.", Snackbar.LENGTH_SHORT).show();
-                                        Intent i=new Intent(LoginHome.this, loginDetails.class);
+                                        Intent i=new Intent(LoginHome.this, LoginDetails.class);
                                         startActivity(i);
                                     }
                                 }

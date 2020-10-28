@@ -9,10 +9,10 @@
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".createQuick"></activity>
-        <activity android:name=".userSearch" />
+        <activity android:name=".CreateQuick"></activity>
+        <activity android:name=".UserSearch" />
         <activity android:name=".ShowSavedPost" />
-        <activity android:name=".postSearch" />
+        <activity android:name=".PostSearch" />
         <activity android:name=".AnotherUserProfile" />
         <activity android:name=".SetPostTitle" />
         <activity android:name=".ViewPost" />
@@ -28,9 +28,9 @@
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".CreatePost" />
-        <activity android:name=".loginDetails" />
-        <activity android:name=".signin" />
-        <activity android:name=".signup" />
+        <activity android:name=".LoginDetails" />
+        <activity android:name=".SignIn" />
+        <activity android:name=".SignUp" />
         <activity android:name=".HomeActivity" />
     </application>
 

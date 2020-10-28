@@ -1,6 +1,5 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,27 +11,23 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class postSearch extends AppCompatActivity implements LatestAdapter.SelectedItem {
+public class PostSearch extends AppCompatActivity implements com.example.myapplication.latestAdapter.SelectedItem {
 
     private TextView searchText;
     private RecyclerView searchRecycler;
     private FirebaseFirestore firestore;
-    private List<Model_Latest> searchModels;
-    private LatestAdapter latestAdapter;
+    private List<modelLatest> searchModels;
+    private com.example.myapplication.latestAdapter latestAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +41,7 @@ public class postSearch extends AppCompatActivity implements LatestAdapter.Selec
         firestore=FirebaseFirestore.getInstance();
 
         searchModels=new ArrayList<>();
-        latestAdapter= new LatestAdapter(searchModels,this);
+        latestAdapter= new latestAdapter(searchModels,this);
         searchRecycler.setAdapter(latestAdapter);
         searchRecycler.hasFixedSize();
         searchRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -84,7 +79,7 @@ public class postSearch extends AppCompatActivity implements LatestAdapter.Selec
 
                     Log.i("searchCheck", "onEvent:" + value.size());
 
-                    Model_Latest set = doc.toObject(Model_Latest.class);
+                    modelLatest set = doc.toObject(modelLatest.class);
                     searchModels.add(set);
                     latestAdapter.notifyDataSetChanged();
                 }
@@ -93,8 +88,8 @@ public class postSearch extends AppCompatActivity implements LatestAdapter.Selec
     }
 
     @Override
-    public void selectedItem(Model_Latest model_latest) {
-        Intent i=new Intent(postSearch.this,ViewPost.class);
+    public void selectedItem(modelLatest model_latest) {
+        Intent i=new Intent(PostSearch.this,ViewPost.class);
         i.putExtra("PostId",model_latest.ID);
         startActivity(i);
 

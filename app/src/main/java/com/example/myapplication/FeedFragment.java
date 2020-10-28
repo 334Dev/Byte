@@ -31,11 +31,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FeedFragment extends Fragment implements LatestAdapter.SelectedItem {
+public class FeedFragment extends Fragment implements latestAdapter.SelectedItem {
     private ImageView search;
     private RecyclerView feedRecycler;
-    private LatestAdapter feedAdapter;
-    private List<Model_Latest> feedModels;
+    private latestAdapter feedAdapter;
+    private List<modelLatest> feedModels;
     private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;
     private String UserID;
@@ -62,7 +62,7 @@ public class FeedFragment extends Fragment implements LatestAdapter.SelectedItem
         UserID=mAuth.getCurrentUser().getUid();
 
         feedModels=new ArrayList<>();
-        feedAdapter= new LatestAdapter(feedModels,this);
+        feedAdapter= new latestAdapter(feedModels,this);
         feedRecycler.setAdapter(feedAdapter);
         feedRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         feedRecycler.setHasFixedSize(true);
@@ -71,7 +71,7 @@ public class FeedFragment extends Fragment implements LatestAdapter.SelectedItem
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(getContext(), userSearch.class);
+                Intent intent=new Intent(getContext(), UserSearch.class);
                 startActivity(intent);
             }
         });
@@ -129,7 +129,7 @@ public class FeedFragment extends Fragment implements LatestAdapter.SelectedItem
                             for (QueryDocumentSnapshot doc : value) {
 
                                 Log.i("PostL", "onEvent:" + doc.getId());
-                                Model_Latest set = doc.toObject(Model_Latest.class);
+                                modelLatest set = doc.toObject(modelLatest.class);
                                 feedModels.add(set);
                                 feedAdapter.notifyDataSetChanged();
 
@@ -158,12 +158,12 @@ public class FeedFragment extends Fragment implements LatestAdapter.SelectedItem
                 if(value.isEmpty()){
                     Log.i("PostEmpty", "onEvent: Empty");
                 }else {
-                    List<Model_Latest> inputList;
+                    List<modelLatest> inputList;
                     inputList=new ArrayList<>();
                     for (QueryDocumentSnapshot doc : value) {
 
                         Log.i("PostL", "onEvent:" + doc.getId());
-                        Model_Latest set = doc.toObject(Model_Latest.class);
+                        modelLatest set = doc.toObject(modelLatest.class);
                         inputList.add(set);
 
                     }
@@ -183,7 +183,7 @@ public class FeedFragment extends Fragment implements LatestAdapter.SelectedItem
 
 
     @Override
-    public void selectedItem(Model_Latest model_latest) {
+    public void selectedItem(modelLatest model_latest) {
         Intent i=new Intent(getActivity(),ViewPost.class);
         i.putExtra("PostId",model_latest.getID());
         startActivity(i);

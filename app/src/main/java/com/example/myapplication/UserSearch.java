@@ -1,6 +1,5 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -14,10 +13,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -27,7 +23,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class userSearch extends AppCompatActivity implements userSearchAdapter.SelectedItem {
+public class UserSearch extends AppCompatActivity implements userSearchAdapter.SelectedItem {
 
     private RecyclerView UserSearchRecycler;
     private TextView UserSearchText;
@@ -111,7 +107,7 @@ public class userSearch extends AppCompatActivity implements userSearchAdapter.S
 
 
 
-              Intent i = new Intent(userSearch.this, AnotherUserProfile.class);
+              Intent i = new Intent(UserSearch.this, AnotherUserProfile.class);
               i.putExtra("SearchUserID", userModel.UserID);
               Log.i("sentIntent", "selectedItem: " + userModel.UserID);
               Log.i("currentUser", "CurrentUserid: " + mAuth.getCurrentUser().getUid());

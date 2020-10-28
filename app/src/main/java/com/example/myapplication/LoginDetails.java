@@ -4,17 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -25,7 +22,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -34,14 +30,13 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class loginDetails extends AppCompatActivity {
+public class LoginDetails extends AppCompatActivity {
 
     private static final String TAG ="User Details" ;
     private CircleImageView profileImage;
@@ -100,7 +95,7 @@ public class loginDetails extends AppCompatActivity {
          @Override
          public void onClick(View view) {
 
-             CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1,1).start(loginDetails.this);
+             CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1,1).start(LoginDetails.this);
          }
      });
      USERNAME_ALREADY=1;
@@ -171,7 +166,7 @@ public class loginDetails extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 Snackbar.make(parentLayout, "Welcome "+UserName.getText().toString(), Snackbar.LENGTH_SHORT).show();
-                Intent i=new Intent( loginDetails.this, HomeActivity.class);
+                Intent i=new Intent( LoginDetails.this, HomeActivity.class);
                 startActivity(i);
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -253,7 +248,7 @@ public class loginDetails extends AppCompatActivity {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                   Toast.makeText(loginDetails.this,e.getMessage(),Toast.LENGTH_SHORT).show();
+                   Toast.makeText(LoginDetails.this,e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
             });
 

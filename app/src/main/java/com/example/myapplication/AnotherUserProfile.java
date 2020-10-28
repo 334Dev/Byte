@@ -43,7 +43,7 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.picasso.transformations.BlurTransformation;
 
-public class AnotherUserProfile extends AppCompatActivity implements LatestAdapter.SelectedItem {
+public class AnotherUserProfile extends AppCompatActivity implements latestAdapter.SelectedItem {
 
     private TextView posts;
     private TextView followers;
@@ -58,8 +58,8 @@ public class AnotherUserProfile extends AppCompatActivity implements LatestAdapt
     private AlertDialog show;
     private String UserID;
     private String AnotherUserId;
-    private LatestAdapter AnotherProfilePostsAdapter;
-    private List<Model_Latest> AnotherProfilePostsItem;
+    private latestAdapter AnotherProfilePostsAdapter;
+    private List<modelLatest> AnotherProfilePostsItem;
     private RecyclerView AnotherProfileRecyclerView;
     private DocumentSnapshot lastAnotherProfilePost;
     private Query query;
@@ -98,7 +98,7 @@ public class AnotherUserProfile extends AppCompatActivity implements LatestAdapt
         scrollView=findViewById(R.id.scrollAnotherProfile);
 
         AnotherProfilePostsItem=new ArrayList<>();
-        AnotherProfilePostsAdapter=new LatestAdapter(AnotherProfilePostsItem,this);
+        AnotherProfilePostsAdapter=new latestAdapter(AnotherProfilePostsItem,this);
         AnotherProfileRecyclerView.setAdapter(AnotherProfilePostsAdapter);
         AnotherProfileRecyclerView.setHasFixedSize(true);
         AnotherProfileRecyclerView.setNestedScrollingEnabled(false);
@@ -263,13 +263,13 @@ public class AnotherUserProfile extends AppCompatActivity implements LatestAdapt
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                List<Model_Latest> inputList;
+                List<modelLatest> inputList;
                 inputList=new ArrayList<>();
 
                 for (QueryDocumentSnapshot doc : value) {
 
                     Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                    Model_Latest set = doc.toObject(Model_Latest.class);
+                    modelLatest set = doc.toObject(modelLatest.class);
                     inputList.add(set);
                     show.dismiss();
 
@@ -305,7 +305,7 @@ public class AnotherUserProfile extends AppCompatActivity implements LatestAdapt
                     for (QueryDocumentSnapshot doc : value) {
 
                         Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                        Model_Latest set = doc.toObject(Model_Latest.class);
+                        modelLatest set = doc.toObject(modelLatest.class);
                         AnotherProfilePostsItem.add(set);
                         AnotherProfilePostsAdapter.notifyDataSetChanged();
                         show.dismiss();
@@ -397,7 +397,7 @@ public class AnotherUserProfile extends AppCompatActivity implements LatestAdapt
         }
 
     @Override
-    public void selectedItem(Model_Latest model_latest) {
+    public void selectedItem(modelLatest model_latest) {
 
         Intent i=new Intent(AnotherUserProfile.this,ViewPost.class);
         i.putExtra("PostId",model_latest.ID);

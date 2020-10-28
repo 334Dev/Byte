@@ -5,29 +5,21 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.ScrollView;
-import android.widget.Scroller;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.myapplication.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,17 +31,16 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem, trendViewPagerAdapter.SelectedPager {
+public class HomeFragment extends Fragment implements com.example.myapplication.latestAdapter.SelectedItem, trendViewPagerAdapter.SelectedPager {
 
    private RecyclerView recyclerView, upVoteRecycler;
-   private List<Model_Latest> item_list, upVote_list;
-   private LatestAdapter latestAdapter, upVoteAdapter;
+   private List<modelLatest> item_list, upVote_list;
+   private com.example.myapplication.latestAdapter latestAdapter, upVoteAdapter;
    private FirebaseFirestore firestore;
    private FirebaseAuth mAuth;
     private ImageView postSearchBtn;
@@ -82,7 +73,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         upVoteRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         upVote_list=new ArrayList<>();
-        upVoteAdapter=new LatestAdapter(upVote_list,this);
+        upVoteAdapter=new latestAdapter(upVote_list,this);
         upVoteRecycler.setAdapter(upVoteAdapter);
         upVoteRecycler.setNestedScrollingEnabled(false);
 
@@ -103,7 +94,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         postSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(getActivity(),postSearch.class);
+                Intent i=new Intent(getActivity(), PostSearch.class);
                 startActivity(i);
             }
         });
@@ -113,7 +104,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
 
         item_list=new ArrayList<>();
 
-        latestAdapter= new LatestAdapter(item_list,this);
+        latestAdapter= new latestAdapter(item_list,this);
         latestAdapter.setHasStableIds(true);
         recyclerView.setAdapter(latestAdapter);
 
@@ -157,7 +148,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
 
                     Log.i("dataRecieveCHeck", "onEvent:" + value.size());
                     if(Tag.contains(doc.getString("tag"))) {
-                        Model_Latest set = doc.toObject(Model_Latest.class);
+                        modelLatest set = doc.toObject(modelLatest.class);
                         upVote_list.add(set);
                         upVoteAdapter.notifyDataSetChanged();
                     }
@@ -218,7 +209,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                     //item_list.clear();
                     List<DocumentSnapshot> snapshotList=queryDocumentSnapshots.getDocuments();
                     for(DocumentSnapshot snapshot:snapshotList){
-                        item_list.add(snapshot.toObject(Model_Latest.class));
+                        item_list.add(snapshot.toObject(modelLatest.class));
                     }
                     latestAdapter.notifyDataSetChanged();
                     lastVisible = snapshotList.get(snapshotList.size() -1);
@@ -262,7 +253,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
                 }else if(item_list.size()%10==0) {
                     List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
                     for(DocumentSnapshot doc: snapshots){
-                        item_list.add(doc.toObject(Model_Latest.class));
+                        item_list.add(doc.toObject(modelLatest.class));
                     }
                     latestAdapter.notifyDataSetChanged();
                     lastVisible=snapshots.get(snapshots.size()-1);
@@ -293,7 +284,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
 
 
     @Override
-    public void selectedItem(Model_Latest model_latest) {
+    public void selectedItem(modelLatest model_latest) {
         Intent i=new Intent(getActivity(),ViewPost.class);
         i.putExtra("PostId",model_latest.ID);
         startActivity(i);
@@ -305,25 +296,3 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         startActivity(i);
     }
 }
-
-
-
-        /*item_list=new ArrayList<>();
-        item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                ,  6725,890));
-        item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                ,  672537,890));
-        item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                ,  67253,890));
-        item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                ,  67253,890));
-        item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                ,  6725,890));
-        item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                , 6725,890));
-        item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                , 672,890));
-        item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                ,  67253,890));
-        item_list.add(new Model_Latest(R.drawable.iceland,"Book","This is the best book.","politics"
-                ,  672537,890));*/

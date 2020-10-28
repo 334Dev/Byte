@@ -1,6 +1,6 @@
 package com.example.myapplication;
 
-public class Model_Latest {
+public class modelLatest {
     String img;  // for storing Img URL
     String title; // Article Title
     String desc;  // Article Description
@@ -10,14 +10,14 @@ public class Model_Latest {
     String ID;
 
 
-    Model_Latest()
+    modelLatest()
     {
        //Empty Constructor
     }
 
     //Parametric Constructor
 
-    public Model_Latest(String img, String title, String desc, String tag, Long time, Integer viewCount, String ID) {
+    public modelLatest(String img, String title, String desc, String tag, Long time, Integer viewCount, String ID) {
         this.img = img;
         this.title = title;
         this.desc = desc;

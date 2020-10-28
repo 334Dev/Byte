@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class quickFragment extends Fragment implements quickAdapter.SelectedPager {
+public class QuickFragment extends Fragment implements quickAdapter.SelectedPager {
     private ViewPager2 viewPager;
     private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;

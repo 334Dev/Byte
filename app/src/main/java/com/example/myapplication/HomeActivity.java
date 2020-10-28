@@ -8,11 +8,8 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
 
@@ -20,7 +17,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private HomeFragment homefragment;
     private FeedFragment feedFragment;
-    private quickFragment quickFragment;
+    private QuickFragment quickFragment;
     private ProfileFragment profileFragment;
     private SpeedDialView addBtn;
     private BottomNavigationView bottomNav;
@@ -31,7 +28,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         homefragment=new HomeFragment();
         feedFragment=new FeedFragment();
-        quickFragment =new quickFragment();
+        quickFragment =new QuickFragment();
         profileFragment=new ProfileFragment();
         addBtn=findViewById(R.id.AddPostButton);
 
@@ -44,7 +41,7 @@ public class HomeActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
                 if(actionItem.getId()==R.id.quickFAB){
-                    Intent intent=new Intent(HomeActivity.this,createQuick.class);
+                    Intent intent=new Intent(HomeActivity.this, CreateQuick.class);
                     startActivity(intent);
                 }
                 return false;

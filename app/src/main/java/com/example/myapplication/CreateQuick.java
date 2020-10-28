@@ -7,18 +7,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.database.ChangeEventListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -27,7 +24,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.gson.internal.$Gson$Preconditions;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -41,7 +37,7 @@ import java.util.UUID;
 
 import id.zelory.compressor.Compressor;
 
-public class createQuick extends AppCompatActivity {
+public class CreateQuick extends AppCompatActivity {
 
     private TextView editTitle, editDesc;
     private TextView previewTitle, previewDesc;
@@ -120,7 +116,7 @@ public class createQuick extends AppCompatActivity {
         addImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(9,16).start(createQuick.this);
+                CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(9,16).start(CreateQuick.this);
             }
         });
 
@@ -151,7 +147,7 @@ public class createQuick extends AppCompatActivity {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(createQuick.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateQuick.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -174,7 +170,7 @@ public class createQuick extends AppCompatActivity {
         firestore.collection("Quick").document().set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Intent i=new Intent(createQuick.this, HomeActivity.class);
+                Intent i=new Intent(CreateQuick.this, HomeActivity.class);
                 startActivity(i);
             }
         }).addOnFailureListener(new OnFailureListener() {

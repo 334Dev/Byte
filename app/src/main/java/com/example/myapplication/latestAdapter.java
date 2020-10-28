@@ -1,9 +1,5 @@
 package com.example.myapplication;
 
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,22 +7,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholder> {
+public class latestAdapter extends RecyclerView.Adapter<latestAdapter.mViewholder> {
 
-    private List<Model_Latest> item_list;
+    private List<modelLatest> item_list;
     private SelectedItem selectedItem;
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
-    public LatestAdapter(List<Model_Latest> item_list, SelectedItem selectedItem){
+    public latestAdapter(List<modelLatest> item_list, SelectedItem selectedItem){
         this.item_list=item_list;
         this.selectedItem=selectedItem;
     }
@@ -38,7 +33,7 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         //view.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        return new LatestAdapter.mViewholder(view);
+        return new latestAdapter.mViewholder(view);
     }
 
     @Override
@@ -56,7 +51,7 @@ public class LatestAdapter extends RecyclerView.Adapter<LatestAdapter.mViewholde
     }
 
     public interface SelectedItem{
-        void selectedItem(Model_Latest model_latest);
+        void selectedItem(modelLatest model_latest);
     }
 
     @Override

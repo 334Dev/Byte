@@ -74,6 +74,20 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_post);
+
+
+        HeaderImage=findViewById(R.id.postCover);
+        titleHeader=findViewById(R.id.postTitle);
+        ViewCount=findViewById(R.id.viewCount);
+        upvoteButton=findViewById(R.id.Upvotebtn);
+        upvoteCountText=findViewById(R.id.UpvoteCount);
+        reportBtn=findViewById(R.id.reportBtn);
+        saveButton=findViewById(R.id.imageViewSaved);
+
+
+        //parent layout for Snack Bar
+        parentLayout = findViewById(android.R.id.content);
+
         savedId=new ArrayList<>();
 
         //comments
@@ -117,7 +131,6 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         fstore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
-        saveButton=findViewById(R.id.imageViewSaved);
 
         //webView to show the article
         web=findViewById(R.id.webView);
@@ -130,25 +143,10 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         web.getSettings().setBuiltInZoomControls(true);
         web.getSettings().setDisplayZoomControls(false);
 
-        parentLayout = findViewById(android.R.id.content);
-
-        HeaderImage=findViewById(R.id.postCover);
-        titleHeader=findViewById(R.id.postTitle);
-        ViewCount=findViewById(R.id.viewCount);
-
-
-        upvoteButton=findViewById(R.id.Upvotebtn);
-        upvoteCountText=findViewById(R.id.UpvoteCount);
-
-
-        reportBtn=findViewById(R.id.reportBtn);
 
         //getting postID intent
         Intent intent=getIntent();
         id=intent.getStringExtra("PostId"); // getting PostId from Intent
-
-
-
 
 
         //passing the text which contain html code to web view
@@ -192,6 +190,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         //checking if post already saved
         getSavedId();
 
+        //getting list of user already upvoted
         getUpvoteArray();
 
         //checking if already reported
@@ -200,7 +199,9 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         //set Comments
         setComments();
 
+        //get upVote count
         setUpvoteCount();
+
         //setting up total views
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -220,16 +221,19 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         });
 
 
-
-
-
+        //report Btn on click
         reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //check if already reported
                if(reportBtn.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.reported).getConstantState()){
                     Snackbar.make(parentLayout,"You already reported this post.If found against our community guidelines we will remove it",Snackbar.LENGTH_LONG).show();
                 }
+
+               //else
                 else if(reportBtn.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_report_24).getConstantState()){                   AlertDialog.Builder alert = new AlertDialog.Builder(ViewPost.this);
+
+                   // alert dialog box for entering the report text
                    alert.setTitle("Report the post");
                    alert.setMessage("Tell us the reason so we could speed up the process");
                    final String[] value = new String[1];
@@ -238,19 +242,24 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog, int whichButton) {
 
+                           //getting report reason from dialog box
                            String reportReason = input.getText().toString();
-                           Log.i("reportPost", "onClick: "+reportReason);
-                           reportUser.add(mAuth.getCurrentUser().getUid());
-                           Snackbar.make(parentLayout,reportReason,Snackbar.LENGTH_LONG);
-                           final Map<String, Object> reportMap = new HashMap<>();
+
+                           //snackbar of the report reason
+                           Snackbar.make(parentLayout,reportReason,Snackbar.LENGTH_LONG).show();
+
+                           //adding the report message
                            fstore.collection("Post").document(id).update("reportList",FieldValue.arrayUnion(reportReason)).addOnSuccessListener(new OnSuccessListener<Void>() {
                                @Override
                                public void onSuccess(Void aVoid) {
+                                            //increasing report count
                                            fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                @Override
                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                    Double reportCount = documentSnapshot.getDouble("Report");
                                                    fstore.collection("Post").document(id).update("Report", reportCount + 1);
+
+                                                   //adding the user to database of reportList
                                                    setReportArray();
                                                    
                                                }
@@ -271,12 +280,11 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         });
 
 
-
-
-
+        //upVote setOnClickListener
          upvoteButton.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View view) {
+                 //if already upvoted remove the upvote
                  if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.thumbs_up_clicked).getConstantState()){
                      Map<String,Object> upVoteMap=new HashMap<>();
                      upVoteMap.put("UpVoteArray",FieldValue.arrayRemove(mAuth.getCurrentUser().getUid()));
@@ -303,6 +311,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                          }
                      });
                  }
+                 //else add the upvote
                  else if(upvoteButton.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_thumb_up_alt_24).getConstantState())
                  {
                      upvotearray.add(mAuth.getCurrentUser().getUid());
@@ -315,10 +324,17 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                              fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                  @Override
                                  public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                     //getting upVote count
                                      upVoteCount= (Double) documentSnapshot.get("UpVote");
+
+                                     //getting trend points of the post
                                      trend=documentSnapshot.getDouble("trend");
+
+                                     //updating trend and upVote
                                      fstore.collection("Post").document(id).update("Trend",trend-1);
                                      fstore.collection("Post").document(id).update("UpVote",upVoteCount+1);
+
+                                     //increasing upVote Count
                                      setUpvoteCount();
                                  }
                              });
@@ -383,6 +399,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     }
 
+    //setting up report- if already reported change in button drawable
     private void setReportArray() {
         fstore.collection("Post").document(id).update("reportUser", FieldValue.arrayUnion(UserID)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -392,6 +409,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         });
     }
 
+    //onCreate check if already reported
     private void getReportArray() {
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -408,6 +426,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     }
 
+    //setting the upVote count in text View;
     private void setUpvoteCount() {
 
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -422,6 +441,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     }
 
+    //checking if already upVoted setting the drawable of upVote btn
     private void getUpvoteArray() {
 
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -449,6 +469,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     }
 
+    // adding user comment in firestore
     private void addCommenttoFstore(final String username) {
         fstore=FirebaseFirestore.getInstance();
         Date date=new Date();
@@ -483,6 +504,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     }
 
+    //setting up comments in the comment recycler view
     private void setComments() {
         fstore=FirebaseFirestore.getInstance();
         fstore.collection("Post").document(id).collection("Comments")
@@ -509,7 +531,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
     }
 
 
-
+    //checking if already saved the article or not and changing the drawable accordingly
    private void getSavedId() {
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override

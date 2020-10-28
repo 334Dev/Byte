@@ -7,12 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -28,14 +24,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShowSavedPost extends AppCompatActivity implements LatestAdapter.SelectedItem {
+public class ShowSavedPost extends AppCompatActivity implements latestAdapter.SelectedItem {
 
     private RecyclerView savedrecyclerView;
-    private Model_Latest savedModel;
-    private LatestAdapter savedAdapter;
+    private modelLatest savedModel;
+    private latestAdapter savedAdapter;
     private AlertDialog.Builder builder;
     private AlertDialog show;
-    private List<Model_Latest> SavedPostsItem;
+    private List<modelLatest> SavedPostsItem;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String UserID;
     private FirebaseFirestore fstore;
@@ -55,7 +51,7 @@ public class ShowSavedPost extends AppCompatActivity implements LatestAdapter.Se
         savedrecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         SavedPostsItem=new ArrayList<>();
-        savedAdapter=new LatestAdapter(SavedPostsItem,this);
+        savedAdapter=new latestAdapter(SavedPostsItem,this);
         savedAdapter.setHasStableIds(true);
         savedrecyclerView.setAdapter(savedAdapter);
         savedrecyclerView.setHasFixedSize(true);
@@ -95,7 +91,7 @@ public class ShowSavedPost extends AppCompatActivity implements LatestAdapter.Se
                     for (QueryDocumentSnapshot doc : value) {
 
                         Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                        Model_Latest set = doc.toObject(Model_Latest.class);
+                        modelLatest set = doc.toObject(modelLatest.class);
                         SavedPostsItem.add(set);
                         savedAdapter.notifyDataSetChanged();
                         //show.dismiss();
@@ -111,7 +107,7 @@ public class ShowSavedPost extends AppCompatActivity implements LatestAdapter.Se
     }
 
     @Override
-    public void selectedItem(Model_Latest model_latest) {
+    public void selectedItem(modelLatest model_latest) {
         Intent i=new Intent(getApplicationContext(),ViewPost.class);
         i.putExtra("PostId",model_latest.ID);
         startActivity(i);

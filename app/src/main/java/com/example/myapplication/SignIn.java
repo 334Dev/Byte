@@ -9,14 +9,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -25,7 +21,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class signin extends AppCompatActivity {
+public class SignIn extends AppCompatActivity {
 
     private static final String TAG ="SignIn" ;
     private TextView email,password,signupTxt;
@@ -71,7 +67,7 @@ public class signin extends AppCompatActivity {
                                         Log.d(TAG, "signInWithEmail:success");
                                         FirebaseUser user = mAuth.getCurrentUser();
                                         Snackbar.make(parentLayout, "Login Successful", Snackbar.LENGTH_SHORT).show();
-                                        Intent i=new Intent(signin.this, HomeActivity.class);
+                                        Intent i=new Intent(SignIn.this, HomeActivity.class);
                                         startActivity(i);
                                     } else {
                                         // If sign in fails, display a message to the user.
@@ -89,9 +85,9 @@ public class signin extends AppCompatActivity {
         signupTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent sharedintent= new Intent(signin.this,signup.class);
+                Intent sharedintent= new Intent(SignIn.this, SignUp.class);
                 //Transition Animation
-                ActivityOptions options= ActivityOptions.makeSceneTransitionAnimation(signin.this,
+                ActivityOptions options= ActivityOptions.makeSceneTransitionAnimation(SignIn.this,
                         new android.util.Pair<View, String>(logo, "logoTransition"));
                 startActivity(sharedintent, options.toBundle());
             }

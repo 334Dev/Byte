@@ -15,22 +15,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class signup extends AppCompatActivity {
+ public class SignUp extends AppCompatActivity {
 
     private static final String TAG ="Register" ;
     private TextView signinText,email,password;
@@ -81,9 +72,9 @@ public class signup extends AppCompatActivity {
         signinText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent sharedintent= new Intent(signup.this,signin.class);
+                Intent sharedintent= new Intent(SignUp.this, SignIn.class);
                 //Transition Animation
-                ActivityOptions options= ActivityOptions.makeSceneTransitionAnimation(signup.this,
+                ActivityOptions options= ActivityOptions.makeSceneTransitionAnimation(SignUp.this,
                         new android.util.Pair<View, String>(logo, "logoTransition"));
                 startActivity(sharedintent, options.toBundle());
             }
@@ -107,7 +98,7 @@ public class signup extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "createUserWithEmail:success");
                         Snackbar.make(parentLayout, "Authentication Successful", Snackbar.LENGTH_SHORT).show();
-                        Intent i=new Intent(signup.this, loginDetails.class);
+                        Intent i=new Intent(SignUp.this, LoginDetails.class);
                         startActivity(i);
 
                     } else {

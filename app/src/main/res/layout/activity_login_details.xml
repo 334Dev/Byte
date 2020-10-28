@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/Background"
     android:animateLayoutChanges="true"
-    tools:context=".signin">
+    tools:context=".SignIn">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
