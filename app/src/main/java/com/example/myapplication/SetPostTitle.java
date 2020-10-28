@@ -118,6 +118,7 @@ public class SetPostTitle extends AppCompatActivity{
                                         i.putExtra("Title",post_Title);
                                         i.putExtra("Desc",post_Desc);
                                         startActivity(i);
+                                        finish();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override

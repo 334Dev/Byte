@@ -7,9 +7,14 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
 
@@ -21,11 +26,19 @@ public class HomeActivity extends AppCompatActivity {
     private ProfileFragment profileFragment;
     private SpeedDialView addBtn;
     private BottomNavigationView bottomNav;
+    private FirebaseFirestore fstore;
+    private FirebaseAuth mAuth;
+    private String UserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        fstore=FirebaseFirestore.getInstance();
+        mAuth=FirebaseAuth.getInstance();
+        UserID=mAuth.getCurrentUser().getUid();
+
         homefragment=new HomeFragment();
         feedFragment=new FeedFragment();
         quickFragment =new QuickFragment();
@@ -37,8 +50,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public boolean onActionSelected(SpeedDialActionItem actionItem) {
                 if(actionItem.getId()==R.id.postFAB){
-                    Intent intent=new Intent(HomeActivity.this,SetPostTitle.class);
-                    startActivity(intent);
+                    checkDraftexist();
                 }
                 if(actionItem.getId()==R.id.quickFAB){
                     Intent intent=new Intent(HomeActivity.this, CreateQuick.class);
@@ -79,6 +91,36 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void checkDraftexist() {
+        fstore.collection("Users").document(UserID).collection("draft").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if(queryDocumentSnapshots.isEmpty()){
+                    Log.i("Draft", "onSuccess: No Draft");
+                    Intent intent=new Intent(HomeActivity.this,SetPostTitle.class);
+                    startActivity(intent);
+                }else{
+                    Log.i("Draft", "onSuccess: Draft exist");
+                    String Filename=queryDocumentSnapshots.getDocuments().get(0).getString("FileName");
+                    String TitleImage=queryDocumentSnapshots.getDocuments().get(0).getString("TitleImage");
+                    String Tag=queryDocumentSnapshots.getDocuments().get(0).getString("Tag");
+                    String Title=queryDocumentSnapshots.getDocuments().get(0).getString("Title");
+                    String Desc=queryDocumentSnapshots.getDocuments().get(0).getString("Desc");
+
+                    Intent intent=new Intent(HomeActivity.this,CreatePost.class);
+
+                    intent.putExtra("FileName",Filename);
+                    intent.putExtra("DraftExist",true);
+                    intent.putExtra("TitleImage",TitleImage);
+                    intent.putExtra("Tag",Tag);
+                    intent.putExtra("Title",Title);
+                    intent.putExtra("Desc",Desc);
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     public void replaceFragment(Fragment fragment){

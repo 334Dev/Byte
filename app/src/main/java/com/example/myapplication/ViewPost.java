@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -45,7 +46,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     private WebView web;
     private FirebaseFirestore fstore;
-    private TextView titleHeader;
+    private TextView titleHeader, PostAuthor;
     private ImageView HeaderImage;
     private TextView ViewCount;
     private ImageView saveButton;
@@ -69,13 +70,18 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
     private List<commentModel> commentModels;
     private commentAdapter commentadapter;
 
+    //delete (if owner of article)
+    private FloatingActionButton deletePost;
+    private String Owner, OwnerUsername;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_post);
 
-
+        PostAuthor=findViewById(R.id.PostAuthor);
+        deletePost=findViewById(R.id.deleteButton);
         HeaderImage=findViewById(R.id.postCover);
         titleHeader=findViewById(R.id.postTitle);
         ViewCount=findViewById(R.id.viewCount);
@@ -83,7 +89,6 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         upvoteCountText=findViewById(R.id.UpvoteCount);
         reportBtn=findViewById(R.id.reportBtn);
         saveButton=findViewById(R.id.imageViewSaved);
-
 
         //parent layout for Snack Bar
         parentLayout = findViewById(android.R.id.content);
@@ -187,6 +192,10 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
             }
         });
 
+
+        //getting post owner
+        getPostOwner();
+
         //checking if post already saved
         getSavedId();
 
@@ -220,6 +229,33 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
             }
         });
 
+        //delete Post if Owner
+        deletePost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Owner.equals(UserID)){
+                    fstore.collection("Post").document(id).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Snackbar.make(parentLayout,"Deleted Successfully",Snackbar.LENGTH_SHORT).show();
+                            Intent i= new Intent(ViewPost.this, HomeActivity.class);
+                            startActivity(i);
+
+                        }
+                    });
+                }
+            }
+        });
+
+        //onClick Author
+        PostAuthor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(ViewPost.this, AnotherUserProfile.class);
+                i.putExtra("SearchUserID",Owner);
+                startActivity(i);
+            }
+        });
 
         //report Btn on click
         reportBtn.setOnClickListener(new View.OnClickListener() {
@@ -399,6 +435,37 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     }
 
+    private void getPostOwner() {
+
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Owner=documentSnapshot.getString("Owner");
+                if(Owner.equals(UserID)){
+                    deletePost.setVisibility(View.VISIBLE);
+                }
+                getOwnerUsername();
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("PostOwner", "onFailure: Failed to access Post");
+            }
+        });
+
+    }
+
+    private void getOwnerUsername() {
+        fstore.collection("Users").document(Owner).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    OwnerUsername=documentSnapshot.getString("Username");
+                    PostAuthor.setText("Author: "+OwnerUsername);
+            }
+        });
+    }
+
     //setting up report- if already reported change in button drawable
     private void setReportArray() {
         fstore.collection("Post").document(id).update("reportUser", FieldValue.arrayUnion(UserID)).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -553,15 +620,6 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
     }
 
 
-
-
-    // Getting back to HomeActivity on back
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent i=new Intent(ViewPost.this, HomeActivity.class);
-        startActivity(i);
-    }
 
     @Override
     public void selectedItem(commentModel commentModel_) {

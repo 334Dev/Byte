@@ -22,9 +22,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -53,14 +56,13 @@ import static com.example.myapplication.R.drawable.left_align_clicked;
 public class CreatePost extends AppCompatActivity {
 
     private RichEditor mEditor;
-    private TextView mPreview;
 
     private FirebaseFirestore fstore;
     private FirebaseAuth mAuth;
     private StorageReference storageReference;
 
     private ProgressBar loading;
-    private FloatingActionButton done;
+    private FloatingActionButton done,delete;
     private String UserID,FileName;
 
     private ImageButton bold_btn;
@@ -122,10 +124,39 @@ public class CreatePost extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference();
         UserID=mAuth.getCurrentUser().getUid();
 
+
+        done=findViewById(R.id.doneButton);
+        delete=findViewById(R.id.draftDelete);
+
         //getIntent Filename
         FileName=getIntent().getStringExtra("FileName");
 
-        done=findViewById(R.id.doneButton);
+        if(getIntent().hasExtra("DraftExist")){
+            setupDraft();
+            delete.setVisibility(View.VISIBLE);
+        }
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fstore.collection("Users").document(UserID).collection("draft").document(FileName).delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(getApplicationContext(),"Draft deleted",Toast.LENGTH_SHORT).show();
+                                Intent i=new Intent(CreatePost.this, HomeActivity.class);
+                                startActivity(i);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("Draft CF delete", "onFailure: "+e.getMessage());
+                    }
+                });
+            }
+        });
+
+
 
         //bold Button on Click
         bold_btn=findViewById(R.id.action_bold);
@@ -393,6 +424,7 @@ public class CreatePost extends AppCompatActivity {
                                 Intent i=new Intent(CreatePost.this,ViewPost.class);
                                 i.putExtra("PostId",FileName);
                                 startActivity(i);
+                                finish();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -430,6 +462,24 @@ public class CreatePost extends AppCompatActivity {
 
 
     }
+
+
+
+    private void setupDraft() {
+        fstore.collection("Users").document(UserID).collection("draft").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                String content=queryDocumentSnapshots.getDocuments().get(0).getString("content");
+                mEditor.setHtml(content);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("Draft", "onFailure: "+e.getMessage());
+            }
+        });
+    }
+
 
     private void createKeyword(String title) {
         keyword=new ArrayList<>();
@@ -572,6 +622,61 @@ public class CreatePost extends AppCompatActivity {
 
         }
 
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        saveAsDraft();
+    }
+
+    private void saveAsDraft() {
+        Intent intent=getIntent();
+        String title=intent.getStringExtra("Title");
+        String desc=intent.getStringExtra("Desc");
+        String tag=intent.getStringExtra("Tag");
+        String img=intent.getStringExtra("TitleImage");
+
+        String content="Saved Draft (Delete this) <br>"+mEditor.getHtml();
+
+        Map<String, Object> map=new HashMap<>();
+
+
+        if(intent.hasExtra("DraftExist")){
+            map.put("content",content);
+            fstore.collection("Users").document(UserID).collection("draft").document(FileName).update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Toast.makeText(getApplicationContext(), "Saved as Draft",Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.i("Draft", "onFailure: "+e.getMessage());
+                }
+            });
+
+        }else{
+            map.put("TitleImage",img);
+            map.put("Desc",desc);
+            map.put("Title",title);
+            map.put("Tag",tag);
+            map.put("FileName",FileName);
+            map.put("content",content);
+
+            fstore.collection("Users").document(UserID).collection("draft").document(FileName).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Toast.makeText(getApplicationContext(), "Saved as Draft",Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.i("Draft", "onFailure: "+e.getMessage());
+                }
+            });
+        }
 
     }
 }
