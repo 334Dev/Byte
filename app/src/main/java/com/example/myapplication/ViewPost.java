@@ -1,18 +1,15 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,14 +21,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -45,7 +39,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class ViewPost extends AppCompatActivity implements commentAdapter.SelectedItem {
 
@@ -58,13 +51,14 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
     private ImageView upvoteButton;
     private TextView upvoteCountText;
     private FirebaseAuth mAuth;
+    private ImageView reportBtn;
 
     private View parentLayout;
     private StorageReference storageReference;
     private String UserID;
-    private List<String> savedId,upvotearray;
+    private List<String> savedId,upvotearray,reportUser,reportList;
     private String id;
-    private Double upVoteCount;
+    private Double upVoteCount,trend;
 
 
     //comments
@@ -144,9 +138,15 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         upvoteButton=findViewById(R.id.Upvotebtn);
         upvoteCountText=findViewById(R.id.UpvoteCount);
 
+
+        reportBtn=findViewById(R.id.reportBtn);
+
         //getting postID intent
         Intent intent=getIntent();
         id=intent.getStringExtra("PostId"); // getting PostId from Intent
+
+
+
 
 
         //passing the text which contain html code to web view
@@ -192,6 +192,9 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
         getUpvoteArray();
 
+        //checking if already reported
+        getReportArray();
+
         //set Comments
         setComments();
 
@@ -215,6 +218,67 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         });
 
 
+
+
+
+        reportBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               if(reportBtn.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.reported).getConstantState()){
+                    Snackbar.make(parentLayout,"You already reported this post.If found against our community guidelines we will remove it",Snackbar.LENGTH_LONG).show();
+                }
+                else if(reportBtn.getDrawable().getConstantState()==getResources().getDrawable(R.drawable.ic_baseline_report_24).getConstantState()){                   AlertDialog.Builder alert = new AlertDialog.Builder(ViewPost.this);
+                   alert.setTitle("Report the post");
+                   alert.setMessage("Tell us the reason so we could speed up the process");
+                   final String[] value = new String[1];
+                   final EditText input = new EditText(ViewPost.this);
+                   alert.setView(input);
+                   alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                       public void onClick(DialogInterface dialog, int whichButton) {
+                           String reportReason = input.getText().toString();
+                           reportUser.add(mAuth.getCurrentUser().getUid());
+                          // reportList.add(reportReason);
+                           Snackbar.make(parentLayout,reportReason,Snackbar.LENGTH_LONG);
+                           final Map<String, Object> reportMap = new HashMap<>();
+                          // final Map<String, Object> reportReasonMap = new HashMap<>();
+                           reportMap.put("reportUser", reportUser);
+                          // reportReasonMap.put("reportList", reportList);
+                           fstore.collection("Post").document(id).update(reportMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                               @Override
+                               public void onSuccess(Void aVoid) {
+                                   /*fstore.collection("Post").document(id).update(reportReasonMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                       @Override
+                                       public void onSuccess(Void aVoid) {*/
+                                           fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                               @Override
+                                               public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                   Double reportCount = documentSnapshot.getDouble("Report");
+                                                   fstore.collection("Post").document(id).update("Report", reportCount + 1);
+                                                   getReportArray();
+                                               }
+                                           });
+                                /*       }
+                                   });*/
+
+                               }
+                           });
+
+                       }
+                   });
+                   alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                       public void onClick(DialogInterface dialog, int whichButton) {
+                           //cancelled
+                       }
+                   });
+                   alert.show();
+                }
+            }
+        });
+
+
+
+
+
          upvoteButton.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View view) {
@@ -229,7 +293,9 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                              fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                  @Override
                                  public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                      upVoteCount= (Double) documentSnapshot.get("UpVote");
+                                      upVoteCount=documentSnapshot.getDouble("UpVote");
+                                      trend=documentSnapshot.getDouble("trend");
+                                      fstore.collection("Post").document(id).update("Trend",trend-1);
                                       fstore.collection("Post").document(id).update("UpVote",upVoteCount-1);
                                       setUpvoteCount();
                                  }
@@ -255,6 +321,8 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                                  @Override
                                  public void onSuccess(DocumentSnapshot documentSnapshot) {
                                      upVoteCount= (Double) documentSnapshot.get("UpVote");
+                                     trend=documentSnapshot.getDouble("trend");
+                                     fstore.collection("Post").document(id).update("Trend",trend-1);
                                      fstore.collection("Post").document(id).update("UpVote",upVoteCount+1);
                                      setUpvoteCount();
                                  }
@@ -320,12 +388,28 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     }
 
+    private void getReportArray() {
+        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                reportUser= (List<String>) documentSnapshot.get("reportUser");
+                if(reportUser.contains(mAuth.getCurrentUser().getUid())){
+                    reportBtn.setImageResource(R.drawable.reported);
+                }
+                else{
+                    reportBtn.setImageResource(R.drawable.ic_baseline_report_24);
+                }
+            }
+        });
+
+    }
+
     private void setUpvoteCount() {
 
         fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                  upVoteCount= (Double) documentSnapshot.get("UpVote");
+                  upVoteCount= documentSnapshot.getDouble("UpVote");
                   upvoteCountText.setText(String.format("%.0f",upVoteCount));
 
             }

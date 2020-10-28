@@ -108,9 +108,9 @@
         android:id="@+id/imageViewSaved"
         android:layout_width="45dp"
         android:layout_height="60dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="228dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toEndOf="@+id/UpvoteCount"
         app:layout_constraintTop_toBottomOf="@+id/webView"
         app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
 
@@ -190,6 +190,21 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/addComment"
         app:layout_constraintTop_toBottomOf="@+id/addComment" />
+
+    <ImageView
+        android:id="@+id/reportBtn"
+        android:layout_width="44dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewSaved"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.652"
+        app:layout_constraintStart_toEndOf="@+id/imageViewSaved"
+        app:layout_constraintTop_toTopOf="@+id/imageViewSaved"
+        app:layout_constraintVertical_bias="0.476"
+        app:srcCompat="@drawable/ic_baseline_report_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

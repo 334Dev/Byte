@@ -80,6 +80,8 @@ public class CreatePost extends AppCompatActivity {
     private ImageButton insert_link_btn;
     private List<String> savedId;
     private List<String> upvoteArray;
+    private List<String> reportUser;
+    private List<String> reportList;
 
 
     private List<String> keyword;
@@ -94,9 +96,13 @@ public class CreatePost extends AppCompatActivity {
         //mEditor(~RichEditor Library) settings
         savedId=new ArrayList<>();
         upvoteArray=new ArrayList<>();
+        reportUser=new ArrayList<>();
+        reportList=new ArrayList<>();
 
         savedId.add("demoUser");
         upvoteArray.add("demoUser");
+        reportUser.add("demoUser");
+        reportList.add("demoReport");
 
 
         mEditor=(RichEditor)findViewById(R.id.editor);
@@ -185,6 +191,7 @@ public class CreatePost extends AppCompatActivity {
                 alert.setTitle("Youtube");
                 alert.setMessage("Enter the Youtube Link here");
                 final String[] value = new String[1];
+
 
                 //EditText view to get user input
                 final EditText input = new EditText(CreatePost.this);
@@ -370,6 +377,8 @@ public class CreatePost extends AppCompatActivity {
                 map.put("trend",date.getTime());
                 map.put("SavedId",savedId);
                 map.put("Owner",UserID);
+                map.put("reportUser",reportUser);
+                map.put("reportList",reportList);
 
 
                 //add post info in firestore as map

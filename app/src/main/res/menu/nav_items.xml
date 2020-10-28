@@ -6,14 +6,15 @@
         android:icon="@drawable/ic_round_home_24"
         android:title="Home"
         android:id="@+id/nav_home_id"/>
-    <item
-        android:icon="@drawable/ic_baseline_speaker_notes_24"
-        android:title="Your Feed"
-        android:id="@+id/nav_feed_id"/>
+
     <item
         android:icon="@drawable/quick"
         android:title="Quick"
         android:id="@+id/nav_saved_id"/>
+    <item
+        android:icon="@drawable/ic_baseline_speaker_notes_24"
+        android:title="Your Feed"
+        android:id="@+id/nav_feed_id"/>
     <item
         android:icon="@drawable/ic_baseline_person_24"
         android:title="@string/nav_profile"
