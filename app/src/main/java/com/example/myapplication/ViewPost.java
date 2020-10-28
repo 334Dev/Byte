@@ -361,7 +361,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
     }
 
-    private void addCommenttoFstore(String username) {
+    private void addCommenttoFstore(final String username) {
         fstore=FirebaseFirestore.getInstance();
         Date date=new Date();
         SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy hh:mm");
@@ -420,103 +420,6 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
         });
     }
 
-    private void onCreateCheckUpVote() {
-        fstore.collection("Post").document(id).collection("upVotes")
-                .whereEqualTo("ProfileId",UserID).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if(value.isEmpty()){
-                    Log.i("status", "onEvent: Has not upVoted");
-                    VOTE_FLAG=false;
-                }else{
-                    //set button drawable if already voted
-                    upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
-                    VOTE_FLAG=true;
-                }
-            }
-        });
-    }
-
-    private void addUserUpvote() {
-        fstore=FirebaseFirestore.getInstance();
-        Map<String,Object> UpvoteMap=new HashMap<>();
-        UpvoteMap.put("ProfileId",UserID);
-        String name= UUID.randomUUID().toString();
-        fstore.collection("Post").document(id).collection("upVotes").document(name).set(UpvoteMap)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            //setUpVote
-                            fstore.collection("Post").document(id).update("UpVote", upVoteCount + 1).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    upvoteButton.setImageResource(R.drawable.thumbs_up_clicked);
-                                    upVoteCount=upVoteCount+1;
-                                    upvoteCountText.setText(String.format("%.0f",upVoteCount));
-                                    VOTE_FLAG=true;
-                                    Log.i("AddUser", "onSuccess"+VOTE_FLAG);
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.i("AddUser", "onFailure: "+e.getMessage());
-                                }
-                            });
-
-                        }
-                    }
-                });
-    }
-
-    private void removeUserUpdate() {
-        fstore=FirebaseFirestore.getInstance();
-        fstore.collection("Post").document(id).collection("upVotes")
-                .whereEqualTo("ProfileId",UserID).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                for(DocumentSnapshot doc: value){
-                    doc.getReference().delete();
-                    fstore.collection("Post").document(id).update("UpVote", upVoteCount -1).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            upvoteButton.setImageResource(R.drawable.ic_baseline_thumb_up_alt_24);
-                            upVoteCount=upVoteCount-1;
-                            upvoteCountText.setText(String.format("%.0f",upVoteCount));
-                            VOTE_FLAG=false;
-                            Log.i("removeUser", "onSuccess"+VOTE_FLAG);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.i("removeUser", "onFailure: "+e.getMessage());
-                        }
-                    });
-                }
-            }
-        });
-
-    }
-
-
-    // getting value of number of UpVote from database and showing in this activity..
-    private void updateUpVoteCounts() {
-
-        fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                upVoteCount=documentSnapshot.getDouble("UpVote");
-                upvoteCountText.setText(String.format("%.0f",upVoteCount));
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
 
 
    private void getSavedId() {

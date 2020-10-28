@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -60,16 +61,20 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
    private Query query;
    private NestedScrollView scrollHome;
    private Integer index=0;
+   private static Integer LAST_VISIBLE=1;
+    private DocumentSnapshot lastVisible;
 
    //loading dialog box
    private AlertDialog.Builder builder;
    private AlertDialog show;
    private Integer LAST_SIZE=0;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root=inflater.inflate(R.layout.fragment_home,container,false);
+
 
         trendViewPager=root.findViewById(R.id.trendViewPager);
 
@@ -112,6 +117,7 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
         firestore=FirebaseFirestore.getInstance();
 
         item_list=new ArrayList<>();
+
         latestAdapter= new LatestAdapter(item_list,this);
         latestAdapter.setHasStableIds(true);
         recyclerView.setAdapter(latestAdapter);
@@ -139,24 +145,11 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
 
         recyclerView.setNestedScrollingEnabled(false);
 
-        scrollHome.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged()
-            {
-                View view = (View)scrollHome.getChildAt(scrollHome.getChildCount() - 1);
-
-                int diff = (view.getBottom() - (scrollHome.getHeight() + scrollHome
-                        .getScrollY()));
-
-                if (diff == 0) {
-                    loadLatestPost();
-                }
-            }
-        });
 
         return root;
 
     }
+
 
     private void setUpVotePost() {
         firestore.collection("Post")
@@ -216,67 +209,87 @@ public class HomeFragment extends Fragment implements LatestAdapter.SelectedItem
     }
 
     private void setLatestPost() {
-            query=firestore.collection("Post")
-                    .orderBy("time", Query.Direction.DESCENDING)
-                    .whereIn("tag",Tag)
-                    .limit(10);
-            query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                    if(value.isEmpty()){
-                        Log.i("PostEmpty", "onEvent: Empty");
-                    }else {
-                        for (QueryDocumentSnapshot doc : value) {
-
-                            Log.i("PostL", "onEvent:" + doc.getId());
-                            Model_Latest set = doc.toObject(Model_Latest.class);
-                            item_list.add(set);
-                            latestAdapter.notifyDataSetChanged();
-                            show.dismiss();
-
-                        }
-                        index=index+value.size()-1;
-                        Log.i("PostIndex", "onEvent: "+index);
-                        lastLatestPost = value.getDocuments().get(value.size() - 1);
-                        Log.i("PostLast", "onEvent: "+item_list.size());
-                        Log.i("PostLast", "onEvent: "+lastLatestPost.getId());
+        LAST_VISIBLE=1;
+        query=firestore.collection("Post")
+                .orderBy("time", Query.Direction.DESCENDING)
+                .whereIn("tag",Tag)
+                .limit(10);
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if(queryDocumentSnapshots.isEmpty()){
+                    Log.i("LatestPost", "onSuccess: Empty");
+                }else{
+                    //item_list.clear();
+                    List<DocumentSnapshot> snapshotList=queryDocumentSnapshots.getDocuments();
+                    for(DocumentSnapshot snapshot:snapshotList){
+                        item_list.add(snapshot.toObject(Model_Latest.class));
                     }
+                    latestAdapter.notifyDataSetChanged();
+                    lastVisible = snapshotList.get(snapshotList.size() -1);
+                    show.dismiss();
+                    if(snapshotList.size()<10){
+                        LAST_VISIBLE=0;
+                    }
+
+                    scrollHome.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                        @Override
+                        public void onScrollChanged()
+                        {
+                            View view = (View)scrollHome.getChildAt(scrollHome.getChildCount() - 1);
+
+                            int diff = (view.getBottom() - (scrollHome.getHeight() + scrollHome
+                                    .getScrollY()));
+
+                            if (diff == 0 && LAST_VISIBLE==1 ) {
+                                loadLatestPost();
+                            }
+                        }
+                    });
                 }
-            });
+            }
+        });
 
 
     }
 
     private void loadLatestPost(){
-        query=firestore.collection("Post")
+        Query nextquery=firestore.collection("Post")
                 .orderBy("time", Query.Direction.DESCENDING)
                 .whereIn("tag",Tag)
-                .startAt(lastLatestPost)
+                .startAfter(lastVisible)
                 .limit(10);
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        nextquery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if(value.isEmpty()){
-                    Log.i("PostEmpty", "onEvent: Empty");
-                }else {
-                    List<Model_Latest> inputList;
-                    inputList=new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : value) {
-
-                        Log.i("PostL", "onEvent:" + doc.getId());
-                        Model_Latest set = doc.toObject(Model_Latest.class);
-                        inputList.add(set);
-                        show.dismiss();
-
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if(queryDocumentSnapshots.isEmpty()){
+                    Log.i("LatestPost", "onSuccess: Empty");
+                }else if(item_list.size()%10==0) {
+                    List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
+                    for(DocumentSnapshot doc: snapshots){
+                        item_list.add(doc.toObject(Model_Latest.class));
                     }
-                        item_list.addAll(index, inputList);
-                        latestAdapter.notifyItemRangeChanged(index, value.size());
+                    latestAdapter.notifyDataSetChanged();
+                    lastVisible=snapshots.get(snapshots.size()-1);
+                    if(snapshots.size()<10){
+                        Log.i("LatestPost", "onScrollChanged: limit reached");
+                        LAST_VISIBLE=0;
+                    }
+                    scrollHome.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                        @Override
+                        public void onScrollChanged()
+                        {
+                            View view = (View)scrollHome.getChildAt(scrollHome.getChildCount() - 1);
 
-                        index = index + value.size();
+                            int diff = (view.getBottom() - (scrollHome.getHeight() + scrollHome
+                                    .getScrollY()));
 
-                    Log.i("PostIndex", "onEvent: "+index);
-                    Log.i("PostLast", "onEvent: "+item_list.size());
-                    Log.i("PostLast", "onEvent: "+lastLatestPost.getId());
+                            if (diff == 0 && LAST_VISIBLE==1 ) {
+                                Log.i("LatestPost", "onScrollChanged: More");
+                                loadLatestPost();
+                            }
+                        }
+                    });
                 }
             }
         });
