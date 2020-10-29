@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -67,7 +68,7 @@ public class ProfileFragment extends Fragment implements latestAdapter.SelectedI
     private DocumentSnapshot lastProfilePost;
     private Query query;
     private ScrollView scrollView;
-    private Integer index=0;
+    private static Integer LAST_VISIBLE=0,IS_LOADING=0;
 
     @Nullable
     @Override
@@ -181,68 +182,96 @@ public class ProfileFragment extends Fragment implements latestAdapter.SelectedI
     }
 
     private void loadProfilePost() {
-        query=fstore.collection("Post")
+        LAST_VISIBLE=1;
+        IS_LOADING=1;
+        Query nextquery=fstore.collection("Post")
                 .orderBy("time", Query.Direction.DESCENDING)
                 .whereEqualTo("Owner",UserID)
                 .startAfter(lastProfilePost)
                 .limit(1000);
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        nextquery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                    List<modelLatest> inputList;
-                    inputList=new ArrayList<>();
-                    if(value.isEmpty()){
-                        Log.i("onLoad", "onEvent: Empty");
-                    }else {
-                        for (QueryDocumentSnapshot doc : value) {
-
-                            Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                            modelLatest set = doc.toObject(modelLatest.class);
-                            inputList.add(set);
-                            show.dismiss();
-
-                        }
-                        ProfilePostsItem.addAll(index, inputList);
-                        ProfilePostsAdapter.notifyItemRangeChanged(index, value.size());
-                        index = index + value.size();
-                        lastProfilePost = value.getDocuments().get(value.size() - 1);
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if(queryDocumentSnapshots.isEmpty()){
+                    Log.i("LatestPost", "onSuccess: Empty");
+                }else if(ProfilePostsItem.size()%10==0) {
+                    List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
+                    for(DocumentSnapshot doc: snapshots){
+                        ProfilePostsItem.add(doc.toObject(modelLatest.class));
                     }
+                    ProfilePostsAdapter.notifyDataSetChanged();
+                    lastProfilePost=snapshots.get(snapshots.size()-1);
+                    IS_LOADING=0;
+                    if(snapshots.size()<10){
+                        Log.i("LatestPost", "onScrollChanged: limit reached");
+                        LAST_VISIBLE=0;
+                    }
+                    scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                        @Override
+                        public void onScrollChanged()
+                        {
+                            View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
 
+                            int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
+                                    .getScrollY()));
 
+                            if (diff == 0 && LAST_VISIBLE==1 && IS_LOADING==0) {
+                                Log.i("LatestPost", "onScrollChanged: More");
+                                loadProfilePost();
+                            }
+                        }
+                    });
+                }
             }
         });
 
     }
 
     private void setProfilePosts() {
+        LAST_VISIBLE=1;
+        IS_LOADING=1;
 
-             query=fstore.collection("Post")
+        query=fstore.collection("Post")
                      .orderBy("time", Query.Direction.DESCENDING)
                      .whereEqualTo("Owner",UserID)
-                     .limit(1000);
+                     .limit(10);
 
-         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-             @Override
-             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-               if(value.isEmpty())
-                   Toast.makeText(getContext(),"You have no posts",Toast.LENGTH_SHORT).show();
-               else {
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if(queryDocumentSnapshots.isEmpty()){
+                    Log.i("LatestPost", "onSuccess: Empty");
+                    Snackbar.make(getActivity().findViewById(android.R.id.content),"You have no post",Snackbar.LENGTH_SHORT).show();
+                }else{
+                    //item_list.clear();
+                    List<DocumentSnapshot> snapshotList=queryDocumentSnapshots.getDocuments();
+                    for(DocumentSnapshot snapshot:snapshotList){
+                        ProfilePostsItem.add(snapshot.toObject(modelLatest.class));
+                    }
+                    ProfilePostsAdapter.notifyDataSetChanged();
+                    lastProfilePost = snapshotList.get(snapshotList.size() -1);
+                    show.dismiss();
+                    if(snapshotList.size()<10){
+                        LAST_VISIBLE=0;
+                    }
+                    IS_LOADING=0;
+                    scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                        @Override
+                        public void onScrollChanged()
+                        {
+                            View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
 
-                   for (QueryDocumentSnapshot doc : value) {
+                            int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
+                                    .getScrollY()));
 
-                       Log.i("dataRecieveCHeck", "onEvent:" + value.size());
-                       modelLatest set = doc.toObject(modelLatest.class);
-                       ProfilePostsItem.add(set);
-                       ProfilePostsAdapter.notifyDataSetChanged();
-                       show.dismiss();
-
-                   }
-                   index=index+value.size()-1;
-                   lastProfilePost = value.getDocuments().get(value.size() - 1);
-               }
-
-             }
-         });
+                            if (diff == 0 && LAST_VISIBLE==1 && IS_LOADING==0) {
+                                loadProfilePost();
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
 
 

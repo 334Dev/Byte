@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -109,7 +110,7 @@ public class QuickFragment extends Fragment implements quickAdapter.SelectedPage
                 @Override
                 public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                     if(value.isEmpty()){
-                        Toast.makeText(getContext(),"No posts to show",Toast.LENGTH_SHORT).show();
+                        Snackbar.make(getActivity().findViewById(android.R.id.content),"No Quick to show, be the first one",Snackbar.LENGTH_SHORT).show();
 
                     }else {
                         for (QueryDocumentSnapshot doc : value) {

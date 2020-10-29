@@ -40,9 +40,8 @@ public class FeedFragment extends Fragment implements latestAdapter.SelectedItem
     private FirebaseAuth mAuth;
     private String UserID;
     private List<String> following;
-    private Query query;
     private DocumentSnapshot LastPost;
-    private Integer index=0;
+    private Integer LAST_VISIBLE=0;
     private ScrollView scrollView;
 
     @Nullable
@@ -94,88 +93,94 @@ public class FeedFragment extends Fragment implements latestAdapter.SelectedItem
             }
         });
 
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged()
-            {
-                View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
-
-                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
-                        .getScrollY()));
-
-                if (diff == 0) {
-                    loadFollowingPost();
-                }
-            }
-        });
-
         return v;
     }
 
     private void getFollowingPosts() {
+        LAST_VISIBLE=1;
         if(following.isEmpty()){
             Toast.makeText(getContext(),"You Don't follow anyone",Toast.LENGTH_LONG).show();
         }else {
-                query = firestore.collection("Post")
+               Query query = firestore.collection("Post")
                         .whereIn("Owner", following)
                         .orderBy("time", Query.Direction.DESCENDING)
                         .limit(10);
-                query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if(value.isEmpty()){
-                            Log.i("PostEmpty", "onEvent: Empty");
-                        }else {
-                            for (QueryDocumentSnapshot doc : value) {
-
-                                Log.i("PostL", "onEvent:" + doc.getId());
-                                modelLatest set = doc.toObject(modelLatest.class);
-                                feedModels.add(set);
-                                feedAdapter.notifyDataSetChanged();
-
-                            }
-                            index=index+value.size()-1;
-                            Log.i("PostIndex", "onEvent: "+index);
-                            LastPost = value.getDocuments().get(value.size() - 1);
-                            Log.i("PostLast", "onEvent: "+feedModels.size());
-                            Log.i("PostLast", "onEvent: "+LastPost.getId());
+            query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    if(queryDocumentSnapshots.isEmpty()){
+                        Log.i("LatestPost", "onSuccess: Empty");
+                    }else{
+                        //item_list.clear();
+                        List<DocumentSnapshot> snapshotList=queryDocumentSnapshots.getDocuments();
+                        for(DocumentSnapshot snapshot:snapshotList){
+                            feedModels.add(snapshot.toObject(modelLatest.class));
                         }
+                        feedAdapter.notifyDataSetChanged();
+                        LastPost = snapshotList.get(snapshotList.size() -1);
+                        if(snapshotList.size()<10){
+                            LAST_VISIBLE=0;
+                        }
+
+                        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                            @Override
+                            public void onScrollChanged()
+                            {
+                                View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
+
+                                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
+                                        .getScrollY()));
+
+                                if (diff == 0 && LAST_VISIBLE==1 ) {
+                                    loadFollowingPost();
+                                }
+                            }
+                        });
                     }
-                });
+                }
+            });
 
         }
     }
 
     public void loadFollowingPost(){
-        query = firestore.collection("Post")
+        LAST_VISIBLE=1;
+        Query nextquery = firestore.collection("Post")
                 .whereIn("Owner", following)
                 .orderBy("time", Query.Direction.DESCENDING)
-                .startAt(LastPost)
+                .startAfter(LastPost)
                 .limit(10);
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        nextquery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if(value.isEmpty()){
-                    Log.i("PostEmpty", "onEvent: Empty");
-                }else {
-                    List<modelLatest> inputList;
-                    inputList=new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : value) {
-
-                        Log.i("PostL", "onEvent:" + doc.getId());
-                        modelLatest set = doc.toObject(modelLatest.class);
-                        inputList.add(set);
-
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if(queryDocumentSnapshots.isEmpty()){
+                    Log.i("LatestPost", "onSuccess: Empty");
+                }else if(feedModels.size()%10==0) {
+                    List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
+                    for(DocumentSnapshot doc: snapshots){
+                        feedModels.add(doc.toObject(modelLatest.class));
                     }
-                    feedModels.addAll(index,inputList);
-                    feedAdapter.notifyItemRangeChanged(index,value.size());
+                    feedAdapter.notifyDataSetChanged();
+                    LastPost=snapshots.get(snapshots.size()-1);
+                    if(snapshots.size()<10){
+                        Log.i("LatestPost", "onScrollChanged: limit reached");
+                        LAST_VISIBLE=0;
+                    }
+                    scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                        @Override
+                        public void onScrollChanged()
+                        {
+                            View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
 
-                    index=index+value.size();
-                    LastPost = value.getDocuments().get(value.size() - 1);
+                            int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
+                                    .getScrollY()));
 
-                    Log.i("PostIndex", "onEvent: "+index);
-                    Log.i("PostLast", "onEvent: "+feedModels.size());
-                    Log.i("PostLast", "onEvent: "+LastPost.getId());
+                            if (diff == 0 && LAST_VISIBLE==1 ) {
+                                Log.i("LatestPost", "onScrollChanged: More");
+                                loadFollowingPost();
+                            }
+                        }
+                    });
                 }
             }
         });

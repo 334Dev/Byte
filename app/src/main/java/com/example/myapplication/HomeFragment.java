@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
@@ -48,11 +50,14 @@ public class HomeFragment extends Fragment implements com.example.myapplication.
    private Query query;
    private NestedScrollView scrollHome;
    private static Integer LAST_VISIBLE=1;
+   private static Integer IS_LOADING=0;
     private DocumentSnapshot lastVisible;
 
    //loading dialog box
    private AlertDialog.Builder builder;
    private AlertDialog show;
+
+   private ProgressBar loadPost;
 
 
     @Nullable
@@ -64,6 +69,7 @@ public class HomeFragment extends Fragment implements com.example.myapplication.
         trendViewPager=root.findViewById(R.id.trendViewPager);
 
         scrollHome=root.findViewById(R.id.scrollHome);
+        loadPost=root.findViewById(R.id.loadPost);
 
         upVoteRecycler=root.findViewById(R.id.upvoteView);
         upVoteRecycler.setHasFixedSize(true);
@@ -193,6 +199,7 @@ public class HomeFragment extends Fragment implements com.example.myapplication.
 
     private void setLatestPost() {
         LAST_VISIBLE=1;
+        IS_LOADING=1;
         query=firestore.collection("Post")
                 .orderBy("time", Query.Direction.DESCENDING)
                 .whereIn("tag",Tag)
@@ -214,7 +221,7 @@ public class HomeFragment extends Fragment implements com.example.myapplication.
                     if(snapshotList.size()<10){
                         LAST_VISIBLE=0;
                     }
-
+                    IS_LOADING=0;
                     scrollHome.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
                         @Override
                         public void onScrollChanged()
@@ -224,7 +231,8 @@ public class HomeFragment extends Fragment implements com.example.myapplication.
                             int diff = (view.getBottom() - (scrollHome.getHeight() + scrollHome
                                     .getScrollY()));
 
-                            if (diff == 0 && LAST_VISIBLE==1 ) {
+                            if (diff == 0 && LAST_VISIBLE==1 && IS_LOADING==0) {
+                                loadPost.setVisibility(View.VISIBLE);
                                 loadLatestPost();
                             }
                         }
@@ -237,6 +245,7 @@ public class HomeFragment extends Fragment implements com.example.myapplication.
     }
 
     private void loadLatestPost(){
+        IS_LOADING=1;
         Query nextquery=firestore.collection("Post")
                 .orderBy("time", Query.Direction.DESCENDING)
                 .whereIn("tag",Tag)
@@ -247,13 +256,16 @@ public class HomeFragment extends Fragment implements com.example.myapplication.
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if(queryDocumentSnapshots.isEmpty()){
                     Log.i("LatestPost", "onSuccess: Empty");
+                    loadPost.setVisibility(View.GONE);
                 }else if(item_list.size()%10==0) {
                     List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
                     for(DocumentSnapshot doc: snapshots){
                         item_list.add(doc.toObject(modelLatest.class));
                     }
+                    loadPost.setVisibility(View.GONE);
                     latestAdapter.notifyDataSetChanged();
                     lastVisible=snapshots.get(snapshots.size()-1);
+                    IS_LOADING=0;
                     if(snapshots.size()<10){
                         Log.i("LatestPost", "onScrollChanged: limit reached");
                         LAST_VISIBLE=0;
@@ -267,8 +279,9 @@ public class HomeFragment extends Fragment implements com.example.myapplication.
                             int diff = (view.getBottom() - (scrollHome.getHeight() + scrollHome
                                     .getScrollY()));
 
-                            if (diff == 0 && LAST_VISIBLE==1 ) {
+                            if (diff == 0 && LAST_VISIBLE==1 && IS_LOADING==0) {
                                 Log.i("LatestPost", "onScrollChanged: More");
+                                loadPost.setVisibility(View.VISIBLE);
                                 loadLatestPost();
                             }
                         }
