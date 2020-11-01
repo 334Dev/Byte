@@ -47,6 +47,7 @@ public class AnotherUserProfile extends AppCompatActivity implements latestAdapt
     private TextView posts;
     private TextView followers;
     private TextView following;
+    private TextView username;
     private CircleImageView AnotherUserProfileImageView;
     private ImageView CoverPhoto;
     private Button FollowButton;
@@ -85,6 +86,7 @@ public class AnotherUserProfile extends AppCompatActivity implements latestAdapt
         followers=findViewById(R.id.followers);
         following=findViewById(R.id.following);
         posts=findViewById(R.id.post);
+        username=findViewById(R.id.username);
 
         builder=new AlertDialog.Builder(AnotherUserProfile.this);
         builder.setView(R.layout.loading_dailog);
@@ -341,9 +343,11 @@ public class AnotherUserProfile extends AppCompatActivity implements latestAdapt
                 Double mFollowers=documentSnapshot.getDouble("Followers");
                 Double mFollowing=documentSnapshot.getDouble("Following");
                 Double mPost=documentSnapshot.getDouble("Post");
+                String UserName=documentSnapshot.getString("Username");
                 followers.setText(String.format("%.0f", mFollowers));
                 following.setText(String.format("%.0f", mFollowing));
                 posts.setText(String.format("%.0f", mPost));
+                username.setText(UserName);
 
 
 
