@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -38,13 +39,11 @@ public class HomeActivity extends AppCompatActivity {
         fstore=FirebaseFirestore.getInstance();
         mAuth=FirebaseAuth.getInstance();
         UserID=mAuth.getCurrentUser().getUid();
-
         homefragment=new HomeFragment();
         feedFragment=new FeedFragment();
         quickFragment =new QuickFragment();
         profileFragment=new ProfileFragment();
         addBtn=findViewById(R.id.AddPostButton);
-
         addBtn.inflate(R.menu.floatingbtn_menu);
         addBtn.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
             @Override
@@ -73,15 +72,19 @@ public class HomeActivity extends AppCompatActivity {
                 {
                     case R.id.nav_home_id:
                         replaceFragment(homefragment);
+                        addBtn.setVisibility(View.VISIBLE);
                         break;
                     case R.id.nav_profile_id:
                         replaceFragment(profileFragment);
+                        addBtn.setVisibility(View.VISIBLE);
                         break;
                     case R.id.nav_feed_id:
                         replaceFragment(feedFragment);
+                        addBtn.setVisibility(View.VISIBLE);
                         break;
                     case R.id.nav_saved_id:
                         replaceFragment(quickFragment);
+                        addBtn.setVisibility(View.INVISIBLE);
                         break;
                     default:
                         return false;

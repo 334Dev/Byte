@@ -109,7 +109,12 @@ public class latestAdapter extends RecyclerView.Adapter<latestAdapter.mViewholde
         }
         public void setViewCount(Integer ViewCount){
             viewCount=view.findViewById(R.id.view_count);
-            viewCount.setText(ViewCount.toString());
+            if(ViewCount>=1000){
+                ViewCount=ViewCount/1000;
+                viewCount.setText(ViewCount.toString()+"k");
+            }
+            else
+               viewCount.setText(ViewCount.toString());
         }
 
         public String getTimeAgo(long time) {
