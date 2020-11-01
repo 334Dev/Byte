@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,7 +54,7 @@ public class ProfileFragment extends Fragment implements latestAdapter.SelectedI
     private CircleImageView profileImageView;
     private TextView userName;
     private Button Logout;
-    private Button SavedBtn;
+    private Button SavedBtn, editTag ;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String UserID;
     private StorageReference storageReference;
@@ -69,6 +70,7 @@ public class ProfileFragment extends Fragment implements latestAdapter.SelectedI
     private Query query;
     private ScrollView scrollView;
     private static Integer LAST_VISIBLE=0,IS_LOADING=0;
+    private View parentlayout;
 
     @Nullable
     @Override
@@ -80,9 +82,11 @@ public class ProfileFragment extends Fragment implements latestAdapter.SelectedI
         userName = root.findViewById(R.id.username);
         Logout = root.findViewById(R.id.logoutBtn);
         SavedBtn=root.findViewById(R.id.SavedPostBtn);
+        editTag=root.findViewById(R.id.editTag);
         coverImage=root.findViewById(R.id.dogBlurImageView);
 
         scrollView= root.findViewById(R.id.scrollProfile);
+        parentlayout=getActivity().findViewById(android.R.id.content);
 
         //Post, Follower, Following
         post=root.findViewById(R.id.post);
@@ -114,18 +118,11 @@ public class ProfileFragment extends Fragment implements latestAdapter.SelectedI
 
         profileRecyclerView.setNestedScrollingEnabled(false);
 
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+        editTag.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onScrollChanged()
-            {
-                View view = (View)scrollView.getChildAt(scrollView.getChildCount() - 1);
-
-                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
-                        .getScrollY()));
-
-                if (diff == 0) {
-                    loadProfilePost();
-                }
+            public void onClick(View v) {
+                Intent i=new Intent(getActivity(), EditTags.class);
+                startActivity(i);
             }
         });
 
@@ -241,7 +238,10 @@ public class ProfileFragment extends Fragment implements latestAdapter.SelectedI
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if(queryDocumentSnapshots.isEmpty()){
                     Log.i("LatestPost", "onSuccess: Empty");
-                    Snackbar.make(getActivity().findViewById(android.R.id.content),"You have no post",Snackbar.LENGTH_SHORT).show();
+                    Snackbar snack =Snackbar.make(parentlayout,
+                            "You have no post",Snackbar.LENGTH_SHORT);
+                    snack.show();
+
                 }else{
                     //item_list.clear();
                     List<DocumentSnapshot> snapshotList=queryDocumentSnapshots.getDocuments();

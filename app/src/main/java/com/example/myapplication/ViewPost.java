@@ -190,6 +190,9 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
             }
         });
 
+        //Trending Algorithm- Views
+        increaseTrending(0.5);
+
 
         //getting post owner
         getPostOwner();
@@ -310,7 +313,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                Double reportCount = documentSnapshot.getDouble("Report");
                                                fstore.collection("Post").document(id).update("Report", reportCount + 1);
-
+                                                increaseTrending(-2);
                                                //adding the user to database of reportList
                                                setReportArray();
 
@@ -350,8 +353,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                                  @Override
                                  public void onSuccess(DocumentSnapshot documentSnapshot) {
                                       upVoteCount=documentSnapshot.getDouble("UpVote");
-                                      trend=documentSnapshot.getDouble("trend");
-                                      fstore.collection("Post").document(id).update("Trend",trend-1);
+                                      increaseTrending(-2);
                                       fstore.collection("Post").document(id).update("UpVote",upVoteCount-1);
                                       setUpvoteCount();
                                  }
@@ -381,10 +383,9 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                                      upVoteCount=documentSnapshot.getDouble("UpVote");
 
                                      //getting trend points of the post
-                                     trend=documentSnapshot.getDouble("trend");
+                                     increaseTrending(2);
 
                                      //updating trend and upVote
-                                     fstore.collection("Post").document(id).update("Trend",trend-1);
                                      fstore.collection("Post").document(id).update("UpVote",upVoteCount+1);
 
                                      //increasing upVote Count
@@ -419,6 +420,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                      public void onSuccess(Void aVoid) {
                          saveButton.setImageResource(R.drawable.ic_outline_bookmark_border_24);
                          savedId.clear();
+                         increaseTrending(-4);
 
                      }
                  }).addOnFailureListener(new OnFailureListener() {
@@ -438,6 +440,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
                      @Override
                      public void onSuccess(Void aVoid) {
                          saveButton.setImageResource(R.drawable.ic_baseline_bookmark_24);
+                         increaseTrending(4);
                      }
                  }).addOnFailureListener(new OnFailureListener() {
                      @Override
@@ -450,6 +453,20 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
      });
 
 
+    }
+
+    private void increaseTrending(double v) {
+        fstore.collection("Post").document(id).update("trend",FieldValue.increment(v)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.i("increaseTrend", "onSuccess: Increased");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("increaseTrend", "onFailure: "+e.getMessage());
+            }
+        });
     }
 
     private void decreaseTotalPost() {
@@ -568,7 +585,7 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
     private void addCommenttoFstore(final String username) {
         fstore=FirebaseFirestore.getInstance();
         Date date=new Date();
-        SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy hh:mm");
+        SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy HH:mm");
         final String sDate=sdf.format(date);
         try {
             date=sdf.parse(sDate);

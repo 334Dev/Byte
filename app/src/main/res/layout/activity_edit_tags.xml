@@ -4,42 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/Background"
-    android:animateLayoutChanges="true"
-    tools:context=".SignIn">
-
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/circleImageView"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/ic_baseline_person_120"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/finishBtn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="72dp"
-        android:layout_marginEnd="72dp"
-        android:layout_marginBottom="40dp"
-        android:background="@drawable/accentbtn"
-        android:text="Finish"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:transitionName="loginT"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
-
+    tools:context=".EditTags">
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
@@ -54,7 +19,7 @@
 
 
         <CheckBox
-            android:id="@+id/radioButton1"
+            android:id="@+id/radio1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -63,7 +28,7 @@
             android:textColor="@color/plainText" />
 
         <CheckBox
-            android:id="@+id/radioButton2"
+            android:id="@+id/radio2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -72,7 +37,7 @@
             android:textColor="@color/plainText" />
 
         <CheckBox
-            android:id="@+id/radioButton3"
+            android:id="@+id/radio3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -81,7 +46,7 @@
             android:textColor="@color/plainText" />
 
         <CheckBox
-            android:id="@+id/radioButton4"
+            android:id="@+id/radio4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -90,7 +55,7 @@
             android:textColor="@color/plainText" />
 
         <CheckBox
-            android:id="@+id/radioButton5"
+            android:id="@+id/radio5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -99,7 +64,7 @@
             android:textColor="@color/plainText" />
 
         <CheckBox
-            android:id="@+id/radioButton6"
+            android:id="@+id/radio6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -108,7 +73,7 @@
             android:textColor="@color/plainText" />
 
         <CheckBox
-            android:id="@+id/radioButton7"
+            android:id="@+id/radio7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -123,7 +88,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="72dp"
         android:fontFamily="@font/helveticaneu_bold"
         android:text="Choose Your Interest"
         android:textColor="@color/plainText"
@@ -131,39 +96,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editTextTextPersonName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/borderbtn"
-        android:ems="10"
-        android:hint="Your UserName"
-        android:digits="abcdefghijklmnopqrstuvwxyz1234567890._"
-        android:inputType="textPersonName"
-        android:paddingStart="24dp"
-        android:paddingTop="16dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="16dp"
-        android:textAlignment="center"
-        android:textColor="@color/plainText"
-        android:textColorHint="@color/hintColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/circleImageView" />
-
-    <ProgressBar
-        android:id="@+id/detailsLoading"
-        style="?android:attr/progressBarStyleHorizontal"
+    <Button
+        android:id="@+id/updateBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="72dp"
+        android:background="@drawable/accentbtn"
+        android:text="Update"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:transitionName="loginT"
         app:layout_constraintEnd_toEndOf="parent"
-        android:indeterminate="true"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="invisible" />
-
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
