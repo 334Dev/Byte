@@ -419,6 +419,21 @@ public class CreatePost extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Toast.makeText(CreatePost.this,"Posted",Toast.LENGTH_LONG).show();
+                                Intent intent1=getIntent();
+                                if(intent1.hasExtra("DraftExist")){
+                                    fstore.collection("Users").document(UserID).collection("draft").document(FileName).delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Log.i("Deleted", "onFailure:");
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i("Draft CF delete", "onFailure: "+e.getMessage());
+                                        }
+                                    });
+                                }
                                 Intent i=new Intent(CreatePost.this,ViewPost.class);
                                 i.putExtra("PostId",FileName);
                                 startActivity(i);
