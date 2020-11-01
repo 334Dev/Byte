@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -38,6 +39,7 @@ public class QuickFragment extends Fragment implements quickAdapter.SelectedPage
     private Query query;
     private Integer index;
     private ProgressBar loading;
+    private View parentLayout;
 
     @Nullable
     @Override
@@ -49,6 +51,7 @@ public class QuickFragment extends Fragment implements quickAdapter.SelectedPage
 
         viewPager=v.findViewById(R.id.quickPager);
         loading=v.findViewById(R.id.quickLoading);
+
 
         loading.setVisibility(View.VISIBLE);
         
@@ -106,7 +109,8 @@ public class QuickFragment extends Fragment implements quickAdapter.SelectedPage
                 @Override
                 public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                     if(value.isEmpty()){
-                        Log.i("PostEmpty", "onEvent: Empty");
+                        Toast.makeText(getContext(),"No posts to show",Toast.LENGTH_SHORT).show();
+
                     }else {
                         for (QueryDocumentSnapshot doc : value) {
 
@@ -119,12 +123,14 @@ public class QuickFragment extends Fragment implements quickAdapter.SelectedPage
                         }
                        // index=index+value.size()-1;
                         //Log.i("PostIndex", "onEvent: "+index);
-                        loading.setVisibility(View.INVISIBLE);
+                        //loading.setVisibility(View.INVISIBLE);
 
                         lastQuick = value.getDocuments().get(value.size() - 1);
                         Log.i("PostLast", "onEvent: "+quickModels.size());
                         Log.i("PostLast", "onEvent: "+lastQuick.getId());
                     }
+
+                    loading.setVisibility(View.INVISIBLE);
                 }
             });
 
