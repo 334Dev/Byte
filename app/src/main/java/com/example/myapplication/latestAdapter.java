@@ -91,6 +91,10 @@ public class latestAdapter extends RecyclerView.Adapter<latestAdapter.mViewholde
             Picasso.get().load(imageView).into(thumbView);
         }
         public void setTitle(String Title){
+            if(Title.length()>26)
+            {
+                Title=Title.substring(0,25)+"...";
+            }
             title=view.findViewById(R.id.post_title);
             title.setText(Title);
         }

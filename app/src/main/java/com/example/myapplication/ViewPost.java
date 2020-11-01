@@ -53,7 +53,6 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
     private TextView upvoteCountText;
     private FirebaseAuth mAuth;
     private ImageView reportBtn;
-
     private View parentLayout;
     private StorageReference storageReference;
     private String UserID;
@@ -295,29 +294,32 @@ public class ViewPost extends AppCompatActivity implements commentAdapter.Select
 
                            //getting report reason from dialog box
                            String reportReason = input.getText().toString();
+                           if (reportReason.isEmpty()) {
+                               Snackbar.make(parentLayout, "Please enter a valid report reason", Snackbar.LENGTH_LONG).show();
+                           } else {
+                               //snackbar of the report reason
+                               Snackbar.make(parentLayout, reportReason, Snackbar.LENGTH_LONG).show();
 
-                           //snackbar of the report reason
-                           Snackbar.make(parentLayout,reportReason,Snackbar.LENGTH_LONG).show();
+                               //adding the report message
+                               fstore.collection("Post").document(id).update("reportList", FieldValue.arrayUnion(reportReason)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                   @Override
+                                   public void onSuccess(Void aVoid) {
+                                       //increasing report count
+                                       fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                           @Override
+                                           public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                               Double reportCount = documentSnapshot.getDouble("Report");
+                                               fstore.collection("Post").document(id).update("Report", reportCount + 1);
 
-                           //adding the report message
-                           fstore.collection("Post").document(id).update("reportList",FieldValue.arrayUnion(reportReason)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                               @Override
-                               public void onSuccess(Void aVoid) {
-                                            //increasing report count
-                                           fstore.collection("Post").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                               @Override
-                                               public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                   Double reportCount = documentSnapshot.getDouble("Report");
-                                                   fstore.collection("Post").document(id).update("Report", reportCount + 1);
+                                               //adding the user to database of reportList
+                                               setReportArray();
 
-                                                   //adding the user to database of reportList
-                                                   setReportArray();
-                                                   
-                                               }
-                                           });
-                               }
-                           });
+                                           }
+                                       });
+                                   }
+                               });
 
+                           }
                        }
                    });
                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
