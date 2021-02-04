@@ -4,7 +4,7 @@
 A native android mobile application for people to post, like, share, report, comment, follow and short news feed. Also contains a trending section featuring our own trending algorithm. 
 
 ## App Screenshots
-<img src="https://user-images.githubusercontent.com/59697798/106940063-148c2580-6747-11eb-9b1f-f368aa9d28ef.jpg" width="250" heigth="500">      <img src="https://user-images.githubusercontent.com/59697798/106940063-148c2580-6747-11eb-9b1f-f368aa9d28ef.jpg" width="250" heigth="500">      <img src="https://user-images.githubusercontent.com/59697798/106940063-148c2580-6747-11eb-9b1f-f368aa9d28ef.jpg" width="250" heigth="500">
+<img src="https://user-images.githubusercontent.com/59697798/106940063-148c2580-6747-11eb-9b1f-f368aa9d28ef.jpg" width="250" heigth="500">      <img src="https://user-images.githubusercontent.com/59697798/106940321-6b91fa80-6747-11eb-9993-26ff213bc936.jpg" width="250" heigth="500">      <img src="https://user-images.githubusercontent.com/59697798/106940063-148c2580-6747-11eb-9b1f-f368aa9d28ef.jpg" width="250" heigth="500">
 
 #### Basic Features of the Application
 - Post a article
